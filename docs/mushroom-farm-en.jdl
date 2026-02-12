@@ -1,0 +1,800 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ *  MUSHROOM CULTIVATION MANAGEMENT SYSTEM (MCMS)
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ *  Domain: Smart Agriculture / Controlled Environment Agriculture (CEA)
+ *  Sub-domain: Commercial Mushroom Farming
+ *
+ *  Key capabilities:
+ *    - Full batch lifecycle tracking with state machine enforcement
+ *    - IoT sensor integration & environmental monitoring
+ *    - Multi-flush cycle support (unlimited flushes)
+ *    - Strain & substrate recipe management
+ *    - Structured contamination tracking with root cause analysis
+ *    - Supply chain traceability (supplier → substrate → harvest → customer)
+ *    - Financial layer (cost tracking, revenue, profitability per batch)
+ *    - Role-based workforce management
+ *    - Quality grading and compliance auditing
+ *    - Real-time dashboards and reporting
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+// ─────────────────────────────────────────────────────────────────
+// ENUMERATIONS
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Biological production phases — ordered lifecycle.
+ * Phase ordering is enforced at the service layer via a state machine.
+ * Sequence: 1→2→3→4→5→6→7→8→(9→10→8)* → COMPLETED
+ */
+enum PhaseName {
+  INOCULATION            /** 1 - Spawn injected into substrate */
+  EARLY_COLONIZATION     /** 2 - Mycelium begins spreading */
+  FULL_COLONIZATION      /** 3 - Substrate fully colonized */
+  CONSOLIDATION          /** 4 - Mycelium matures and strengthens */
+  FRUITING_TRIGGER       /** 5 - Environmental shock applied to initiate pinning */
+  PRIMORDIA              /** 6 - Pin formation (baby mushrooms) */
+  FRUITING_BODY_GROWTH   /** 7 - Mushrooms develop to harvest size */
+  HARVEST                /** 8 - Picking (per flush cycle) */
+  REHYDRATION_PAUSE      /** 9 - Substrate rest and rehydration between flushes */
+  COMPLETED              /** 10 - Batch lifecycle ended */
+}
+
+/**
+ * Physical room classification within the farm.
+ * Rooms are now entities; this enum classifies their function.
+ */
+enum RoomType {
+  STERILE_ZONE           /** Sterile/clean zone for inoculation */
+  INCUBATION             /** Incubation chambers — dark, warm */
+  FRUITING_CHAMBER       /** Fruiting chambers — high humidity, fresh air */
+  COLD_STORAGE           /** Cold storage for harvested product */
+  WORK_ZONE              /** General work area — packing, prep */
+  LABORATORY             /** Lab — cultures, quality testing */
+}
+
+/**
+ * Room operational status for scheduling and maintenance.
+ */
+enum RoomStatus {
+  ACTIVE                 /** Active / in use */
+  MAINTENANCE            /** Under maintenance / cleaning */
+  DISINFECTION           /** Undergoing disinfection between batches */
+  INACTIVE               /** Inactive / offline */
+}
+
+/**
+ * Contamination severity classification.
+ */
+enum ContaminationSeverity {
+  LOW                    /** Isolated spot, manageable */
+  MEDIUM                 /** Spreading, requires intervention */
+  HIGH                   /** Significant loss expected */
+  CRITICAL               /** Batch may be lost */
+}
+
+/**
+ * Common contamination agent types in mushroom cultivation.
+ */
+enum ContaminationType {
+  TRICHODERMA            /** Green mold — most common competitor */
+  COBWEB                 /** Cobweb mold (Dactylium) */
+  BLACK_MOLD             /** Aspergillus niger */
+  BACTERIAL_BLOTCH       /** Pseudomonas tolaasii */
+  WET_BUBBLE             /** Mycogone perniciosa */
+  DRY_BUBBLE             /** Lecanicillium fungicola */
+  INSECT                 /** Insect infestation (sciarid flies, mites) */
+  UNKNOWN                /** Unknown — requires lab analysis */
+  OTHER                  /** Other */
+}
+
+/**
+ * Contamination response actions.
+ */
+enum ContaminationAction {
+  ISOLATE                /** Isolate affected units */
+  REMOVE                 /** Remove contaminated substrate */
+  SALT_TREATMENT         /** Salt treatment */
+  PEROXIDE_TREATMENT     /** Hydrogen peroxide treatment */
+  INCREASED_VENTILATION  /** Increased ventilation */
+  DISCARD_BATCH          /** Discard entire batch */
+  MONITOR                /** Continue monitoring */
+}
+
+/**
+ * Harvest quality grading.
+ */
+enum QualityGrade {
+  A_PREMIUM              /** Premium — perfect form, no defects */
+  B_STANDARD             /** Standard — minor cosmetic imperfections */
+  C_INDUSTRIAL           /** Industrial — processing/drying only */
+  WASTE                  /** Waste — compost or discard */
+}
+
+/**
+ * Substrate base material types.
+ */
+enum SubstrateBase {
+  WHEAT_STRAW            /** Wheat straw */
+  BARLEY_STRAW           /** Barley straw */
+  BEECH_SAWDUST          /** Beech sawdust */
+  OAK_SAWDUST            /** Oak sawdust */
+  CORN_COB               /** Corn cob */
+  SPENT_COFFEE_GROUNDS   /** Spent coffee grounds */
+  BLENDED                /** Blended / custom mix */
+}
+
+/**
+ * Financial transaction cost categories.
+ */
+enum CostCategory {
+  RAW_MATERIALS          /** Raw materials (substrate, grain, supplements) */
+  ENERGY                 /** Energy (electricity, gas, heating) */
+  LABOR                  /** Labor costs */
+  PACKAGING              /** Packaging */
+  TRANSPORT              /** Transportation / logistics */
+  LABORATORY             /** Lab testing / quality control */
+  MAINTENANCE            /** Maintenance & repairs */
+  OTHER                  /** Other / miscellaneous */
+}
+
+/**
+ * Units of measurement for sensor readings.
+ */
+enum SensorUnit {
+  CELSIUS                /** Temperature in °C */
+  HUMIDITY_PERCENT       /** Relative humidity % */
+  PPM_CO2                /** CO₂ concentration in ppm */
+  LUX                    /** Light intensity in lux */
+  AIRFLOW_MS             /** Air flow in m/s */
+}
+
+/**
+ * Sensor operational status.
+ */
+enum SensorStatus {
+  ACTIVE                 /** Online and reporting */
+  INACTIVE               /** Offline / disabled */
+  ERROR                  /** Error / malfunction */
+  CALIBRATING            /** Under calibration */
+}
+
+/**
+ * Alert severity for environmental deviations.
+ */
+enum AlertSeverity {
+  INFO                   /** Informational */
+  WARNING                /** Warning — approaching threshold */
+  CRITICAL               /** Critical — immediate action needed */
+}
+
+/**
+ * Supplier classification.
+ */
+enum SupplierType {
+  SPAWN                  /** Spawn / seed supplier */
+  SUBSTRATE              /** Substrate material supplier */
+  CHEMICALS              /** Chemicals & supplements */
+  EQUIPMENT              /** Equipment supplier */
+  PACKAGING              /** Packaging supplier */
+}
+
+/**
+ * Order / delivery status.
+ */
+enum OrderStatus {
+  ORDERED                /** Ordered */
+  DELIVERED              /** Delivered */
+  RECEIVED               /** Received & inspected */
+  RETURNED               /** Complaint / return */
+}
+
+/**
+ * Payment status for orders.
+ */
+enum PaymentStatus {
+  UNPAID                 /** Not yet paid */
+  PARTIALLY_PAID         /** Partial payment received */
+  PAID                   /** Fully paid */
+  OVERDUE                /** Payment past due date */
+  REFUNDED               /** Payment refunded */
+}
+
+/**
+ * Standard units of measure across supply chain.
+ */
+enum UnitOfMeasure {
+  KG                     /** Kilograms */
+  GRAM                   /** Grams */
+  LITER                  /** Liters */
+  PIECE                  /** Individual pieces / items */
+  BAG                    /** Bags (substrate, spawn) */
+  BOX                    /** Boxes (packaging) */
+  PALLET                 /** Pallets */
+}
+
+/**
+ * Material classification for inventory management.
+ */
+enum MaterialCategory {
+  SPAWN                  /** Mushroom spawn / grain spawn / liquid culture */
+  SUBSTRATE              /** Bulk substrate material (straw, sawdust, etc.) */
+  SUPPLEMENT             /** Nutritional supplements (gypsum, bran, lime) */
+  CHEMICAL               /** Chemicals (hydrogen peroxide, alcohol, etc.) */
+  PACKAGING              /** Bags, boxes, labels, clamshells */
+  EQUIPMENT_SUPPLY       /** Consumable equipment (filters, gloves, etc.) */
+  OTHER                  /** Miscellaneous */
+}
+
+/**
+ * Stock movement direction / reason.
+ */
+enum StockMovementType {
+  RECEIPT                /** Inbound: material received from supplier */
+  CONSUMPTION            /** Outbound: material consumed by a batch */
+  ADJUSTMENT_IN          /** Inventory correction — increase */
+  ADJUSTMENT_OUT         /** Inventory correction — decrease */
+  WASTE                  /** Material lost / expired / discarded */
+  RETURN_TO_SUPPLIER     /** Material returned to supplier */
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CORE ENTITIES — PRODUCTION
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Mushroom strain / species being cultivated.
+ * Central to yield optimization — links genetics to performance.
+ */
+entity Strain {
+  name String required                       /** e.g. "Pleurotus ostreatus — Grey Dove" */
+  species String required                    /** Latin species name */
+  variety String                             /** Cultivar or variant */
+  optimalTempMinC BigDecimal                 /** Min fruiting temp °C */
+  optimalTempMaxC BigDecimal                 /** Max fruiting temp °C */
+  optimalHumidityMin BigDecimal              /** Min RH % */
+  optimalHumidityMax BigDecimal              /** Max RH % */
+  optimalCO2MaxPpm Integer                   /** Max CO₂ ppm for fruiting */
+  colonizationDaysMin Integer                /** Typical min colonization days */
+  colonizationDaysMax Integer                /** Typical max colonization days */
+  expectedYieldPercent BigDecimal            /** Expected biological efficiency % */
+  shelfLifeDays Integer                      /** Post-harvest shelf life in days */
+  note TextBlob                              /** Cultivation tips, observations */
+  active Boolean required                    /** Is this strain currently in use? */
+}
+
+/**
+ * Substrate recipe — the growth medium formulation.
+ * Versioned to track recipe evolution and yield correlation.
+ */
+entity SubstrateRecipe {
+  name String required                       /** e.g. "Standard Wheat Straw v3" */
+  version String required                    /** Recipe version identifier */
+  baseType SubstrateBase required            /** Primary substrate material */
+  compositionDetail TextBlob                 /** Full ingredient list & ratios */
+  sterilizationMethod String                 /** e.g. "Autoclave 121°C/2h", "Pasteurization 80°C/8h" */
+  moistureTargetPercent BigDecimal           /** Target moisture content % */
+  phTarget BigDecimal                        /** Target pH level */
+  supplementNotes TextBlob                   /** Supplements: gypsum, bran, lime, etc. */
+  active Boolean required
+}
+
+/**
+ * Production batch — the central tracking entity.
+ * Represents a single production run from inoculation to final harvest.
+ */
+entity Batch {
+  batchCode String required unique           /** Unique identifier, e.g. "PO-2025-001" */
+  startDate LocalDate required               /** Inoculation date */
+  endDate LocalDate                          /** Batch completion date */
+  currentPhase PhaseName required            /** Current lifecycle phase (state machine) */
+  numberOfBags Integer                       /** Total substrate bags/blocks in batch */
+  substrateWeightKg BigDecimal               /** Total substrate weight in kg */
+  spawnWeightKg BigDecimal                   /** Total spawn weight used in kg */
+  targetYieldKg BigDecimal                   /** Expected total yield in kg */
+  actualTotalYieldKg BigDecimal              /** Accumulated actual yield across all flushes */
+  biologicalEfficiencyPercent BigDecimal      /** (actual yield / dry substrate weight) × 100 */
+  isContaminated Boolean                     /** Flag: any contamination detected? */
+  isActive Boolean required                  /** Batch still in production? */
+  completionNote TextBlob                    /** Final notes upon batch closure */
+  note TextBlob                              /** General batch notes */
+}
+
+/**
+ * Phase execution — a single lifecycle phase within a batch.
+ * State machine validates transitions (enforced at service layer):
+ *   INOCULATION → EARLY_COLONIZATION → FULL_COLONIZATION →
+ *   CONSOLIDATION → FRUITING_TRIGGER → PRIMORDIA →
+ *   FRUITING_BODY_GROWTH → HARVEST → (REHYDRATION_PAUSE → HARVEST)* → COMPLETED
+ */
+entity PhaseExecution {
+  phase PhaseName required                   /** Which lifecycle phase */
+  sequenceOrder Integer required             /** Execution order within the batch (1, 2, 3...) */
+  startDate LocalDate required               /** Phase start date */
+  endDate LocalDate                          /** Phase end date (null if ongoing) */
+  plannedDurationDays Integer                /** Planned duration in days */
+  actualDurationDays Integer                 /** Actual duration in days */
+  responsiblePerson String                   /** Who managed this phase (display name) */
+  note TextBlob                              /** Phase observations & notes */
+}
+
+/**
+ * Flush cycle — each harvest cycle within a batch.
+ * Supports unlimited flushes (typical: 2-5 depending on species).
+ */
+entity FlushCycle {
+  flushNumber Integer required               /** 1st, 2nd, 3rd flush, etc. */
+  harvestStartDate LocalDate required        /** When picking began */
+  harvestEndDate LocalDate                   /** When picking ended */
+  yieldKg BigDecimal required                /** Total yield for this flush */
+  yieldBagsHarvested Integer                 /** Number of bags that produced */
+  avgFruitBodyWeightG BigDecimal             /** Average individual mushroom weight in grams */
+  rehydrationDone Boolean                    /** Was rehydration performed after this flush? */
+  rehydrationDurationHours Integer           /** Soaking time in hours */
+  note TextBlob                              /** Flush-specific observations */
+}
+
+/**
+ * Harvest detail — individual harvest event within a flush.
+ * Enables daily picking records and quality grading.
+ */
+entity HarvestRecord {
+  harvestDate LocalDate required             /** Date of picking */
+  weightKg BigDecimal required               /** Weight harvested */
+  grade QualityGrade required                /** Quality classification */
+  pickerName String                          /** Who harvested */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FACILITY & IoT
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Physical room / chamber in the facility.
+ * Now a full entity instead of an enum — supports multiple rooms
+ * of the same type, capacity tracking, and sensor linkage.
+ */
+entity Room {
+  name String required                       /** e.g. "Incubation A1", "Chamber B3" */
+  code String required unique                /** Short code, e.g. "INC-A1" */
+  roomType RoomType required                 /** Functional classification */
+  status RoomStatus required                 /** Current operational status */
+  capacityBags Integer                       /** Max bag/block capacity */
+  currentOccupancy Integer                   /** Current number of bags/blocks */
+  areaSqM BigDecimal                         /** Floor area in m² */
+  hasHVAC Boolean                            /** Automated climate control? */
+  hasMisting Boolean                         /** Automated misting/humidification? */
+  lastDisinfectionDate LocalDate             /** When was it last disinfected? */
+  note TextBlob
+}
+
+/**
+ * Environmental target ranges for a room per phase.
+ * Defines what the environment SHOULD be for optimal growth.
+ */
+entity EnvironmentalTarget {
+  phase PhaseName required                   /** Target applies during this phase */
+  tempMinC BigDecimal required               /** Minimum temperature °C */
+  tempMaxC BigDecimal required               /** Maximum temperature °C */
+  humidityMinPercent BigDecimal required      /** Minimum RH % */
+  humidityMaxPercent BigDecimal required      /** Maximum RH % */
+  co2MaxPpm Integer                          /** Maximum CO₂ ppm */
+  lightLux Integer                           /** Target light level */
+  freshAirExchangesPerHour Integer           /** FAE target */
+}
+
+/**
+ * IoT sensor device installed in a room.
+ */
+entity Sensor {
+  sensorCode String required unique          /** Device identifier */
+  sensorType SensorUnit required             /** What it measures */
+  status SensorStatus required               /** Current operational status */
+  installedDate LocalDate                    /** Installation date */
+  lastCalibrationDate LocalDate              /** Last calibration date */
+  manufacturer String                        /** Device manufacturer */
+  model String                               /** Device model */
+  note TextBlob
+}
+
+/**
+ * Time-series sensor reading — the IoT data stream.
+ * High-volume entity — consider TimescaleDB or partitioning for production.
+ */
+entity SensorReading {
+  timestamp Instant required                 /** Reading timestamp (UTC) */
+  value BigDecimal required                  /** Measured value */
+  unit SensorUnit required                   /** Unit of measurement */
+}
+
+/**
+ * Environmental alert — triggered when readings breach thresholds.
+ */
+entity EnvironmentalAlert {
+  alertTime Instant required                 /** When the alert was triggered */
+  severity AlertSeverity required            /** INFO / WARNING / CRITICAL */
+  parameter SensorUnit required              /** Which environmental parameter */
+  actualValue BigDecimal required            /** The value that triggered the alert */
+  thresholdValue BigDecimal required         /** The threshold that was breached */
+  message String required                    /** Human-readable alert description */
+  acknowledged Boolean required              /** Has someone acknowledged this? */
+  acknowledgedBy String                      /** Who acknowledged it */
+  acknowledgedAt Instant                     /** When it was acknowledged */
+  resolutionNote TextBlob                    /** What was done about it */
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CONTAMINATION TRACKING
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Structured contamination event — replaces free-text notes.
+ * Enables trend analysis, root cause tracking, and loss forecasting.
+ */
+entity ContaminationEvent {
+  detectedDate LocalDate required            /** When contamination was first observed */
+  type ContaminationType required            /** What type of contamination */
+  severity ContaminationSeverity required    /** How severe */
+  affectedBags Integer                       /** How many bags/blocks affected */
+  affectedPercentage BigDecimal              /** % of batch affected */
+  actionTaken ContaminationAction required   /** Primary response action */
+  resolvedDate LocalDate                     /** When issue was resolved (null if ongoing) */
+  lossKg BigDecimal                          /** Estimated yield loss in kg */
+  rootCauseAnalysis TextBlob                 /** Root cause investigation notes */
+  preventiveMeasures TextBlob                /** Preventive actions for future */
+  detectedBy String                          /** Who discovered it */
+  photosReference String                     /** Path/URL to photo evidence */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// PRODUCT CATALOG
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Product — a sellable mushroom product.
+ * Normalizes what is being sold across sales order lines.
+ * Combines strain + grade into a marketable product definition.
+ */
+entity Product {
+  code String required unique                /** SKU / product code, e.g. "OYS-PREM-500" */
+  name String required                       /** Display name, e.g. "Premium Oyster Mushroom 500g" */
+  description TextBlob                       /** Product description */
+  defaultGrade QualityGrade required         /** Default quality grade for this product */
+  defaultWeightKg BigDecimal                 /** Standard package weight in kg */
+  defaultPricePerKg BigDecimal               /** Standard selling price per kg */
+  shelfLifeDays Integer                      /** Product shelf life in days */
+  active Boolean required                    /** Currently offered? */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SUPPLY CHAIN — PROCUREMENT (Header + Lines)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Supplier / vendor master data.
+ */
+entity Supplier {
+  name String required                       /** Company or individual name */
+  type SupplierType required                 /** What they supply */
+  contactPerson String                       /** Primary contact name */
+  email String                               /** Email */
+  phone String                               /** Phone number */
+  address TextBlob                           /** Full address */
+  rating Integer min(1) max(5)               /** Internal quality rating 1-5 */
+  active Boolean required
+  note TextBlob
+}
+
+/**
+ * Supply order header — purchase order from a supplier.
+ * Contains shared order-level information.
+ * Line items are in SupplyOrderLine.
+ */
+entity SupplyOrder {
+  orderCode String required unique           /** PO reference number, e.g. "PO-2025-042" */
+  orderDate LocalDate required               /** Date ordered */
+  expectedDeliveryDate LocalDate             /** Expected delivery date */
+  actualDeliveryDate LocalDate               /** Actual delivery date */
+  status OrderStatus required                /** Current order status */
+  totalAmount BigDecimal                     /** Calculated total across all lines */
+  currency String required                   /** Currency code, e.g. "EUR", "RSD" */
+  shippingAddress TextBlob                   /** Delivery address (if different from default) */
+  note TextBlob
+}
+
+/**
+ * Supply order line item — individual item on a purchase order.
+ * Each line represents one material being procured.
+ * Links to Material catalog for standardized identification.
+ * Supports partial deliveries and per-line quality tracking.
+ */
+entity SupplyOrderLine {
+  lineNumber Integer required                /** Line sequence (1, 2, 3...) */
+  itemDescription String required            /** Free-text description of what is being ordered */
+  quantityOrdered BigDecimal required        /** Amount ordered */
+  quantityReceived BigDecimal                /** Amount actually received (supports partial delivery) */
+  unit UnitOfMeasure required                /** Unit of measure */
+  unitPrice BigDecimal required              /** Price per unit */
+  lineTotal BigDecimal required              /** quantityOrdered × unitPrice */
+  lotNumber String                           /** Supplier lot/batch number for traceability */
+  expiryDate LocalDate                       /** Expiry date of supplied material */
+  qualityOnReceipt String                    /** Quality assessment upon delivery */
+  isReceived Boolean required                /** Has this line been received? */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SUPPLY CHAIN — SALES (Header + Lines)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Customer — who buys the harvested mushrooms.
+ */
+entity Customer {
+  name String required                       /** Business or individual name */
+  contactPerson String
+  email String
+  phone String
+  address TextBlob
+  deliveryPreference String                  /** e.g. "Next-day cold chain", "Weekly pickup" */
+  paymentTerms String                        /** e.g. "Net 30", "COD" */
+  active Boolean required
+  note TextBlob
+}
+
+/**
+ * Sales order header — order from a customer.
+ * Contains shared order-level information.
+ * Line items are in SalesOrderLine.
+ */
+entity SalesOrder {
+  orderCode String required unique           /** Sales order reference, e.g. "SO-2025-108" */
+  orderDate LocalDate required               /** Date order was placed */
+  requestedDeliveryDate LocalDate            /** Customer's requested delivery date */
+  actualDeliveryDate LocalDate               /** Actual delivery date */
+  status OrderStatus required                /** Current order status */
+  totalWeight BigDecimal                     /** Calculated total weight across all lines (kg) */
+  totalRevenue BigDecimal                    /** Calculated total revenue across all lines */
+  currency String required                   /** Currency code */
+  invoiceNumber String                       /** Linked invoice reference */
+  paymentStatus PaymentStatus required       /** Payment tracking (replaces simple isPaid boolean) */
+  paymentDueDate LocalDate                   /** When payment is due */
+  paymentReceivedDate LocalDate              /** When payment was received */
+  shippingAddress TextBlob                   /** Delivery address */
+  note TextBlob
+}
+
+/**
+ * Sales order line item — individual product on a sales order.
+ * Each line represents one product (strain + grade combination) being sold.
+ * Links to Product catalog and source Batch for full traceability.
+ */
+entity SalesOrderLine {
+  lineNumber Integer required                /** Line sequence (1, 2, 3...) */
+  weightKg BigDecimal required               /** Weight sold on this line */
+  grade QualityGrade required                /** Quality grade for this line */
+  quantityUnits Integer                      /** Number of packages/units (if applicable) */
+  unit UnitOfMeasure                         /** Unit of measure */
+  pricePerKg BigDecimal required             /** Selling price per kg for this line */
+  lineTotal BigDecimal required              /** weightKg × pricePerKg */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INVENTORY & MATERIAL TRACEABILITY
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Material — master catalog of all materials the farm uses.
+ * Centralizes material definitions so they can be referenced
+ * consistently across supply orders, inventory, and batch consumption.
+ */
+entity Material {
+  code String required unique                /** Material code, e.g. "MAT-SPAWN-PO-01" */
+  name String required                       /** Display name, e.g. "Pleurotus ostreatus grain spawn" */
+  category MaterialCategory required         /** Material classification */
+  defaultUnit UnitOfMeasure required         /** Default unit of measure */
+  minimumStockLevel BigDecimal               /** Reorder threshold — alert when stock falls below */
+  description TextBlob                       /** Detailed description / specifications */
+  active Boolean required
+  note TextBlob
+}
+
+/**
+ * Inventory lot — a specific batch of material received into stock.
+ * Each lot is linked to the SupplyOrderLine it came from,
+ * providing full traceability back to the supplier and PO.
+ *
+ * Lot quantity lifecycle:
+ *   quantityReceived (initial) → quantityOnHand (current, decremented by consumption)
+ */
+entity InventoryLot {
+  lotCode String required unique             /** Internal lot identifier, e.g. "LOT-2025-0042" */
+  receivedDate LocalDate required            /** Date material was received into inventory */
+  quantityReceived BigDecimal required       /** Original quantity received */
+  quantityOnHand BigDecimal required         /** Current remaining quantity */
+  unit UnitOfMeasure required                /** Unit of measure */
+  expiryDate LocalDate                       /** Material expiry date */
+  storageLocation String                     /** Where it's stored, e.g. "Warehouse A, Shelf 3" */
+  supplierLotNumber String                   /** Supplier's lot/batch number (external reference) */
+  isExhausted Boolean required               /** True when quantityOnHand reaches 0 */
+  note TextBlob
+}
+
+/**
+ * Stock movement — every inbound/outbound inventory transaction.
+ * Provides a complete audit trail of all stock changes.
+ * Each movement adjusts the quantityOnHand of its InventoryLot.
+ */
+entity StockMovement {
+  movementDate Instant required              /** When the movement occurred */
+  movementType StockMovementType required    /** RECEIPT, CONSUMPTION, ADJUSTMENT, WASTE, RETURN */
+  quantity BigDecimal required               /** Quantity moved (always positive; direction from type) */
+  unit UnitOfMeasure required                /** Unit of measure */
+  reference String                           /** External reference (PO number, batch code, etc.) */
+  reason String                              /** Reason for adjustment/waste */
+  performedBy String                         /** Who performed this transaction */
+  note TextBlob
+}
+
+/**
+ * Batch material usage — the key traceability link.
+ * Records exactly which materials (from which inventory lots,
+ * from which supply orders, from which suppliers) were consumed
+ * in each production batch.
+ *
+ * Answers: "Batch PO-2025-001 used 200kg of wheat straw from
+ *           LOT-2025-0042, which came from SupplyOrder PO-2025-018
+ *           line 2, supplied by Agro-Straw d.o.o."
+ */
+entity BatchMaterialUsage {
+  usageDate LocalDate required               /** When the material was used */
+  quantityUsed BigDecimal required           /** How much was consumed */
+  unit UnitOfMeasure required                /** Unit of measure */
+  purpose String                             /** What it was used for, e.g. "Substrate preparation", "Supplementation" */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FINANCIALS
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Cost record — tracks expenses per batch per category.
+ * Enables full batch profitability analysis.
+ */
+entity CostRecord {
+  recordDate LocalDate required              /** Date of expense */
+  category CostCategory required             /** What type of cost */
+  description String required                /** Brief description */
+  amount BigDecimal required                 /** Cost amount in local currency */
+  currency String required                   /** Currency code, e.g. "RSD", "EUR" */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// COMPLIANCE & REPORTING
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Mandatory field check — audit trail for data completeness.
+ */
+entity MandatoryFieldCheck {
+  fieldName String required                  /** Which field was checked */
+  isFilled Boolean required                  /** Was it filled in? */
+  checkDate LocalDate required               /** When the check was performed */
+}
+
+/**
+ * Monthly report — operational summary per batch per month.
+ */
+entity MonthlyReport {
+  year Integer required                      /** Year */
+  month Integer required min(1) max(12)      /** Month (1-12) */
+  generatedAt Instant required               /** Report generation timestamp */
+  totalYieldKg BigDecimal                    /** Total yield in reporting period */
+  totalCost BigDecimal                       /** Total costs in reporting period */
+  totalRevenue BigDecimal                    /** Total revenue in reporting period */
+  profitMarginPercent BigDecimal             /** Calculated profit margin */
+  totalContaminationEvents Integer           /** Count of contamination events */
+  totalMissingFields Integer                 /** Count of incomplete mandatory fields */
+  summary TextBlob                           /** Executive summary text */
+}
+
+/**
+ * Task / action item for farm staff.
+ * Lightweight task management for daily operations.
+ */
+entity Task {
+  title String required                      /** Task title */
+  description TextBlob                       /** Detailed instructions */
+  dueDate LocalDate required                 /** When it's due */
+  completed Boolean required                 /** Is it done? */
+  completedDate LocalDate                    /** When it was completed */
+  priority Integer min(1) max(5)             /** Priority: 1=highest, 5=lowest */
+  assignedTo String                          /** Display name of assignee */
+  note TextBlob
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RELATIONSHIPS
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * Relationship design principles:
+ *   - Batch is the central aggregate root
+ *   - Room → Sensor → SensorReading forms the IoT hierarchy
+ *   - Batch → FlushCycle → HarvestRecord enables multi-flush tracking
+ *   - Product links Strain to sales catalog
+ *   - SupplyOrder → SupplyOrderLine → Material (header/line, multi-item POs)
+ *   - SalesOrder → SalesOrderLine → Product (header/line, multi-product invoices)
+ *   - Full material traceability chain:
+ *       Supplier → SupplyOrder → SupplyOrderLine → InventoryLot → BatchMaterialUsage → Batch
+ *   - StockMovement provides audit trail for all inventory changes
+ */
+
+relationship ManyToOne {
+  /** Production core */
+  Batch{strain(name) required} to Strain
+  Batch{recipe(name) required} to SubstrateRecipe
+  PhaseExecution{batch(batchCode) required} to Batch
+  PhaseExecution{room(name)} to Room
+
+  /** Multi-flush harvest */
+  FlushCycle{batch(batchCode) required} to Batch
+  HarvestRecord{flushCycle required} to FlushCycle
+
+  /** Product catalog */
+  Product{strain(name) required} to Strain
+
+  /** Facility & IoT */
+  Sensor{room(name) required} to Room
+  SensorReading{sensor(sensorCode) required} to Sensor
+  EnvironmentalTarget{room(name) required} to Room
+  EnvironmentalAlert{room(name) required} to Room
+  EnvironmentalAlert{sensor(sensorCode)} to Sensor
+  EnvironmentalAlert{batch(batchCode)} to Batch
+
+  /** Contamination */
+  ContaminationEvent{batch(batchCode) required} to Batch
+  ContaminationEvent{phaseExecution} to PhaseExecution
+  ContaminationEvent{room(name)} to Room
+
+  /** Supply chain — Procurement (header → lines → material) */
+  SupplyOrder{supplier(name) required} to Supplier
+  SupplyOrderLine{supplyOrder(orderCode) required} to SupplyOrder
+  SupplyOrderLine{material(name) required} to Material     /** What material is on this PO line */
+  SupplyOrderLine{batch(batchCode)} to Batch               /** Optional: pre-assigned to a batch */
+
+  /** Supply chain — Sales (header → lines → product) */
+  SalesOrder{customer(name) required} to Customer
+  SalesOrderLine{salesOrder(orderCode) required} to SalesOrder
+  SalesOrderLine{product(name) required} to Product        /** What product is being sold */
+  SalesOrderLine{batch(batchCode)} to Batch                /** Which batch it came from */
+
+  /** Inventory & stock management */
+  InventoryLot{material(name) required} to Material        /** What material this lot contains */
+  InventoryLot{supplyOrderLine required} to SupplyOrderLine /** Which PO line it was received from */
+  StockMovement{inventoryLot(lotCode) required} to InventoryLot /** Which lot was affected */
+  StockMovement{batch(batchCode)} to Batch                 /** Which batch (for CONSUMPTION movements) */
+
+  /** Batch material usage — THE KEY TRACEABILITY LINK */
+  BatchMaterialUsage{batch(batchCode) required} to Batch   /** Which batch consumed the material */
+  BatchMaterialUsage{inventoryLot(lotCode) required} to InventoryLot /** Which lot it came from */
+  BatchMaterialUsage{material(name) required} to Material  /** Which material (denormalized for easy querying) */
+
+  /** Financials */
+  CostRecord{batch(batchCode) required} to Batch
+
+  /** Compliance & operations */
+  MandatoryFieldCheck{phaseExecution} to PhaseExecution
+  MonthlyReport{batch(batchCode)} to Batch
+  Task{batch(batchCode)} to Batch
+  Task{room(name)} to Room
+}
+
