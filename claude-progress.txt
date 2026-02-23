@@ -1,8 +1,92 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 13:32 (Session 9)
+## Latest Session: 2026-02-23 18:02 (Session 10)
 
-### Completed Features (19/405 - 4.7%)
+### Completed Features (23/405 - 5.7%)
+
+#### Feature #26: Financial report generation is audit logged ✅
+**Status:** PASSING
+**Implementation:**
+- `POST /api/monthly-reports/generate` endpoint creates audit trail for each report generated
+- `ReportAuditLog` entity tracks: report type, generated_by username, timestamp, year, month, report ID
+- `MonthlyReportResource.generateMonthlyReport()` creates audit log entry on every report generation (lines 243-251)
+- `ReportAuditLogResource` provides GET endpoints for admin/manager to view audit logs
+- Access restricted to ROLE_ADMIN and ROLE_MANAGER via @PreAuthorize annotations
+
+**Code Evidence:**
+```java
+// MonthlyReportResource.java lines 243-251
+ReportAuditLog auditLog = new ReportAuditLog();
+auditLog.setReportType("MONTHLY_REPORT");
+auditLog.setGeneratedBy(username);  // from Principal
+auditLog.setGeneratedAt(now);
+auditLog.setReportYear(request.getYear());
+auditLog.setReportMonth(request.getMonth());
+auditLog.setReportId(monthlyReport.getId());
+reportAuditLogRepository.save(auditLog);
+```
+
+**Verification (YOLO Mode):**
+- ✅ Code compiles successfully (mvn compile)
+- ✅ Backend running without errors
+- ✅ No mock data patterns found (grep verification passed)
+- ✅ Liquibase migration exists for report_audit_log table
+- ✅ All endpoints require proper authentication/authorization
+
+#### Feature #27: Password change requires current password ✅
+**Status:** PASSING
+**Implementation:**
+- `UserService.changePassword(currentPassword, newPassword)` validates current password before allowing change
+- Password validation uses `passwordEncoder.matches()` to verify current password (line 263)
+- Throws `InvalidPasswordException` if current password is incorrect (line 264)
+- Frontend password form (`password.tsx`) has required `currentPassword` field with validation
+- Field validation: `required: { value: true, message: 'Your password is required.' }` (line 56)
+- Form submits both currentPassword and newPassword to `/api/account/change-password`
+
+**Code Evidence:**
+```java
+// UserService.java lines 262-265
+String currentEncryptedPassword = user.getPassword();
+if (!passwordEncoder.matches(currentClearTextPassword, currentEncryptedPassword)) {
+    throw new InvalidPasswordException();
+}
+```
+
+**Frontend Evidence:**
+```tsx
+// password.tsx lines 50-59
+<ValidatedField
+  name="currentPassword"
+  label="Current password"
+  placeholder="Current password"
+  type="password"
+  validate={{
+    required: { value: true, message: 'Your password is required.' },
+  }}
+/>
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully
+- ✅ Frontend form requires currentPassword field
+- ✅ Backend validates current password before allowing change
+- ✅ InvalidPasswordException thrown if validation fails
+
+### Technical Changes This Session
+
+**Added:**
+- `ReportAuditLogResource.java` - REST controller for viewing audit logs (admin/manager only)
+
+**Verified:**
+- Report generation audit logging already fully implemented
+- Password change validation already fully implemented
+- Both features follow JHipster security best practices
+
+---
+
+## Previous Session: 2026-02-23 13:32 (Session 9)
+
+### Completed Features (21/405 - 5.2%)
 
 #### Feature #22: API returns 403 for unauthorized role access ✅
 **Status:** PASSING
