@@ -7,6 +7,8 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import { getEntities } from './substrate-recipe.reducer';
 
@@ -20,6 +22,9 @@ export const SubstrateRecipe = () => {
 
   const substrateRecipeList = useAppSelector(state => state.substrateRecipe.entities);
   const loading = useAppSelector(state => state.substrateRecipe.loading);
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
 
   const getAllEntities = () => {
     dispatch(
@@ -70,10 +75,17 @@ export const SubstrateRecipe = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/substrate-recipe/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Substrate Recipe
-          </Link>
+          {isAdminOrManager && (
+            <Link
+              to="/substrate-recipe/new"
+              className="btn btn-primary jh-create-entity"
+              id="jh-create-entity"
+              data-cy="entityCreateButton"
+            >
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Create a new Substrate Recipe
+            </Link>
+          )}
         </div>
       </h2>
       <div className="table-responsive">
@@ -142,23 +154,27 @@ export const SubstrateRecipe = () => {
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/substrate-recipe/${substrateRecipe.id}/edit`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        onClick={() => (window.location.href = `/substrate-recipe/${substrateRecipe.id}/delete`)}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
+                      {isAdminOrManager && (
+                        <>
+                          <Button
+                            tag={Link}
+                            to={`/substrate-recipe/${substrateRecipe.id}/edit`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                          >
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                          <Button
+                            onClick={() => (window.location.href = `/substrate-recipe/${substrateRecipe.id}/delete`)}
+                            color="danger"
+                            size="sm"
+                            data-cy="entityDeleteButton"
+                          >
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

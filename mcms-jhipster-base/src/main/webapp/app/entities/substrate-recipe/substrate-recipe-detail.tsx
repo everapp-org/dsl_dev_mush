@@ -5,6 +5,8 @@ import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import { getEntity } from './substrate-recipe.reducer';
 
@@ -18,6 +20,10 @@ export const SubstrateRecipeDetail = () => {
   }, []);
 
   const substrateRecipeEntity = useAppSelector(state => state.substrateRecipe.entity);
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
+
   return (
     <Row>
       <Col md="8">
@@ -78,9 +84,11 @@ export const SubstrateRecipeDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/substrate-recipe/${substrateRecipeEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-        </Button>
+        {isAdminOrManager && (
+          <Button tag={Link} to={`/substrate-recipe/${substrateRecipeEntity.id}/edit`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+          </Button>
+        )}
       </Col>
     </Row>
   );
