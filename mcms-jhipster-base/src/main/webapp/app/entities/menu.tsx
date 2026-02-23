@@ -7,7 +7,7 @@ import MenuItem from 'app/shared/layout/menus/menu-item';
 
 const EntitiesMenu = () => {
   const isAdminOrManager = useAppSelector(state =>
-    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER])
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
   );
 
   return (

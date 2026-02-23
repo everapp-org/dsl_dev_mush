@@ -22,6 +22,9 @@ export const BatchDetail = () => {
 
   const batchEntity = useAppSelector(state => state.batch.entity);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+  const canModifyBatch = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
+  );
   return (
     <Row>
       <Col md="8">
@@ -109,10 +112,14 @@ export const BatchDetail = () => {
         <Button tag={Link} to="/batch" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
-        &nbsp;
-        <Button tag={Link} to={`/batch/${batchEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-        </Button>
+        {canModifyBatch && (
+          <>
+            &nbsp;
+            <Button tag={Link} to={`/batch/${batchEntity.id}/edit`} replace color="primary">
+              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+            </Button>
+          </>
+        )}
         {isAdmin && (
           <>
             &nbsp;
