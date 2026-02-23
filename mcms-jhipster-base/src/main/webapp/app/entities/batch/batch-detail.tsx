@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -19,6 +21,7 @@ export const BatchDetail = () => {
   }, []);
 
   const batchEntity = useAppSelector(state => state.batch.entity);
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
   return (
     <Row>
       <Col md="8">
@@ -110,6 +113,20 @@ export const BatchDetail = () => {
         <Button tag={Link} to={`/batch/${batchEntity.id}/edit`} replace color="primary">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
+        {isAdmin && (
+          <>
+            &nbsp;
+            <Button
+              tag={Link}
+              to={`/batch/${batchEntity.id}/force-transition`}
+              replace
+              color="warning"
+              data-cy="entityForceTransitionButton"
+            >
+              <FontAwesomeIcon icon="exchange-alt" /> <span className="d-none d-md-inline">Force Transition</span>
+            </Button>
+          </>
+        )}
       </Col>
     </Row>
   );

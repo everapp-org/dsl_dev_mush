@@ -22,6 +22,7 @@
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/AbstractAuditingEntity.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/Authority.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/Batch.java
+/home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/BatchAuditLog.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/BatchMaterialUsage.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/ContaminationEvent.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/domain/CostRecord.java
@@ -73,6 +74,7 @@
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/management/package-info.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/package-info.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/repository/AuthorityRepository.java
+/home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/repository/BatchAuditLogRepository.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/repository/BatchMaterialUsageRepository.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/repository/BatchRepository.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/repository/ContaminationEventRepository.java
@@ -154,6 +156,7 @@
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/SupplyOrderResource.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/TaskResource.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/UserResource.java
+/home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/dto/ForceTransitionRequest.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/errors/BadRequestAlertException.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/errors/EmailAlreadyUsedException.java
 /home/gpetrov/src/dsl_dev_mush/mcms-jhipster-base/src/main/java/com/mcms/web/rest/errors/ErrorConstants.java

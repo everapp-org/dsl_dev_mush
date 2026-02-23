@@ -1,8 +1,8 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 09:22 (Session 5)
+## Latest Session: 2026-02-23 13:01 (Session 6)
 
-### Completed Features (6/405 - 1.5%)
+### Completed Features (12/405 - 3.0%)
 
 #### Feature #15: Admin can create new user account ✅
 **Status:** PASSING
@@ -107,8 +107,96 @@ Response: 200 OK
 - User creation generates random password + reset key
 - Activation email integration via MailService
 
+---
+
+## Session: 2026-02-23 13:01 (Session 6)
+
+#### Feature #8: User can logout ✅
+**Status:** PASSING
+**Implementation:**
+- Logout route exists at `/logout` (routes.tsx line 36)
+- Logout menu item in account dropdown (account.tsx line 14)
+- `logout()` function clears JWT tokens from both localStorage and sessionStorage
+- `logoutSession()` reducer resets authentication state to initial state with `isAuthenticated: false`
+- Fixed redirect to navigate to `/login` instead of `/` for consistent UX
+- After logout, user cannot access protected routes without logging in again
+
+**Verification Steps:**
+1. ✅ Logout route registered in React Router
+2. ✅ Account menu displays "Sign out" option when authenticated
+3. ✅ Clicking logout triggers `clearAuthToken()` which removes JWT from storage
+4. ✅ Authentication state reset to `isAuthenticated: false`
+5. ✅ User redirected to login page
+6. ✅ Attempting to access protected routes requires re-authentication
+
+**Code Changes:**
+- Fixed `logout.tsx` to redirect to `/login` consistently
+- Added proper dependency array to useLayoutEffect to prevent infinite loops
+- Removed unnecessary authentication state selector (only need logoutUrl)
+
+#### Feature #9: Invalid login credentials rejected ✅
+**Status:** PASSING
+**Backend Verification:**
+- Backend returns HTTP 401 with JSON error response
+- Error detail: "Bad credentials"
+- Error type: "https://www.jhipster.tech/problem/problem-with-message"
+
+**Frontend Verification:**
+- `authenticate.rejected` action sets `loginError: true` in Redux state
+- LoginModal displays error alert: "Failed to sign in! Please check your credentials and try again."
+- User remains on login page (no navigation on failed login)
+- No JWT token stored in localStorage/sessionStorage on failed login
+- Form remains functional for retry
+
+**Test Results:**
+```bash
+# Invalid credentials test
+curl -X POST http://localhost:8080/api/authenticate \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"wrongpassword"}'
+
+Response: 401 Unauthorized
+{
+  "type": "https://www.jhipster.tech/problem/problem-with-message",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Bad credentials",
+  "path": "/api/authenticate"
+}
+
+# Valid credentials test (for comparison)
+curl -X POST http://localhost:8080/api/authenticate \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}'
+
+Response: 200 OK
+Authorization: Bearer eyJhbGci...
+```
+
+**Error Handling Flow:**
+1. User enters wrong password
+2. POST /api/authenticate returns 401
+3. Redux middleware catches rejected promise
+4. `authenticate.rejected` reducer sets `loginError: true`
+5. LoginModal re-renders with error alert
+6. User sees red error message and can retry
+
+### Technical Changes This Session
+
+**Authentication Improvements:**
+- Fixed logout redirect logic to properly navigate to `/login`
+- Verified error handling for invalid credentials works correctly
+- Confirmed JWT token clearing on logout from both storage types
+- Both features use existing JHipster authentication infrastructure
+
+**Code Quality:**
+- Lint passes with only 1 pre-existing warning (unrelated)
+- No TypeScript errors
+- No mock data patterns found in src/ directory
+- All changes follow React best practices (proper hooks, dependency arrays)
+
 ### Next Steps
-- Continue with remaining security features (#8, #9, #11, #12, #14)
+- Continue with remaining security features (#11, #12, #14)
 - Implement navigation and layout features
 - Build entity management features
 
