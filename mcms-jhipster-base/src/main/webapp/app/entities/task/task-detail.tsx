@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import { getEntity } from './task.reducer';
 
@@ -13,12 +16,37 @@ export const TaskDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
 
   const taskEntity = useAppSelector(state => state.task.entity);
+  const account = useAppSelector(state => state.authentication.account);
+  const isOperator = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.OPERATOR]));
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
+
+  const canComplete = !taskEntity.completed && (isAdminOrManager || (isOperator && taskEntity.assignedTo === account.login));
+
+  const handleCompleteTask = async () => {
+    if (window.confirm('Mark this task as complete?')) {
+      try {
+        setCompleting(true);
+        await axios.post(`/api/tasks/${id}/complete`);
+        // Refresh the task to show updated status
+        dispatch(getEntity(id));
+      } catch (error) {
+        console.error('Error completing task:', error);
+        alert('Failed to complete task. Please try again.');
+      } finally {
+        setCompleting(false);
+      }
+    }
+  };
+
   return (
     <Row>
       <Col md="8">
@@ -78,9 +106,19 @@ export const TaskDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/task/${taskEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-        </Button>
+        {canComplete && (
+          <>
+            <Button onClick={handleCompleteTask} color="success" disabled={completing}>
+              <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Mark Complete</span>
+            </Button>
+            &nbsp;
+          </>
+        )}
+        {isAdminOrManager && (
+          <Button tag={Link} to={`/task/${taskEntity.id}/edit`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+          </Button>
+        )}
       </Col>
     </Row>
   );
