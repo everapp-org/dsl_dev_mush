@@ -4,17 +4,17 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { logout } from 'app/shared/reducers/authentication';
 
 export const Logout = () => {
-  const authentication = useAppSelector(state => state.authentication);
+  const logoutUrl = useAppSelector(state => state.authentication.logoutUrl);
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
     dispatch(logout());
-    if (authentication.logoutUrl) {
-      window.location.href = authentication.logoutUrl;
-    } else if (!authentication.isAuthenticated) {
-      window.location.href = '/';
+    if (logoutUrl) {
+      window.location.href = logoutUrl;
+    } else {
+      window.location.href = '/login';
     }
-  });
+  }, [dispatch, logoutUrl]);
 
   return (
     <div className="p-5">
