@@ -77,6 +77,17 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const discardBatch = createAsyncThunk(
+  'batch/discard_batch',
+  async ({ id, reason }: { id: string | number; reason: string }, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/discard`;
+    const result = await axios.post<IBatch>(requestUrl, { reason });
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const BatchSlice = createEntitySlice({
@@ -109,7 +120,7 @@ export const BatchSlice = createEntitySlice({
           }),
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, discardBatch), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -120,7 +131,7 @@ export const BatchSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, discardBatch), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

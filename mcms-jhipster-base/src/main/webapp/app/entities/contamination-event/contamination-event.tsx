@@ -4,6 +4,8 @@ import { Button, Table } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
@@ -21,6 +23,9 @@ export const ContaminationEvent = () => {
 
   const contaminationEventList = useAppSelector(state => state.contaminationEvent.entities);
   const loading = useAppSelector(state => state.contaminationEvent.loading);
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
 
   const getAllEntities = () => {
     dispatch(
@@ -198,23 +203,27 @@ export const ContaminationEvent = () => {
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/contamination-event/${contaminationEvent.id}/edit`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        onClick={() => (window.location.href = `/contamination-event/${contaminationEvent.id}/delete`)}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
+                      {isAdminOrManager && (
+                        <Button
+                          tag={Link}
+                          to={`/contamination-event/${contaminationEvent.id}/edit`}
+                          color="primary"
+                          size="sm"
+                          data-cy="entityEditButton"
+                        >
+                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                        </Button>
+                      )}
+                      {isAdminOrManager && (
+                        <Button
+                          onClick={() => (window.location.href = `/contamination-event/${contaminationEvent.id}/delete`)}
+                          color="danger"
+                          size="sm"
+                          data-cy="entityDeleteButton"
+                        >
+                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>

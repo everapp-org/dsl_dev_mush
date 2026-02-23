@@ -7,6 +7,7 @@ import Batch from './batch';
 import BatchDetail from './batch-detail';
 import BatchUpdate from './batch-update';
 import BatchDeleteDialog from './batch-delete-dialog';
+import BatchDiscardDialog from './batch-discard-dialog';
 import BatchForceTransitionDialog from './batch-force-transition-dialog';
 
 const BatchRoutes = () => (
@@ -17,6 +18,7 @@ const BatchRoutes = () => (
       <Route index element={<BatchDetail />} />
       <Route path="edit" element={<BatchUpdate />} />
       <Route path="delete" element={<BatchDeleteDialog />} />
+      <Route path="discard" element={<BatchDiscardDialog />} />
       <Route path="force-transition" element={<BatchForceTransitionDialog />} />
     </Route>
   </ErrorBoundaryRoutes>

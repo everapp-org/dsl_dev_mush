@@ -5,6 +5,7 @@ import com.mcms.domain.BatchAuditLog;
 import com.mcms.repository.BatchAuditLogRepository;
 import com.mcms.repository.BatchRepository;
 import com.mcms.repository.UserRepository;
+import com.mcms.web.rest.dto.DiscardBatchRequest;
 import com.mcms.web.rest.dto.ForceTransitionRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -305,6 +307,40 @@ public class BatchResource {
         LOG.debug("REST request to get audit log for Batch : {}", id);
         List<BatchAuditLog> auditLog = auditLogRepository.findByBatchIdOrderByTimestampDesc(id);
         return ResponseEntity.ok().body(auditLog);
+    }
+
+    /**
+     * {@code POST  /batches/:id/discard} : Discard a contaminated batch with a reason.
+     *
+     * @param id the id of the batch to discard.
+     * @param request the discard request containing the reason.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the discarded batch.
+     */
+    @PostMapping("/{id}/discard")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+    public ResponseEntity<Batch> discardBatch(@PathVariable("id") Long id, @Valid @RequestBody DiscardBatchRequest request) {
+        LOG.debug("REST request to discard Batch : {} with reason: {}", id, request.getReason());
+
+        Optional<Batch> batchOptional = batchRepository.findById(id);
+        if (!batchOptional.isPresent()) {
+            throw new BadRequestAlertException("Batch not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Batch batch = batchOptional.get();
+
+        // Mark batch as contaminated and inactive
+        batch.setIsContaminated(true);
+        batch.setIsActive(false);
+        batch.setEndDate(LocalDate.now());
+        batch.setCompletionNote("DISCARDED - " + request.getReason());
+
+        batch = batchRepository.save(batch);
+
+        LOG.info("Batch {} discarded by {} - Reason: {}", id, SecurityContextHolder.getContext().getAuthentication().getName(), request.getReason());
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
+            .body(batch);
     }
 
     /**

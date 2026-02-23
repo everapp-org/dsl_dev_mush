@@ -73,7 +73,7 @@ public class ContaminationEventResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<ContaminationEvent> updateContaminationEvent(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ContaminationEvent contaminationEvent
@@ -108,7 +108,7 @@ public class ContaminationEventResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<ContaminationEvent> partialUpdateContaminationEvent(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ContaminationEvent contaminationEvent

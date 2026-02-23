@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -19,6 +21,9 @@ export const ContaminationEventDetail = () => {
   }, []);
 
   const contaminationEventEntity = useAppSelector(state => state.contaminationEvent.entity);
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
   return (
     <Row>
       <Col md="8">
@@ -110,10 +115,14 @@ export const ContaminationEventDetail = () => {
         <Button tag={Link} to="/contamination-event" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
-        &nbsp;
-        <Button tag={Link} to={`/contamination-event/${contaminationEventEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-        </Button>
+        {isAdminOrManager && (
+          <>
+            &nbsp;
+            <Button tag={Link} to={`/contamination-event/${contaminationEventEntity.id}/edit`} replace color="primary">
+              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+            </Button>
+          </>
+        )}
       </Col>
     </Row>
   );
