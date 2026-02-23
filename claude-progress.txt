@@ -1,8 +1,101 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 18:20 (Session 10)
+## Latest Session: 2026-02-23 18:40 (Session 11)
 
-### Completed Features (26/405 - 6.4%)
+### Completed Features (25/405 - 6.2%)
+
+#### Feature #30: ROLE_OPERATOR can log contamination events ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize annotations to all ContaminationEventResource endpoints
+- CREATE/UPDATE/PATCH: ROLE_ADMIN, ROLE_MANAGER, ROLE_OPERATOR allowed
+- READ (GET all, GET by id): All authenticated users (ADMIN, MANAGER, OPERATOR, USER)
+- DELETE: Only ROLE_ADMIN and ROLE_MANAGER (OPERATOR cannot delete)
+
+**Permission Matrix:**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✓     | ✓       | ✓        | ✗    |
+| Read      | ✓     | ✓       | ✓        | ✓    |
+| Update    | ✓     | ✓       | ✓        | ✗    |
+| Delete    | ✓     | ✓       | ✗        | ✗    |
+
+**Code Evidence:**
+```java
+// ContaminationEventResource.java
+@PostMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+public ResponseEntity<ContaminationEvent> createContaminationEvent(...)
+
+@GetMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+public List<ContaminationEvent> getAllContaminationEvents(...)
+
+@DeleteMapping("/{id}")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<Void> deleteContaminationEvent(...)
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (Maven)
+- ✅ All endpoints have @PreAuthorize annotations
+- ✅ No mock data patterns (uses real JPA repository)
+- ✅ Matches spec: ROLE_OPERATOR can "Log contamination events"
+
+#### Feature #31: ROLE_OPERATOR cannot access financial dashboards ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize annotations to all MonthlyReportResource endpoints
+- Added @PreAuthorize annotations to all CostRecordResource endpoints
+- Both resources now restrict ALL endpoints to ROLE_ADMIN and ROLE_MANAGER only
+- ROLE_OPERATOR and ROLE_USER receive HTTP 403 Forbidden for financial endpoints
+
+**Backend Security (MonthlyReportResource):**
+- POST /api/monthly-reports: ADMIN, MANAGER only
+- GET /api/monthly-reports: ADMIN, MANAGER only
+- GET /api/monthly-reports/{id}: ADMIN, MANAGER only
+- PUT /api/monthly-reports/{id}: ADMIN, MANAGER only
+- PATCH /api/monthly-reports/{id}: ADMIN, MANAGER only
+- DELETE /api/monthly-reports/{id}: ADMIN, MANAGER only
+- POST /api/monthly-reports/generate: ADMIN, MANAGER only (already secured)
+
+**Backend Security (CostRecordResource):**
+- All CRUD endpoints restricted to ADMIN, MANAGER only
+- ROLE_OPERATOR blocked from viewing costs, revenues, profit margins
+
+**Frontend Menu Visibility:**
+- Updated menu.tsx to conditionally render financial menu items
+- Added ROLE_MANAGER and ROLE_OPERATOR to AUTHORITIES constants
+- Monthly Report menu item hidden from ROLE_OPERATOR
+- Cost Record menu item hidden from ROLE_OPERATOR
+- Used `hasAnyAuthority` check with Redux selector
+
+**Code Evidence:**
+```tsx
+// menu.tsx
+const isAdminOrManager = useAppSelector(state =>
+  hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER])
+);
+
+{isAdminOrManager && (
+  <MenuItem icon="asterisk" to="/monthly-report">
+    Monthly Report
+  </MenuItem>
+)}
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (Maven)
+- ✅ All financial endpoints have @PreAuthorize annotations
+- ✅ Frontend menu conditionally renders based on role
+- ✅ No mock data patterns
+- ✅ Matches spec: Financial data restricted to ADMIN/MANAGER
+
+---
+
+## Previous Session: 2026-02-23 18:20 (Session 10)
+
+### Completed Features (23/405 - 5.7%)
 
 #### Feature #28: Session invalidated on password change ✅
 **Status:** PASSING
