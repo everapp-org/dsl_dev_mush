@@ -1,6 +1,87 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 23:10 (Session 14)
+## Latest Session: 2026-02-23 23:17 (Session 15)
+
+### Completed Features (36/405 - 8.9%)
+
+#### Feature #41: ROLE_OPERATOR can record stock movements ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize security annotations to all StockMovementResource endpoints
+- OPERATOR can CREATE and UPDATE stock movements (consumption, receipt logging)
+- OPERATOR can READ all stock movements
+- OPERATOR cannot DELETE stock movements (only ADMIN/MANAGER)
+- All authenticated users (including ROLE_USER) can view stock movements
+
+**Security Matrix (StockMovementResource.java):**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✅    | ✅      | ✅       | ❌   |
+| Read      | ✅    | ✅      | ✅       | ✅   |
+| Update    | ✅    | ✅      | ✅       | ❌   |
+| Delete    | ✅    | ✅      | ❌       | ❌   |
+
+**Code Evidence:**
+```java
+// StockMovementResource.java
+@PostMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+public ResponseEntity<StockMovement> createStockMovement(...)
+
+@DeleteMapping("/{id}")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<Void> deleteStockMovement(...)
+```
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt line 102: "Record stock movements (consumption, receipt)"
+- ✅ OPERATOR can create and update stock movements
+- ✅ Only ADMIN/MANAGER can delete (prevents accidental data loss)
+
+#### Feature #42: ROLE_OPERATOR has read-only strain access ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize security annotations to all StrainResource endpoints
+- OPERATOR can READ all strains (view-only access)
+- OPERATOR cannot CREATE, UPDATE, or DELETE strains
+- Only ADMIN and MANAGER have full CRUD on strains
+- All authenticated users can view strains
+
+**Security Matrix (StrainResource.java):**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✅    | ✅      | ❌       | ❌   |
+| Read      | ✅    | ✅      | ✅       | ✅   |
+| Update    | ✅    | ✅      | ❌       | ❌   |
+| Delete    | ✅    | ✅      | ❌       | ❌   |
+
+**Code Evidence:**
+```java
+// StrainResource.java
+@PostMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<Strain> createStrain(...)
+
+@GetMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+public List<Strain> getAllStrains()
+```
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt line 101: "View (read-only) strain and recipe information"
+- ✅ OPERATOR can view all strains (GET endpoints)
+- ✅ OPERATOR blocked from modifying strains (POST/PUT/PATCH/DELETE)
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (mvn clean compile)
+- ✅ Code style check passes (mvn spotless:check)
+- ✅ No mock data patterns found in either resource
+- ✅ Security annotations follow JHipster best practices
+- ✅ Both resources use real database repositories
+
+---
+
+## Previous Session: 2026-02-23 23:10 (Session 14)
 
 ### Completed Features (34/405 - 8.4%)
 
