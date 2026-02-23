@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.SupplyOrder;
 import com.mcms.repository.SupplyOrderRepository;
+import com.mcms.security.AuthoritiesConstants;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +50,7 @@ public class SupplyOrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<SupplyOrder> createSupplyOrder(@Valid @RequestBody SupplyOrder supplyOrder) throws URISyntaxException {
         LOG.debug("REST request to save SupplyOrder : {}", supplyOrder);
         if (supplyOrder.getId() != null) {
@@ -70,6 +73,7 @@ public class SupplyOrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<SupplyOrder> updateSupplyOrder(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody SupplyOrder supplyOrder
@@ -104,6 +108,7 @@ public class SupplyOrderResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<SupplyOrder> partialUpdateSupplyOrder(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody SupplyOrder supplyOrder
@@ -168,6 +173,7 @@ public class SupplyOrderResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of supplyOrders in body.
      */
     @GetMapping("")
+    @PreAuthorize("isAuthenticated()")
     public List<SupplyOrder> getAllSupplyOrders(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -186,6 +192,7 @@ public class SupplyOrderResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the supplyOrder, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<SupplyOrder> getSupplyOrder(@PathVariable("id") Long id) {
         LOG.debug("REST request to get SupplyOrder : {}", id);
         Optional<SupplyOrder> supplyOrder = supplyOrderRepository.findOneWithEagerRelationships(id);
@@ -199,6 +206,7 @@ public class SupplyOrderResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Void> deleteSupplyOrder(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete SupplyOrder : {}", id);
         supplyOrderRepository.deleteById(id);
