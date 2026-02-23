@@ -1,0 +1,11 @@
+export enum SensorUnit {
+  CELSIUS = 'CELSIUS',
+
+  HUMIDITY_PERCENT = 'HUMIDITY_PERCENT',
+
+  PPM_CO2 = 'PPM_CO2',
+
+  LUX = 'LUX',
+
+  AIRFLOW_MS = 'AIRFLOW_MS',
+}

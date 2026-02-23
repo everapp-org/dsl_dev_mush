@@ -52,6 +52,13 @@ commands:
   - name: awk
     description: Text processing tool for extracting data
 
+  # Test scripts
+  - name: ./test-persistence.sh
+    description: Test data persistence across server restart
+
+  - name: ./test-user-creation.sh
+    description: Test user creation and data verification
+
   # ==========================================
   # iOS Development Example
   # ==========================================

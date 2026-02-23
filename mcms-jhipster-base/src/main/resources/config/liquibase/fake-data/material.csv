@@ -1,0 +1,11 @@
+id;code;name;category;default_unit;minimum_stock_level;description;active;note
+1;apropos;how where;CHEMICAL;BOX;9462.86;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt
+2;delectable blindly;generously;CHEMICAL;LITER;12192.69;../fake-data/blob/hipster.txt;false;../fake-data/blob/hipster.txt
+3;dim;and lightly;EQUIPMENT_SUPPLY;GRAM;8872.12;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt
+4;vanish uh-huh;ouch;SUBSTRATE;LITER;31729.86;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt
+5;worth natural;aha except;PACKAGING;PIECE;21053.02;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt
+6;subsidy;rapidly besides;SUPPLEMENT;KG;14507.08;../fake-data/blob/hipster.txt;false;../fake-data/blob/hipster.txt
+7;heartfelt mobilise;ideal;OTHER;LITER;4346.01;../fake-data/blob/hipster.txt;false;../fake-data/blob/hipster.txt
+8;omelet whoa zowie;drain although;EQUIPMENT_SUPPLY;BAG;10638.49;../fake-data/blob/hipster.txt;false;../fake-data/blob/hipster.txt
+9;outside;mobilise mechanically;SUBSTRATE;BAG;19917.55;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt
+10;overcharge phooey;knottily altruistic;OTHER;BAG;1443.28;../fake-data/blob/hipster.txt;true;../fake-data/blob/hipster.txt

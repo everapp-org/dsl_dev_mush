@@ -1,0 +1,11 @@
+id;line_number;weight_kg;grade;quantity_units;unit;price_per_kg;line_total;note;sales_order_id;product_id
+1;24194;29728.4;WASTE;7860;KG;27902.82;17632.18;../fake-data/blob/hipster.txt;1;1
+2;16015;1470.68;WASTE;14936;LITER;21469;23891.52;../fake-data/blob/hipster.txt;2;2
+3;24574;25210.23;WASTE;2031;LITER;5076.5;10501.48;../fake-data/blob/hipster.txt;3;3
+4;4283;16440.4;B_STANDARD;433;BOX;29939.27;16241.17;../fake-data/blob/hipster.txt;4;4
+5;18101;10441.58;A_PREMIUM;1458;BAG;12859.37;9980.14;../fake-data/blob/hipster.txt;5;5
+6;27586;20582.76;C_INDUSTRIAL;1931;GRAM;16064.39;16320.81;../fake-data/blob/hipster.txt;6;6
+7;32708;9800.38;C_INDUSTRIAL;16984;LITER;31447.72;14477.31;../fake-data/blob/hipster.txt;7;7
+8;19180;5263.42;B_STANDARD;16050;BAG;30109.87;18041.68;../fake-data/blob/hipster.txt;8;8
+9;9585;2289.94;A_PREMIUM;14905;BAG;8471.5;22685.04;../fake-data/blob/hipster.txt;9;9
+10;28358;19232.04;C_INDUSTRIAL;11714;BAG;12102.48;14943.45;../fake-data/blob/hipster.txt;10;10

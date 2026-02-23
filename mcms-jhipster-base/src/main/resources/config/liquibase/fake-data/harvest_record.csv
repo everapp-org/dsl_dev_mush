@@ -1,0 +1,11 @@
+id;harvest_date;weight_kg;grade;picker_name;note;flush_cycle_id
+1;2026-02-22;22862.61;C_INDUSTRIAL;amongst;../fake-data/blob/hipster.txt;1
+2;2026-02-22;24122.6;WASTE;trim;../fake-data/blob/hipster.txt;2
+3;2026-02-22;2581.81;A_PREMIUM;wearily broken;../fake-data/blob/hipster.txt;3
+4;2026-02-22;24836.29;WASTE;frightfully including;../fake-data/blob/hipster.txt;4
+5;2026-02-22;6425.89;B_STANDARD;decisive if indelible;../fake-data/blob/hipster.txt;5
+6;2026-02-21;26330.6;A_PREMIUM;nectarine;../fake-data/blob/hipster.txt;6
+7;2026-02-22;19168.19;A_PREMIUM;hefty libel shallow;../fake-data/blob/hipster.txt;7
+8;2026-02-22;27776.53;A_PREMIUM;wonderfully;../fake-data/blob/hipster.txt;8
+9;2026-02-22;978.64;B_STANDARD;gust;../fake-data/blob/hipster.txt;9
+10;2026-02-22;13170.34;B_STANDARD;regarding;../fake-data/blob/hipster.txt;10

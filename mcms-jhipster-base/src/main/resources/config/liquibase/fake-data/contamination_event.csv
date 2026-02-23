@@ -1,0 +1,11 @@
+id;detected_date;type;severity;affected_bags;affected_percentage;action_taken;resolved_date;loss_kg;root_cause_analysis;preventive_measures;detected_by;photos_reference;note;batch_id
+1;2026-02-22;INSECT;HIGH;29842;16680.51;SALT_TREATMENT;2026-02-22;13628.74;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;blah out key;lest bitterly step-mother;../fake-data/blob/hipster.txt;1
+2;2026-02-21;INSECT;LOW;22174;4404.32;PEROXIDE_TREATMENT;2026-02-22;7766.2;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;continually uh-huh eke;crushing meh ouch;../fake-data/blob/hipster.txt;2
+3;2026-02-22;WET_BUBBLE;CRITICAL;25122;13663.84;DISCARD_BATCH;2026-02-21;30664.1;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;whoa athwart;nougat;../fake-data/blob/hipster.txt;3
+4;2026-02-21;INSECT;LOW;14846;26556.16;INCREASED_VENTILATION;2026-02-22;21693.04;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;plain futon as;diligently aboard before;../fake-data/blob/hipster.txt;4
+5;2026-02-21;INSECT;MEDIUM;17374;22342.67;SALT_TREATMENT;2026-02-22;7518.27;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;considerate;that marten;../fake-data/blob/hipster.txt;5
+6;2026-02-22;BACTERIAL_BLOTCH;CRITICAL;17753;18652.17;REMOVE;2026-02-21;3928.76;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;terrible;founder retool;../fake-data/blob/hipster.txt;6
+7;2026-02-21;TRICHODERMA;CRITICAL;9549;13417.83;SALT_TREATMENT;2026-02-21;6663.49;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;snappy although;when;../fake-data/blob/hipster.txt;7
+8;2026-02-22;INSECT;HIGH;10023;22069.69;REMOVE;2026-02-22;17141.42;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;midst scope;hollow;../fake-data/blob/hipster.txt;8
+9;2026-02-21;COBWEB;HIGH;18947;22721.73;DISCARD_BATCH;2026-02-22;29414.38;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;meh behind shyly;clear-cut splay including;../fake-data/blob/hipster.txt;9
+10;2026-02-22;OTHER;HIGH;26837;24125.83;INCREASED_VENTILATION;2026-02-22;14287.08;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;lest amidst;kindheartedly phooey;../fake-data/blob/hipster.txt;10

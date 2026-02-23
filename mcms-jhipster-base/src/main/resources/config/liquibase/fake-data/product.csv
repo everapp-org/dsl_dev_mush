@@ -1,0 +1,11 @@
+id;code;name;description;default_grade;default_weight_kg;default_price_per_kg;shelf_life_days;active;note;strain_id
+1;overtrain deceivingly yawningly;pliers zany when;../fake-data/blob/hipster.txt;B_STANDARD;16081.92;7725.24;21069;false;../fake-data/blob/hipster.txt;1
+2;made-up successfully;instruction and;../fake-data/blob/hipster.txt;A_PREMIUM;8277.19;31777.86;25865;false;../fake-data/blob/hipster.txt;2
+3;sermon premium;exterior;../fake-data/blob/hipster.txt;A_PREMIUM;21889.2;13295.16;19275;true;../fake-data/blob/hipster.txt;3
+4;ornate because;whitewash;../fake-data/blob/hipster.txt;A_PREMIUM;4852.76;3164;29227;true;../fake-data/blob/hipster.txt;4
+5;condense neatly;times;../fake-data/blob/hipster.txt;WASTE;27585.6;15234.31;1729;true;../fake-data/blob/hipster.txt;5
+6;cleave;general provided whoa;../fake-data/blob/hipster.txt;A_PREMIUM;703.65;30451.48;21327;false;../fake-data/blob/hipster.txt;6
+7;vulgarise;fathom honestly;../fake-data/blob/hipster.txt;C_INDUSTRIAL;22027.96;9258.86;19960;true;../fake-data/blob/hipster.txt;7
+8;angelic softly quaintly;aching grouchy mid;../fake-data/blob/hipster.txt;A_PREMIUM;12938.5;2027.41;12037;false;../fake-data/blob/hipster.txt;8
+9;afore an;creaking actually after;../fake-data/blob/hipster.txt;B_STANDARD;12288.78;21079.38;7561;true;../fake-data/blob/hipster.txt;9
+10;now positively proceed;mallard austere;../fake-data/blob/hipster.txt;A_PREMIUM;32458.94;1760.44;13092;false;../fake-data/blob/hipster.txt;10

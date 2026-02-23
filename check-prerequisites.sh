@@ -48,17 +48,17 @@ print_check() {
 
 print_pass() {
     echo -e "${GREEN}✓ PASS${NC} $1"
-    ((PASS_COUNT++))
+    ((PASS_COUNT++)) || true
 }
 
 print_fail() {
     echo -e "${RED}✗ FAIL${NC} $1"
-    ((FAIL_COUNT++))
+    ((FAIL_COUNT++)) || true
 }
 
 print_warn() {
     echo -e "${YELLOW}⚠ WARN${NC} $1"
-    ((WARN_COUNT++))
+    ((WARN_COUNT++)) || true
 }
 
 print_info() {

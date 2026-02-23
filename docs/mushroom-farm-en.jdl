@@ -12,7 +12,7 @@
  *    - Multi-flush cycle support (unlimited flushes)
  *    - Strain & substrate recipe management
  *    - Structured contamination tracking with root cause analysis
- *    - Supply chain traceability (supplier → substrate → harvest → customer)
+ *    - Supply chain traceability (supplier -> substrate -> harvest -> customer)
  *    - Financial layer (cost tracking, revenue, profitability per batch)
  *    - Role-based workforce management
  *    - Quality grading and compliance auditing
@@ -20,14 +20,32 @@
  * ═══════════════════════════════════════════════════════════════════
  */
 
+application {
+  config {
+    baseName mcms
+    applicationType monolith
+    packageName com.mcms
+    authenticationType jwt
+    databaseType sql
+    prodDatabaseType postgresql
+    devDatabaseType h2Disk
+    buildTool maven
+    clientFramework react
+    enableTranslation false
+    nativeLanguage en
+    testFrameworks [cypress]
+  }
+  entities *
+}
+
 // ─────────────────────────────────────────────────────────────────
 // ENUMERATIONS
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Biological production phases — ordered lifecycle.
+ * Biological production phases - ordered lifecycle.
  * Phase ordering is enforced at the service layer via a state machine.
- * Sequence: 1→2→3→4→5→6→7→8→(9→10→8)* → COMPLETED
+ * Sequence: 1->2->3->4->5->6->7->8->(9->10->8)* -> COMPLETED
  */
 enum PhaseName {
   INOCULATION            /** 1 - Spawn injected into substrate */
@@ -48,11 +66,11 @@ enum PhaseName {
  */
 enum RoomType {
   STERILE_ZONE           /** Sterile/clean zone for inoculation */
-  INCUBATION             /** Incubation chambers — dark, warm */
-  FRUITING_CHAMBER       /** Fruiting chambers — high humidity, fresh air */
+  INCUBATION             /** Incubation chambers - dark, warm */
+  FRUITING_CHAMBER       /** Fruiting chambers - high humidity, fresh air */
   COLD_STORAGE           /** Cold storage for harvested product */
-  WORK_ZONE              /** General work area — packing, prep */
-  LABORATORY             /** Lab — cultures, quality testing */
+  WORK_ZONE              /** General work area - packing, prep */
+  LABORATORY             /** Lab - cultures, quality testing */
 }
 
 /**
@@ -79,14 +97,14 @@ enum ContaminationSeverity {
  * Common contamination agent types in mushroom cultivation.
  */
 enum ContaminationType {
-  TRICHODERMA            /** Green mold — most common competitor */
+  TRICHODERMA            /** Green mold - most common competitor */
   COBWEB                 /** Cobweb mold (Dactylium) */
   BLACK_MOLD             /** Aspergillus niger */
   BACTERIAL_BLOTCH       /** Pseudomonas tolaasii */
   WET_BUBBLE             /** Mycogone perniciosa */
   DRY_BUBBLE             /** Lecanicillium fungicola */
   INSECT                 /** Insect infestation (sciarid flies, mites) */
-  UNKNOWN                /** Unknown — requires lab analysis */
+  UNKNOWN                /** Unknown - requires lab analysis */
   OTHER                  /** Other */
 }
 
@@ -107,10 +125,10 @@ enum ContaminationAction {
  * Harvest quality grading.
  */
 enum QualityGrade {
-  A_PREMIUM              /** Premium — perfect form, no defects */
-  B_STANDARD             /** Standard — minor cosmetic imperfections */
-  C_INDUSTRIAL           /** Industrial — processing/drying only */
-  WASTE                  /** Waste — compost or discard */
+  A_PREMIUM              /** Premium - perfect form, no defects */
+  B_STANDARD             /** Standard - minor cosmetic imperfections */
+  C_INDUSTRIAL           /** Industrial - processing/drying only */
+  WASTE                  /** Waste - compost or discard */
 }
 
 /**
@@ -166,8 +184,8 @@ enum SensorStatus {
  */
 enum AlertSeverity {
   INFO                   /** Informational */
-  WARNING                /** Warning — approaching threshold */
-  CRITICAL               /** Critical — immediate action needed */
+  WARNING                /** Warning - approaching threshold */
+  CRITICAL               /** Critical - immediate action needed */
 }
 
 /**
@@ -234,22 +252,22 @@ enum MaterialCategory {
 enum StockMovementType {
   RECEIPT                /** Inbound: material received from supplier */
   CONSUMPTION            /** Outbound: material consumed by a batch */
-  ADJUSTMENT_IN          /** Inventory correction — increase */
-  ADJUSTMENT_OUT         /** Inventory correction — decrease */
+  ADJUSTMENT_IN          /** Inventory correction - increase */
+  ADJUSTMENT_OUT         /** Inventory correction - decrease */
   WASTE                  /** Material lost / expired / discarded */
   RETURN_TO_SUPPLIER     /** Material returned to supplier */
 }
 
 // ─────────────────────────────────────────────────────────────────
-// CORE ENTITIES — PRODUCTION
+// CORE ENTITIES - PRODUCTION
 // ─────────────────────────────────────────────────────────────────
 
 /**
  * Mushroom strain / species being cultivated.
- * Central to yield optimization — links genetics to performance.
+ * Central to yield optimization - links genetics to performance.
  */
 entity Strain {
-  name String required                       /** e.g. "Pleurotus ostreatus — Grey Dove" */
+  name String required                       /** e.g. "Pleurotus ostreatus - Grey Dove" */
   species String required                    /** Latin species name */
   variety String                             /** Cultivar or variant */
   optimalTempMinC BigDecimal                 /** Min fruiting temp °C */
@@ -266,7 +284,7 @@ entity Strain {
 }
 
 /**
- * Substrate recipe — the growth medium formulation.
+ * Substrate recipe - the growth medium formulation.
  * Versioned to track recipe evolution and yield correlation.
  */
 entity SubstrateRecipe {
@@ -282,7 +300,7 @@ entity SubstrateRecipe {
 }
 
 /**
- * Production batch — the central tracking entity.
+ * Production batch - the central tracking entity.
  * Represents a single production run from inoculation to final harvest.
  */
 entity Batch {
@@ -303,11 +321,11 @@ entity Batch {
 }
 
 /**
- * Phase execution — a single lifecycle phase within a batch.
+ * Phase execution - a single lifecycle phase within a batch.
  * State machine validates transitions (enforced at service layer):
- *   INOCULATION → EARLY_COLONIZATION → FULL_COLONIZATION →
- *   CONSOLIDATION → FRUITING_TRIGGER → PRIMORDIA →
- *   FRUITING_BODY_GROWTH → HARVEST → (REHYDRATION_PAUSE → HARVEST)* → COMPLETED
+ *   INOCULATION -> EARLY_COLONIZATION -> FULL_COLONIZATION ->
+ *   CONSOLIDATION -> FRUITING_TRIGGER -> PRIMORDIA ->
+ *   FRUITING_BODY_GROWTH -> HARVEST -> (REHYDRATION_PAUSE -> HARVEST)* -> COMPLETED
  */
 entity PhaseExecution {
   phase PhaseName required                   /** Which lifecycle phase */
@@ -321,7 +339,7 @@ entity PhaseExecution {
 }
 
 /**
- * Flush cycle — each harvest cycle within a batch.
+ * Flush cycle - each harvest cycle within a batch.
  * Supports unlimited flushes (typical: 2-5 depending on species).
  */
 entity FlushCycle {
@@ -337,7 +355,7 @@ entity FlushCycle {
 }
 
 /**
- * Harvest detail — individual harvest event within a flush.
+ * Harvest detail - individual harvest event within a flush.
  * Enables daily picking records and quality grading.
  */
 entity HarvestRecord {
@@ -354,7 +372,7 @@ entity HarvestRecord {
 
 /**
  * Physical room / chamber in the facility.
- * Now a full entity instead of an enum — supports multiple rooms
+ * Now a full entity instead of an enum - supports multiple rooms
  * of the same type, capacity tracking, and sensor linkage.
  */
 entity Room {
@@ -401,8 +419,8 @@ entity Sensor {
 }
 
 /**
- * Time-series sensor reading — the IoT data stream.
- * High-volume entity — consider TimescaleDB or partitioning for production.
+ * Time-series sensor reading - the IoT data stream.
+ * High-volume entity - consider TimescaleDB or partitioning for production.
  */
 entity SensorReading {
   timestamp Instant required                 /** Reading timestamp (UTC) */
@@ -411,7 +429,7 @@ entity SensorReading {
 }
 
 /**
- * Environmental alert — triggered when readings breach thresholds.
+ * Environmental alert - triggered when readings breach thresholds.
  */
 entity EnvironmentalAlert {
   alertTime Instant required                 /** When the alert was triggered */
@@ -431,7 +449,7 @@ entity EnvironmentalAlert {
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Structured contamination event — replaces free-text notes.
+ * Structured contamination event - replaces free-text notes.
  * Enables trend analysis, root cause tracking, and loss forecasting.
  */
 entity ContaminationEvent {
@@ -455,7 +473,7 @@ entity ContaminationEvent {
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Product — a sellable mushroom product.
+ * Product - a sellable mushroom product.
  * Normalizes what is being sold across sales order lines.
  * Combines strain + grade into a marketable product definition.
  */
@@ -472,7 +490,7 @@ entity Product {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// SUPPLY CHAIN — PROCUREMENT (Header + Lines)
+// SUPPLY CHAIN - PROCUREMENT (Header + Lines)
 // ─────────────────────────────────────────────────────────────────
 
 /**
@@ -491,7 +509,7 @@ entity Supplier {
 }
 
 /**
- * Supply order header — purchase order from a supplier.
+ * Supply order header - purchase order from a supplier.
  * Contains shared order-level information.
  * Line items are in SupplyOrderLine.
  */
@@ -508,7 +526,7 @@ entity SupplyOrder {
 }
 
 /**
- * Supply order line item — individual item on a purchase order.
+ * Supply order line item - individual item on a purchase order.
  * Each line represents one material being procured.
  * Links to Material catalog for standardized identification.
  * Supports partial deliveries and per-line quality tracking.
@@ -529,11 +547,11 @@ entity SupplyOrderLine {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// SUPPLY CHAIN — SALES (Header + Lines)
+// SUPPLY CHAIN - SALES (Header + Lines)
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Customer — who buys the harvested mushrooms.
+ * Customer - who buys the harvested mushrooms.
  */
 entity Customer {
   name String required                       /** Business or individual name */
@@ -548,7 +566,7 @@ entity Customer {
 }
 
 /**
- * Sales order header — order from a customer.
+ * Sales order header - order from a customer.
  * Contains shared order-level information.
  * Line items are in SalesOrderLine.
  */
@@ -570,7 +588,7 @@ entity SalesOrder {
 }
 
 /**
- * Sales order line item — individual product on a sales order.
+ * Sales order line item - individual product on a sales order.
  * Each line represents one product (strain + grade combination) being sold.
  * Links to Product catalog and source Batch for full traceability.
  */
@@ -590,7 +608,7 @@ entity SalesOrderLine {
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Material — master catalog of all materials the farm uses.
+ * Material - master catalog of all materials the farm uses.
  * Centralizes material definitions so they can be referenced
  * consistently across supply orders, inventory, and batch consumption.
  */
@@ -599,19 +617,19 @@ entity Material {
   name String required                       /** Display name, e.g. "Pleurotus ostreatus grain spawn" */
   category MaterialCategory required         /** Material classification */
   defaultUnit UnitOfMeasure required         /** Default unit of measure */
-  minimumStockLevel BigDecimal               /** Reorder threshold — alert when stock falls below */
+  minimumStockLevel BigDecimal               /** Reorder threshold - alert when stock falls below */
   description TextBlob                       /** Detailed description / specifications */
   active Boolean required
   note TextBlob
 }
 
 /**
- * Inventory lot — a specific batch of material received into stock.
+ * Inventory lot - a specific batch of material received into stock.
  * Each lot is linked to the SupplyOrderLine it came from,
  * providing full traceability back to the supplier and PO.
  *
  * Lot quantity lifecycle:
- *   quantityReceived (initial) → quantityOnHand (current, decremented by consumption)
+ *   quantityReceived (initial) -> quantityOnHand (current, decremented by consumption)
  */
 entity InventoryLot {
   lotCode String required unique             /** Internal lot identifier, e.g. "LOT-2025-0042" */
@@ -627,7 +645,7 @@ entity InventoryLot {
 }
 
 /**
- * Stock movement — every inbound/outbound inventory transaction.
+ * Stock movement - every inbound/outbound inventory transaction.
  * Provides a complete audit trail of all stock changes.
  * Each movement adjusts the quantityOnHand of its InventoryLot.
  */
@@ -643,7 +661,7 @@ entity StockMovement {
 }
 
 /**
- * Batch material usage — the key traceability link.
+ * Batch material usage - the key traceability link.
  * Records exactly which materials (from which inventory lots,
  * from which supply orders, from which suppliers) were consumed
  * in each production batch.
@@ -665,7 +683,7 @@ entity BatchMaterialUsage {
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Cost record — tracks expenses per batch per category.
+ * Cost record - tracks expenses per batch per category.
  * Enables full batch profitability analysis.
  */
 entity CostRecord {
@@ -682,7 +700,7 @@ entity CostRecord {
 // ─────────────────────────────────────────────────────────────────
 
 /**
- * Mandatory field check — audit trail for data completeness.
+ * Mandatory field check - audit trail for data completeness.
  */
 entity MandatoryFieldCheck {
   fieldName String required                  /** Which field was checked */
@@ -691,7 +709,7 @@ entity MandatoryFieldCheck {
 }
 
 /**
- * Monthly report — operational summary per batch per month.
+ * Monthly report - operational summary per batch per month.
  */
 entity MonthlyReport {
   year Integer required                      /** Year */
@@ -728,13 +746,13 @@ entity Task {
 /**
  * Relationship design principles:
  *   - Batch is the central aggregate root
- *   - Room → Sensor → SensorReading forms the IoT hierarchy
- *   - Batch → FlushCycle → HarvestRecord enables multi-flush tracking
+ *   - Room -> Sensor -> SensorReading forms the IoT hierarchy
+ *   - Batch -> FlushCycle -> HarvestRecord enables multi-flush tracking
  *   - Product links Strain to sales catalog
- *   - SupplyOrder → SupplyOrderLine → Material (header/line, multi-item POs)
- *   - SalesOrder → SalesOrderLine → Product (header/line, multi-product invoices)
+ *   - SupplyOrder -> SupplyOrderLine -> Material (header/line, multi-item POs)
+ *   - SalesOrder -> SalesOrderLine -> Product (header/line, multi-product invoices)
  *   - Full material traceability chain:
- *       Supplier → SupplyOrder → SupplyOrderLine → InventoryLot → BatchMaterialUsage → Batch
+ *       Supplier -> SupplyOrder -> SupplyOrderLine -> InventoryLot -> BatchMaterialUsage -> Batch
  *   - StockMovement provides audit trail for all inventory changes
  */
 
@@ -765,28 +783,28 @@ relationship ManyToOne {
   ContaminationEvent{phaseExecution} to PhaseExecution
   ContaminationEvent{room(name)} to Room
 
-  /** Supply chain — Procurement (header → lines → material) */
+  // Supply chain - Procurement
   SupplyOrder{supplier(name) required} to Supplier
   SupplyOrderLine{supplyOrder(orderCode) required} to SupplyOrder
-  SupplyOrderLine{material(name) required} to Material     /** What material is on this PO line */
-  SupplyOrderLine{batch(batchCode)} to Batch               /** Optional: pre-assigned to a batch */
+  SupplyOrderLine{material(name) required} to Material
+  SupplyOrderLine{batch(batchCode)} to Batch
 
-  /** Supply chain — Sales (header → lines → product) */
+  // Supply chain - Sales
   SalesOrder{customer(name) required} to Customer
   SalesOrderLine{salesOrder(orderCode) required} to SalesOrder
-  SalesOrderLine{product(name) required} to Product        /** What product is being sold */
-  SalesOrderLine{batch(batchCode)} to Batch                /** Which batch it came from */
+  SalesOrderLine{product(name) required} to Product
+  SalesOrderLine{batch(batchCode)} to Batch
 
   /** Inventory & stock management */
-  InventoryLot{material(name) required} to Material        /** What material this lot contains */
-  InventoryLot{supplyOrderLine required} to SupplyOrderLine /** Which PO line it was received from */
-  StockMovement{inventoryLot(lotCode) required} to InventoryLot /** Which lot was affected */
-  StockMovement{batch(batchCode)} to Batch                 /** Which batch (for CONSUMPTION movements) */
+  InventoryLot{material(name) required} to Material
+  InventoryLot{supplyOrderLine required} to SupplyOrderLine
+  StockMovement{inventoryLot(lotCode) required} to InventoryLot
+  StockMovement{batch(batchCode)} to Batch
 
-  /** Batch material usage — THE KEY TRACEABILITY LINK */
-  BatchMaterialUsage{batch(batchCode) required} to Batch   /** Which batch consumed the material */
-  BatchMaterialUsage{inventoryLot(lotCode) required} to InventoryLot /** Which lot it came from */
-  BatchMaterialUsage{material(name) required} to Material  /** Which material (denormalized for easy querying) */
+  /** Batch material usage - THE KEY TRACEABILITY LINK */
+  BatchMaterialUsage{batch(batchCode) required} to Batch
+  BatchMaterialUsage{inventoryLot(lotCode) required} to InventoryLot
+  BatchMaterialUsage{material(name) required} to Material
 
   /** Financials */
   CostRecord{batch(batchCode) required} to Batch

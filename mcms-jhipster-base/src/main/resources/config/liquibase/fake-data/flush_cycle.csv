@@ -1,0 +1,11 @@
+id;flush_number;harvest_start_date;harvest_end_date;yield_kg;yield_bags_harvested;avg_fruit_body_weight_g;rehydration_done;rehydration_duration_hours;note;batch_id
+1;30275;2026-02-21;2026-02-22;32439.25;21257;5254.95;true;6968;../fake-data/blob/hipster.txt;1
+2;3676;2026-02-22;2026-02-22;26796.58;29117;3635.45;true;1057;../fake-data/blob/hipster.txt;2
+3;4565;2026-02-21;2026-02-21;16059.63;19175;16046.5;false;21096;../fake-data/blob/hipster.txt;3
+4;14291;2026-02-21;2026-02-21;32132.25;24615;23403.78;false;17057;../fake-data/blob/hipster.txt;4
+5;27607;2026-02-22;2026-02-21;12628.75;17365;20290.35;true;7858;../fake-data/blob/hipster.txt;5
+6;17706;2026-02-21;2026-02-22;26075.93;709;2938.04;true;16073;../fake-data/blob/hipster.txt;6
+7;5351;2026-02-22;2026-02-21;4293.18;19785;16165.66;true;25855;../fake-data/blob/hipster.txt;7
+8;27914;2026-02-22;2026-02-22;3269.8;29386;5550.02;true;5309;../fake-data/blob/hipster.txt;8
+9;6593;2026-02-22;2026-02-22;31269.65;14575;14383.13;false;32583;../fake-data/blob/hipster.txt;9
+10;3883;2026-02-21;2026-02-22;31136.62;5548;13974.61;false;32414;../fake-data/blob/hipster.txt;10

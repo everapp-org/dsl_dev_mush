@@ -1,0 +1,11 @@
+id;order_code;order_date;expected_delivery_date;actual_delivery_date;status;total_amount;currency;shipping_address;note;supplier_id
+1;tomb lustrous;2026-02-21;2026-02-22;2026-02-21;DELIVERED;398.71;lest;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;1
+2;gah unsung;2026-02-22;2026-02-22;2026-02-22;DELIVERED;679.82;soon frightened;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;2
+3;ew;2026-02-21;2026-02-22;2026-02-21;DELIVERED;21043.8;hot thorough aboard;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;3
+4;eek;2026-02-22;2026-02-22;2026-02-22;ORDERED;15616.9;afore helpfully;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;4
+5;distinction;2026-02-21;2026-02-21;2026-02-21;RETURNED;15554.43;jealously onto hm;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;5
+6;er;2026-02-21;2026-02-21;2026-02-22;RECEIVED;29421.08;likewise;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;6
+7;second;2026-02-22;2026-02-21;2026-02-21;ORDERED;7782.01;uncover yahoo;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;7
+8;grouper silent;2026-02-22;2026-02-22;2026-02-22;RECEIVED;28887.42;marksman;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;8
+9;inside winged fidget;2026-02-21;2026-02-22;2026-02-22;RETURNED;8480.15;per;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;9
+10;leading now;2026-02-22;2026-02-22;2026-02-22;DELIVERED;27265.97;vivaciously brr;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;10

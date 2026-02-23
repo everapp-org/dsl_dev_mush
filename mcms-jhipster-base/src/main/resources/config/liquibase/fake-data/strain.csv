@@ -1,0 +1,11 @@
+id;name;species;variety;optimal_temp_min_c;optimal_temp_max_c;optimal_humidity_min;optimal_humidity_max;optimal_co_2_max_ppm;colonization_days_min;colonization_days_max;expected_yield_percent;shelf_life_days;note;active
+1;aftermath psst;desk;pillory;25431.43;11699.96;21682.83;32360.96;9109;3523;27512;25472.5;6233;../fake-data/blob/hipster.txt;false
+2;passionate solemnly barring;fat;across against gah;32136.89;4310.94;13942.16;28510.15;14636;17573;29411;7017.28;32264;../fake-data/blob/hipster.txt;true
+3;throughout;duster;coarse than;5668.49;30241.2;2867.37;6693.67;7762;21315;9862;24315.08;4718;../fake-data/blob/hipster.txt;false
+4;gee;phooey;schlep hopelessly ick;17607.45;9335.43;12902.28;17374.33;24751;16293;1943;25530.79;16597;../fake-data/blob/hipster.txt;false
+5;willow cardboard chunter;scrutinise governance surface;boohoo;15267.54;3534.61;22620.1;7401.15;29821;30859;5178;31246.68;3883;../fake-data/blob/hipster.txt;true
+6;off although cycle;smug dream within;posh;26609.24;21438.85;18421.21;24275.15;30985;27582;30707;7616.39;2988;../fake-data/blob/hipster.txt;false
+7;reorganisation;developing oh jump;antagonize frantically gah;32494.3;7649.31;27830.03;13866.78;1263;23543;17072;27829.25;28279;../fake-data/blob/hipster.txt;true
+8;little toward lasting;supposing ectoderm unless;hence sonnet er;21264.01;23242.58;25572.74;2461.53;10286;21854;14238;18095.4;8947;../fake-data/blob/hipster.txt;true
+9;mmm embody that;brave commercial;greedily unlike gleaming;9738.56;4606.7;32047.78;7945.33;23079;5317;28629;3866.78;25963;../fake-data/blob/hipster.txt;false
+10;grade;mockingly vivid drive;quiet beneath;14671.76;28575.07;30458.78;28343.53;2142;4466;29104;1956.76;20497;../fake-data/blob/hipster.txt;true

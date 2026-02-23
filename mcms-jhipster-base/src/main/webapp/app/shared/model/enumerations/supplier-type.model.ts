@@ -1,0 +1,11 @@
+export enum SupplierType {
+  SPAWN = 'SPAWN',
+
+  SUBSTRATE = 'SUBSTRATE',
+
+  CHEMICALS = 'CHEMICALS',
+
+  EQUIPMENT = 'EQUIPMENT',
+
+  PACKAGING = 'PACKAGING',
+}

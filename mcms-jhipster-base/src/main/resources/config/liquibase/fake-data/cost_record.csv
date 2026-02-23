@@ -1,0 +1,11 @@
+id;record_date;category;description;amount;currency;note;batch_id
+1;2026-02-22;ENERGY;er notwithstanding woot;484.3;up;../fake-data/blob/hipster.txt;1
+2;2026-02-22;OTHER;without since;20495.31;restfully oh eternity;../fake-data/blob/hipster.txt;2
+3;2026-02-22;RAW_MATERIALS;sensitize effector;2858.99;except commonly zebra;../fake-data/blob/hipster.txt;3
+4;2026-02-22;RAW_MATERIALS;indeed the dearest;1426.77;creaking idealistic;../fake-data/blob/hipster.txt;4
+5;2026-02-21;ENERGY;knickers um;26813.78;beret woot;../fake-data/blob/hipster.txt;5
+6;2026-02-22;LABOR;urban;23557.8;mould towards gigantic;../fake-data/blob/hipster.txt;6
+7;2026-02-21;ENERGY;overconfidently;995.05;crossly ah starch;../fake-data/blob/hipster.txt;7
+8;2026-02-21;MAINTENANCE;ew perky confide;23205.7;up;../fake-data/blob/hipster.txt;8
+9;2026-02-21;MAINTENANCE;because neck clavicle;27186.64;parsnip ostrich;../fake-data/blob/hipster.txt;9
+10;2026-02-22;OTHER;finally reboot rigidly;5788.72;provided;../fake-data/blob/hipster.txt;10
