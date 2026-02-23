@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import {} from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
@@ -18,6 +20,9 @@ export const EnvironmentalTargetDetail = () => {
   }, []);
 
   const environmentalTargetEntity = useAppSelector(state => state.environmentalTarget.entity);
+  const canManageTargets = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
   return (
     <Row>
       <Col md="8">
@@ -74,9 +79,11 @@ export const EnvironmentalTargetDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/environmental-target/${environmentalTargetEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-        </Button>
+        {canManageTargets && (
+          <Button tag={Link} to={`/environmental-target/${environmentalTargetEntity.id}/edit`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+          </Button>
+        )}
       </Col>
     </Row>
   );

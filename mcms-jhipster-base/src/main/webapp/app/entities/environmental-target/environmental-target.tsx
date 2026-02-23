@@ -4,9 +4,11 @@ import { Button, Table } from 'reactstrap';
 import { getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { AUTHORITIES } from 'app/config/constants';
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './environmental-target.reducer';
 
@@ -20,6 +22,9 @@ export const EnvironmentalTarget = () => {
 
   const environmentalTargetList = useAppSelector(state => state.environmentalTarget.entities);
   const loading = useAppSelector(state => state.environmentalTarget.loading);
+  const canManageTargets = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
 
   const getAllEntities = () => {
     dispatch(
@@ -70,15 +75,17 @@ export const EnvironmentalTarget = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link
-            to="/environmental-target/new"
-            className="btn btn-primary jh-create-entity"
-            id="jh-create-entity"
-            data-cy="entityCreateButton"
-          >
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Environmental Target
-          </Link>
+          {canManageTargets && (
+            <Link
+              to="/environmental-target/new"
+              className="btn btn-primary jh-create-entity"
+              id="jh-create-entity"
+              data-cy="entityCreateButton"
+            >
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Create a new Environmental Target
+            </Link>
+          )}
         </div>
       </h2>
       <div className="table-responsive">
@@ -153,23 +160,27 @@ export const EnvironmentalTarget = () => {
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/environmental-target/${environmentalTarget.id}/edit`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        onClick={() => (window.location.href = `/environmental-target/${environmentalTarget.id}/delete`)}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
+                      {canManageTargets && (
+                        <>
+                          <Button
+                            tag={Link}
+                            to={`/environmental-target/${environmentalTarget.id}/edit`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                          >
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                          <Button
+                            onClick={() => (window.location.href = `/environmental-target/${environmentalTarget.id}/delete`)}
+                            color="danger"
+                            size="sm"
+                            data-cy="entityDeleteButton"
+                          >
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

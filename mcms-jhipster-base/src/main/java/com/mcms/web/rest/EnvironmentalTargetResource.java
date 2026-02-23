@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.EnvironmentalTarget;
 import com.mcms.repository.EnvironmentalTargetRepository;
+import com.mcms.security.AuthoritiesConstants;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +50,7 @@ public class EnvironmentalTargetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalTarget> createEnvironmentalTarget(@Valid @RequestBody EnvironmentalTarget environmentalTarget)
         throws URISyntaxException {
         LOG.debug("REST request to save EnvironmentalTarget : {}", environmentalTarget);
@@ -71,6 +74,7 @@ public class EnvironmentalTargetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalTarget> updateEnvironmentalTarget(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody EnvironmentalTarget environmentalTarget
@@ -105,6 +109,7 @@ public class EnvironmentalTargetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalTarget> partialUpdateEnvironmentalTarget(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody EnvironmentalTarget environmentalTarget
@@ -166,6 +171,7 @@ public class EnvironmentalTargetResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of environmentalTargets in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "', '" + AuthoritiesConstants.USER + "')")
     public List<EnvironmentalTarget> getAllEnvironmentalTargets(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -184,6 +190,7 @@ public class EnvironmentalTargetResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the environmentalTarget, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "', '" + AuthoritiesConstants.USER + "')")
     public ResponseEntity<EnvironmentalTarget> getEnvironmentalTarget(@PathVariable("id") Long id) {
         LOG.debug("REST request to get EnvironmentalTarget : {}", id);
         Optional<EnvironmentalTarget> environmentalTarget = environmentalTargetRepository.findOneWithEagerRelationships(id);
@@ -197,6 +204,7 @@ public class EnvironmentalTargetResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Void> deleteEnvironmentalTarget(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete EnvironmentalTarget : {}", id);
         environmentalTargetRepository.deleteById(id);
