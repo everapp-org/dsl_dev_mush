@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class ContaminationEventResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<ContaminationEvent> createContaminationEvent(@Valid @RequestBody ContaminationEvent contaminationEvent)
         throws URISyntaxException {
         LOG.debug("REST request to save ContaminationEvent : {}", contaminationEvent);
@@ -71,6 +73,7 @@ public class ContaminationEventResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<ContaminationEvent> updateContaminationEvent(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ContaminationEvent contaminationEvent
@@ -105,6 +108,7 @@ public class ContaminationEventResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<ContaminationEvent> partialUpdateContaminationEvent(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ContaminationEvent contaminationEvent
@@ -181,6 +185,7 @@ public class ContaminationEventResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of contaminationEvents in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<ContaminationEvent> getAllContaminationEvents(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -199,6 +204,7 @@ public class ContaminationEventResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the contaminationEvent, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<ContaminationEvent> getContaminationEvent(@PathVariable("id") Long id) {
         LOG.debug("REST request to get ContaminationEvent : {}", id);
         Optional<ContaminationEvent> contaminationEvent = contaminationEventRepository.findOneWithEagerRelationships(id);
@@ -212,6 +218,7 @@ public class ContaminationEventResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteContaminationEvent(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete ContaminationEvent : {}", id);
         contaminationEventRepository.deleteById(id);
