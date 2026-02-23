@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity ReportAuditLog.
+    -->
+    <changeSet id="20260223133400-1" author="jhipster">
+        <createTable tableName="report_audit_log">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="report_type" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="generated_by" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="generated_at" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="report_year" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="report_month" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="report_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="report_audit_log" columnName="generated_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+</databaseChangeLog>

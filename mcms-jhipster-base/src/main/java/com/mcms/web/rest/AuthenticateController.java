@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import static com.mcms.security.SecurityUtils.AUTHORITIES_CLAIM;
 import static com.mcms.security.SecurityUtils.JWT_ALGORITHM;
+import static com.mcms.security.SecurityUtils.PASSWORD_CHANGED_AT_CLAIM;
 import static com.mcms.security.SecurityUtils.USER_ID_CLAIM;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -99,6 +100,9 @@ public class AuthenticateController {
             .claim(AUTHORITIES_CLAIM, authorities);
         if (authentication.getPrincipal() instanceof UserWithId user) {
             builder.claim(USER_ID_CLAIM, user.getId());
+            if (user.getPasswordChangedAt() != null) {
+                builder.claim(PASSWORD_CHANGED_AT_CLAIM, user.getPasswordChangedAt().toEpochMilli());
+            }
         }
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

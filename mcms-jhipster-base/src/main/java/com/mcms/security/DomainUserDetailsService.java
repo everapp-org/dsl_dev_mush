@@ -3,6 +3,7 @@ package com.mcms.security;
 import com.mcms.domain.Authority;
 import com.mcms.domain.User;
 import com.mcms.repository.UserRepository;
+import java.time.Instant;
 import java.util.*;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
@@ -58,14 +59,20 @@ public class DomainUserDetailsService implements UserDetailsService {
     public static class UserWithId extends org.springframework.security.core.userdetails.User {
 
         private final Long id;
+        private final Instant passwordChangedAt;
 
-        public UserWithId(String login, String password, Collection<? extends GrantedAuthority> authorities, Long id) {
+        public UserWithId(String login, String password, Collection<? extends GrantedAuthority> authorities, Long id, Instant passwordChangedAt) {
             super(login, password, authorities);
             this.id = id;
+            this.passwordChangedAt = passwordChangedAt;
         }
 
         public Long getId() {
             return id;
+        }
+
+        public Instant getPasswordChangedAt() {
+            return passwordChangedAt;
         }
 
         @Override
@@ -83,7 +90,8 @@ public class DomainUserDetailsService implements UserDetailsService {
                 user.getLogin(),
                 user.getPassword(),
                 user.getAuthorities().stream().map(Authority::getName).map(SimpleGrantedAuthority::new).toList(),
-                user.getId()
+                user.getId(),
+                user.getPasswordChangedAt()
             );
         }
     }

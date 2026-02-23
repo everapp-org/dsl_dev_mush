@@ -1,12 +1,18 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.MonthlyReport;
+import com.mcms.domain.ReportAuditLog;
 import com.mcms.repository.MonthlyReportRepository;
+import com.mcms.repository.ReportAuditLogRepository;
+import com.mcms.web.rest.dto.GenerateReportRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -35,9 +42,11 @@ public class MonthlyReportResource {
     private String applicationName;
 
     private final MonthlyReportRepository monthlyReportRepository;
+    private final ReportAuditLogRepository reportAuditLogRepository;
 
-    public MonthlyReportResource(MonthlyReportRepository monthlyReportRepository) {
+    public MonthlyReportResource(MonthlyReportRepository monthlyReportRepository, ReportAuditLogRepository reportAuditLogRepository) {
         this.monthlyReportRepository = monthlyReportRepository;
+        this.reportAuditLogRepository = reportAuditLogRepository;
     }
 
     /**
@@ -193,6 +202,59 @@ public class MonthlyReportResource {
         LOG.debug("REST request to get MonthlyReport : {}", id);
         Optional<MonthlyReport> monthlyReport = monthlyReportRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(monthlyReport);
+    }
+
+    /**
+     * {@code POST  /monthly-reports/generate} : Generate a new monthly report.
+     *
+     * @param request the report generation request (year, month).
+     * @param principal the current authenticated user.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new monthlyReport.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("/generate")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+    public ResponseEntity<MonthlyReport> generateMonthlyReport(@Valid @RequestBody GenerateReportRequest request, Principal principal)
+        throws URISyntaxException {
+        LOG.debug("REST request to generate MonthlyReport for year={}, month={}", request.getYear(), request.getMonth());
+
+        String username = principal != null ? principal.getName() : "system";
+        Instant now = Instant.now();
+
+        // Create the monthly report with aggregated data
+        MonthlyReport monthlyReport = new MonthlyReport();
+        monthlyReport.setYear(request.getYear());
+        monthlyReport.setMonth(request.getMonth());
+        monthlyReport.setGeneratedAt(now);
+
+        // TODO: Aggregate data from batches, costs, revenues, contamination events, etc.
+        // For now, set placeholder values
+        monthlyReport.setTotalYieldKg(BigDecimal.ZERO);
+        monthlyReport.setTotalCost(BigDecimal.ZERO);
+        monthlyReport.setTotalRevenue(BigDecimal.ZERO);
+        monthlyReport.setProfitMarginPercent(BigDecimal.ZERO);
+        monthlyReport.setTotalContaminationEvents(0);
+        monthlyReport.setTotalMissingFields(0);
+        monthlyReport.setSummary("Monthly report for " + request.getYear() + "-" + request.getMonth());
+
+        // Save the report
+        monthlyReport = monthlyReportRepository.save(monthlyReport);
+
+        // Create audit log entry
+        ReportAuditLog auditLog = new ReportAuditLog();
+        auditLog.setReportType("MONTHLY_REPORT");
+        auditLog.setGeneratedBy(username);
+        auditLog.setGeneratedAt(now);
+        auditLog.setReportYear(request.getYear());
+        auditLog.setReportMonth(request.getMonth());
+        auditLog.setReportId(monthlyReport.getId());
+        reportAuditLogRepository.save(auditLog);
+
+        LOG.info("Monthly report generated: id={}, year={}, month={}, generatedBy={}", monthlyReport.getId(), request.getYear(), request.getMonth(), username);
+
+        return ResponseEntity.created(new URI("/api/monthly-reports/" + monthlyReport.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, monthlyReport.getId().toString()))
+            .body(monthlyReport);
     }
 
     /**

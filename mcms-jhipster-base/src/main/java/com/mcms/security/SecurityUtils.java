@@ -23,6 +23,8 @@ public final class SecurityUtils {
 
     public static final String USER_ID_CLAIM = "userId";
 
+    public static final String PASSWORD_CHANGED_AT_CLAIM = "pwdChangedAt";
+
     private SecurityUtils() {}
 
     /**

@@ -82,6 +82,9 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Column(name = "reset_date")
     private Instant resetDate = null;
 
+    @Column(name = "password_changed_at")
+    private Instant passwordChangedAt = null;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -180,6 +183,14 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     public void setResetDate(Instant resetDate) {
         this.resetDate = resetDate;
+    }
+
+    public Instant getPasswordChangedAt() {
+        return passwordChangedAt;
+    }
+
+    public void setPasswordChangedAt(Instant passwordChangedAt) {
+        this.passwordChangedAt = passwordChangedAt;
     }
 
     public String getLangKey() {

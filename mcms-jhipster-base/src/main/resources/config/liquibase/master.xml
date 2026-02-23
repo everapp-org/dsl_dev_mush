@@ -47,6 +47,8 @@
     <include file="config/liquibase/changelog/20260222143035_added_entity_MonthlyReport.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222143036_added_entity_Task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260223000000_added_entity_BatchAuditLog.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260223133400_added_entity_ReportAuditLog.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260223140000_add_password_changed_at_to_user.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260222143012_added_entity_constraints_Batch.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222143013_added_entity_constraints_PhaseExecution.xml" relativeToChangelogFile="false"/>
