@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.Supplier;
 import com.mcms.repository.SupplierRepository;
+import com.mcms.repository.SupplyOrderRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,11 @@ public class SupplierResource {
     private String applicationName;
 
     private final SupplierRepository supplierRepository;
+    private final SupplyOrderRepository supplyOrderRepository;
 
-    public SupplierResource(SupplierRepository supplierRepository) {
+    public SupplierResource(SupplierRepository supplierRepository, SupplyOrderRepository supplyOrderRepository) {
         this.supplierRepository = supplierRepository;
+        this.supplyOrderRepository = supplyOrderRepository;
     }
 
     /**
@@ -194,6 +197,16 @@ public class SupplierResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSupplier(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Supplier : {}", id);
+
+        // Check if supplier has any supply orders
+        if (supplyOrderRepository.existsBySupplierId(id)) {
+            throw new BadRequestAlertException(
+                "Cannot delete supplier with existing supply orders",
+                ENTITY_NAME,
+                "supplierhasorders"
+            );
+        }
+
         supplierRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))

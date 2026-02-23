@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.Customer;
 import com.mcms.repository.CustomerRepository;
+import com.mcms.repository.SalesOrderRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,11 @@ public class CustomerResource {
     private String applicationName;
 
     private final CustomerRepository customerRepository;
+    private final SalesOrderRepository salesOrderRepository;
 
-    public CustomerResource(CustomerRepository customerRepository) {
+    public CustomerResource(CustomerRepository customerRepository, SalesOrderRepository salesOrderRepository) {
         this.customerRepository = customerRepository;
+        this.salesOrderRepository = salesOrderRepository;
     }
 
     /**
@@ -194,6 +197,16 @@ public class CustomerResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Customer : {}", id);
+
+        // Check if customer has any sales orders
+        if (salesOrderRepository.existsByCustomerId(id)) {
+            throw new BadRequestAlertException(
+                "Cannot delete customer with existing sales orders",
+                ENTITY_NAME,
+                "customerhasorders"
+            );
+        }
+
         customerRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
