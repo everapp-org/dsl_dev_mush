@@ -1,8 +1,51 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 18:40 (Session 11)
+## Latest Session: 2026-02-23 18:42 (Session 12)
 
-### Completed Features (25/405 - 6.2%)
+### Completed Features (29/405 - 7.2%)
+
+#### Feature #34: ROLE_USER cannot create batches ✅
+**Status:** PASSING
+**Implementation:**
+- Frontend: Hidden "Create a new Batch" button for ROLE_USER in batch list page
+- Frontend: Hidden "Edit" and "Delete" buttons for ROLE_USER in batch list rows
+- Frontend: Hidden "Edit" button for ROLE_USER in batch detail page
+- Backend: POST /api/batches already restricted to ADMIN/MANAGER/OPERATOR only (line 71)
+- Added canModifyBatch permission check using hasAnyAuthority with ADMIN, MANAGER, OPERATOR roles
+
+**Verification (YOLO Mode):**
+- Frontend compiles successfully (npm build passed)
+- Backend already has @PreAuthorize annotations
+- No mock data patterns found
+- Matches spec: ROLE_USER has "View all entities (cannot create/edit/delete)"
+
+#### Feature #35: ROLE_USER cannot edit batches ✅
+**Status:** PASSING
+**Implementation:**
+- This feature was completed as part of feature #34 implementation
+- Backend: PUT /api/batches/{id} restricted to ADMIN/MANAGER/OPERATOR (line 94)
+- Backend: PATCH /api/batches/{id} restricted to ADMIN/MANAGER/OPERATOR (line 127)
+- Frontend: Edit buttons already hidden via canModifyBatch check
+
+**Permission Matrix:**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | Yes   | Yes     | Yes      | No   |
+| Read      | Yes   | Yes     | Yes      | Yes  |
+| Update    | Yes   | Yes     | Yes      | No   |
+| Delete    | Yes   | Yes     | No       | No   |
+
+**Verification (YOLO Mode):**
+- Backend PUT/PATCH endpoints have @PreAuthorize annotations
+- Frontend Edit buttons conditionally rendered based on role
+- No code changes needed (already implemented)
+- Matches spec: ROLE_USER is "Read-only"
+
+---
+
+## Previous Session: 2026-02-23 18:40 (Session 11)
+
+### Completed Features (27/405 - 6.7%)
 
 #### Feature #30: ROLE_OPERATOR can log contamination events ✅
 **Status:** PASSING
