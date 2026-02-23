@@ -1010,8 +1010,148 @@ public ResponseEntity<Task> completeTask(@PathVariable("id") Long id) {
 
 ---
 
+## Session: 2026-02-23 23:30 (Session 17)
+
+### Completed Features (38/405 - 9.4%)
+
+#### Feature #43: ROLE_OPERATOR has read-only recipe access ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize annotations to SubstrateRecipeResource
+- CREATE/UPDATE/DELETE: Only ADMIN and MANAGER (`hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')`)
+- READ (GET list/detail): All authenticated users (`hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')`)
+- Frontend: Hide Edit button on detail page for non-admin/manager
+- Frontend: Hide New/Edit/Delete buttons on list page for non-admin/manager
+
+**Permission Matrix:**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✅    | ✅      | ❌       | ❌   |
+| Read      | ✅    | ✅      | ✅       | ✅   |
+| Update    | ✅    | ✅      | ❌       | ❌   |
+| Delete    | ✅    | ✅      | ❌       | ❌   |
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt line 101: "View (read-only) strain and recipe information"
+- ✅ Operators can view recipe list and details
+- ✅ Operators cannot create, edit, or delete recipes
+- ✅ Managers have full CRUD access to recipes
+
+**Code Evidence:**
+```java
+// SubstrateRecipeResource.java
+@PostMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<SubstrateRecipe> createSubstrateRecipe(...)
+
+@GetMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+public List<SubstrateRecipe> getAllSubstrateRecipes()
+```
+
+**Frontend Evidence:**
+```tsx
+// substrate-recipe-detail.tsx
+const isAdminOrManager = useAppSelector(state =>
+  hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+);
+
+{isAdminOrManager && (
+  <Button tag={Link} to={`/substrate-recipe/${substrateRecipeEntity.id}/edit`}>
+    Edit
+  </Button>
+)}
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (mvn compile)
+- ✅ Frontend compiles successfully (webpack)
+- ✅ No mock data patterns
+- ✅ Real database via SubstrateRecipeRepository
+
+#### Feature #44: Admin can manage rooms ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize annotations to RoomResource
+- CREATE/UPDATE/DELETE: Only ADMIN (`hasAuthority('ROLE_ADMIN')`)
+- READ (GET list/detail): All authenticated users (`hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')`)
+- Frontend: Hide Edit button on detail page for non-admins
+- Frontend: Hide New/Edit/Delete buttons on list page for non-admins
+
+**Permission Matrix:**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✅    | ❌      | ❌       | ❌   |
+| Read      | ✅    | ✅      | ✅       | ✅   |
+| Update    | ✅    | ❌      | ❌       | ❌   |
+| Delete    | ✅    | ❌      | ❌       | ❌   |
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt line 66: "Manage rooms, sensors, and environmental targets" (ADMIN only)
+- ✅ Admin has full CRUD access to rooms
+- ✅ Managers, Operators, Users have read-only access to view room information
+- ✅ Follows the spec requirement that only ADMIN can create/edit/delete rooms
+
+**Code Evidence:**
+```java
+// RoomResource.java
+@PostMapping("")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<Room> createRoom(...)
+
+@GetMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+public List<Room> getAllRooms()
+
+@DeleteMapping("/{id}")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<Void> deleteRoom(...)
+```
+
+**Frontend Evidence:**
+```tsx
+// room-detail.tsx
+const isAdmin = useAppSelector(state =>
+  hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN])
+);
+
+{isAdmin && (
+  <Button tag={Link} to={`/room/${roomEntity.id}/edit`}>
+    Edit
+  </Button>
+)}
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (mvn compile)
+- ✅ Frontend compiles successfully (webpack)
+- ✅ No mock data patterns
+- ✅ Real database via RoomRepository
+
+---
+
+### Technical Changes This Session
+
+**Backend Files Modified:**
+- `SubstrateRecipeResource.java` - Added @PreAuthorize annotations for all endpoints
+- `RoomResource.java` - Added @PreAuthorize annotations for all endpoints
+
+**Frontend Files Modified:**
+- `substrate-recipe-detail.tsx` - Added isAdminOrManager check for Edit button
+- `substrate-recipe.tsx` - Added isAdminOrManager check for New/Edit/Delete buttons
+- `room-detail.tsx` - Added isAdmin check for Edit button
+- `room.tsx` - Added isAdmin check for New/Edit/Delete buttons
+
+**Git Commits:**
+```
+7a8ccf1 feat: implement RBAC for substrate recipes (feature #43)
+f91a80f feat: implement RBAC for rooms (feature #44)
+```
+
+---
+
 ### Current Status
-- **Progress:** 34/405 features passing (8.4%)
+- **Progress:** 38/405 features passing (9.4%)
 - **Backend:** Compiles cleanly, health check passes
 - **Frontend:** Compiles with 1 pre-existing warning
 - **Database:** H2 file-based, real persistence verified
