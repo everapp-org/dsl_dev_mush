@@ -1,8 +1,77 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 13:21 (Session 8)
+## Latest Session: 2026-02-23 13:32 (Session 9)
 
-### Completed Features (17/405 - 4.2%)
+### Completed Features (19/405 - 4.7%)
+
+#### Feature #22: API returns 403 for unauthorized role access ✅
+**Status:** PASSING
+**Verification:**
+- Backend properly enforces role-based access control with Spring Security
+- Regular user (ROLE_USER) attempting admin endpoint gets HTTP 403 Forbidden
+- Error response includes clear message: "insufficient_scope" with description "The request requires higher privileges than provided by the access token."
+- All admin endpoints in UserResource protected with `@PreAuthorize("hasAuthority('ROLE_ADMIN')")`
+
+**Test Results:**
+```bash
+# User with only ROLE_USER tries to create user (admin operation)
+POST /api/admin/users with ROLE_USER JWT
+Response: HTTP 403 Forbidden
+WWW-Authenticate: Bearer error="insufficient_scope"
+
+# Admin with ROLE_ADMIN can access endpoint
+GET /api/admin/users/user with ROLE_ADMIN JWT
+Response: HTTP 200 OK
+```
+
+**Code Evidence:**
+- UserResource.java: All CRUD methods annotated with `@PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")`
+- BatchResource.java: Force transition and admin operations properly restricted
+- AuthorityResource.java: All endpoints require ROLE_ADMIN
+
+#### Feature #23: Remember me extends session duration ✅
+**Status:** PASSING
+**Implementation:**
+- Backend supports `rememberMe` parameter in LoginVM
+- AuthenticateController.createToken() checks rememberMe flag and sets appropriate expiry
+- Normal token validity: **86400 seconds (24 hours)**
+- Remember me token validity: **2592000 seconds (30 days)**
+- Frontend has "Remember me" checkbox in login modal (login-modal.tsx line 71)
+- Authentication reducer stores JWT in localStorage if rememberMe=true (persistent), sessionStorage otherwise
+
+**Test Results:**
+```bash
+# Login without rememberMe
+POST /api/authenticate {"username":"admin","password":"admin","rememberMe":false}
+JWT exp claim: 1771932475 (expires in ~86400 seconds / 24 hours)
+
+# Login with rememberMe=true
+POST /api/authenticate {"username":"admin","password":"admin","rememberMe":true}
+JWT exp claim: 1774438107 (expires in ~2592000 seconds / 30 days)
+```
+
+**Code Evidence:**
+- `AuthenticateController.java` lines 88-92: Uses tokenValidityInSecondsForRememberMe when rememberMe=true
+- `application-dev.yml` & `application-prod.yml`: token-validity-in-seconds: 86400, token-validity-in-seconds-for-remember-me: 2592000
+- `authentication.ts` lines 56-60: Stores in localStorage (persistent) vs sessionStorage (session-only)
+
+### Technical Changes This Session
+
+**Verification Only (No Code Changes):**
+Both features were already fully implemented in the JHipster codebase. Verification confirmed:
+- Spring Security role-based access control working correctly
+- JWT token expiry extension with rememberMe flag functioning as expected
+- Frontend and backend integration complete
+
+**Testing:**
+- Created Node.js JWT decoder script for token inspection
+- Verified 403 responses for unauthorized access
+- Confirmed different token expiry times based on rememberMe flag
+- Both backend and frontend compile without errors
+
+---
+
+## Previous Session: 2026-02-23 13:21 (Session 8)
 
 #### Feature #18: ROLE_MANAGER can manage batches ✅
 **Status:** PASSING
