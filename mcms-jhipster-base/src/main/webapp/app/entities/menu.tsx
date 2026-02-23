@@ -1,8 +1,15 @@
 import React from 'react';
+import { useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 import MenuItem from 'app/shared/layout/menus/menu-item';
 
 const EntitiesMenu = () => {
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER])
+  );
+
   return (
     <>
       {/* prettier-ignore */}
@@ -75,15 +82,19 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/batch-material-usage">
         Batch Material Usage
       </MenuItem>
-      <MenuItem icon="asterisk" to="/cost-record">
-        Cost Record
-      </MenuItem>
+      {isAdminOrManager && (
+        <MenuItem icon="asterisk" to="/cost-record">
+          Cost Record
+        </MenuItem>
+      )}
       <MenuItem icon="asterisk" to="/mandatory-field-check">
         Mandatory Field Check
       </MenuItem>
-      <MenuItem icon="asterisk" to="/monthly-report">
-        Monthly Report
-      </MenuItem>
+      {isAdminOrManager && (
+        <MenuItem icon="asterisk" to="/monthly-report">
+          Monthly Report
+        </MenuItem>
+      )}
       <MenuItem icon="asterisk" to="/task">
         Task
       </MenuItem>

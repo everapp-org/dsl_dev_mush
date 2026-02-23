@@ -57,6 +57,7 @@ public class MonthlyReportResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<MonthlyReport> createMonthlyReport(@Valid @RequestBody MonthlyReport monthlyReport) throws URISyntaxException {
         LOG.debug("REST request to save MonthlyReport : {}", monthlyReport);
         if (monthlyReport.getId() != null) {
@@ -79,6 +80,7 @@ public class MonthlyReportResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<MonthlyReport> updateMonthlyReport(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody MonthlyReport monthlyReport
@@ -113,6 +115,7 @@ public class MonthlyReportResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<MonthlyReport> partialUpdateMonthlyReport(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody MonthlyReport monthlyReport
@@ -180,6 +183,7 @@ public class MonthlyReportResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of monthlyReports in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public List<MonthlyReport> getAllMonthlyReports(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -198,6 +202,7 @@ public class MonthlyReportResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the monthlyReport, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<MonthlyReport> getMonthlyReport(@PathVariable("id") Long id) {
         LOG.debug("REST request to get MonthlyReport : {}", id);
         Optional<MonthlyReport> monthlyReport = monthlyReportRepository.findOneWithEagerRelationships(id);
@@ -264,6 +269,7 @@ public class MonthlyReportResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteMonthlyReport(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete MonthlyReport : {}", id);
         monthlyReportRepository.deleteById(id);

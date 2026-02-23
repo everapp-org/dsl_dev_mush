@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class CostRecordResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<CostRecord> createCostRecord(@Valid @RequestBody CostRecord costRecord) throws URISyntaxException {
         LOG.debug("REST request to save CostRecord : {}", costRecord);
         if (costRecord.getId() != null) {
@@ -70,6 +72,7 @@ public class CostRecordResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<CostRecord> updateCostRecord(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody CostRecord costRecord
@@ -104,6 +107,7 @@ public class CostRecordResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<CostRecord> partialUpdateCostRecord(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody CostRecord costRecord
@@ -159,6 +163,7 @@ public class CostRecordResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of costRecords in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public List<CostRecord> getAllCostRecords(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -177,6 +182,7 @@ public class CostRecordResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the costRecord, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<CostRecord> getCostRecord(@PathVariable("id") Long id) {
         LOG.debug("REST request to get CostRecord : {}", id);
         Optional<CostRecord> costRecord = costRecordRepository.findOneWithEagerRelationships(id);
@@ -190,6 +196,7 @@ public class CostRecordResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteCostRecord(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete CostRecord : {}", id);
         costRecordRepository.deleteById(id);
