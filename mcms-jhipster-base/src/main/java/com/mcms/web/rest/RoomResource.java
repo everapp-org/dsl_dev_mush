@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class RoomResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Room> createRoom(@Valid @RequestBody Room room) throws URISyntaxException {
         LOG.debug("REST request to save Room : {}", room);
         if (room.getId() != null) {
@@ -70,6 +72,7 @@ public class RoomResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Room> updateRoom(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Room room)
         throws URISyntaxException {
         LOG.debug("REST request to update Room : {}, {}", id, room);
@@ -102,6 +105,7 @@ public class RoomResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Room> partialUpdateRoom(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Room room
@@ -171,6 +175,7 @@ public class RoomResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of rooms in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<Room> getAllRooms() {
         LOG.debug("REST request to get all Rooms");
         return roomRepository.findAll();
@@ -183,6 +188,7 @@ public class RoomResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the room, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<Room> getRoom(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Room : {}", id);
         Optional<Room> room = roomRepository.findById(id);
@@ -196,6 +202,7 @@ public class RoomResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteRoom(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Room : {}", id);
         roomRepository.deleteById(id);
