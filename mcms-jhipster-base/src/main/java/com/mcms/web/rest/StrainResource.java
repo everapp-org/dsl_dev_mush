@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class StrainResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Strain> createStrain(@Valid @RequestBody Strain strain) throws URISyntaxException {
         LOG.debug("REST request to save Strain : {}", strain);
         if (strain.getId() != null) {
@@ -70,6 +72,7 @@ public class StrainResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Strain> updateStrain(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Strain strain
@@ -104,6 +107,7 @@ public class StrainResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Strain> partialUpdateStrain(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Strain strain
@@ -182,6 +186,7 @@ public class StrainResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of strains in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<Strain> getAllStrains() {
         LOG.debug("REST request to get all Strains");
         return strainRepository.findAll();
@@ -194,6 +199,7 @@ public class StrainResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the strain, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<Strain> getStrain(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Strain : {}", id);
         Optional<Strain> strain = strainRepository.findById(id);
@@ -207,6 +213,7 @@ public class StrainResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteStrain(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Strain : {}", id);
         strainRepository.deleteById(id);

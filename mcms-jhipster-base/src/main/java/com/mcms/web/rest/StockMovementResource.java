@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class StockMovementResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<StockMovement> createStockMovement(@Valid @RequestBody StockMovement stockMovement) throws URISyntaxException {
         LOG.debug("REST request to save StockMovement : {}", stockMovement);
         if (stockMovement.getId() != null) {
@@ -70,6 +72,7 @@ public class StockMovementResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<StockMovement> updateStockMovement(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody StockMovement stockMovement
@@ -104,6 +107,7 @@ public class StockMovementResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<StockMovement> partialUpdateStockMovement(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody StockMovement stockMovement
@@ -165,6 +169,7 @@ public class StockMovementResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of stockMovements in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<StockMovement> getAllStockMovements(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -183,6 +188,7 @@ public class StockMovementResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the stockMovement, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<StockMovement> getStockMovement(@PathVariable("id") Long id) {
         LOG.debug("REST request to get StockMovement : {}", id);
         Optional<StockMovement> stockMovement = stockMovementRepository.findOneWithEagerRelationships(id);
@@ -196,6 +202,7 @@ public class StockMovementResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteStockMovement(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete StockMovement : {}", id);
         stockMovementRepository.deleteById(id);
