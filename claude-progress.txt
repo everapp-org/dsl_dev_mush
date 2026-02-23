@@ -1,8 +1,86 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 18:02 (Session 10)
+## Latest Session: 2026-02-23 18:20 (Session 10)
 
-### Completed Features (23/405 - 5.7%)
+### Completed Features (26/405 - 6.4%)
+
+#### Feature #28: Session invalidated on password change ✅
+**Status:** PASSING
+**Implementation:**
+- Added `passwordChangedAt` timestamp field to User entity
+- JWT tokens include `pwdChangedAt` claim with epoch milliseconds
+- Custom JWT validator in SecurityJwtConfiguration checks timestamp on every request
+- If user's passwordChangedAt > token's pwdChangedAt → token rejected with JwtException
+- UserService.changePassword() sets passwordChangedAt to Instant.now()
+- Liquibase migration `20260223140000_add_password_changed_at_to_user.xml` adds column
+
+**How It Works:**
+1. User logs in → JWT includes `pwdChangedAt: 1234567890`
+2. User changes password → DB updated with `passwordChangedAt: 1234567999`
+3. Old JWT validation checks: 1234567999 > 1234567890 → reject (HTTP 401)
+4. User must login again → new JWT with updated timestamp
+
+**Code Evidence:**
+```java
+// SecurityJwtConfiguration.java - Custom validation
+if (user.getPasswordChangedAt() != null &&
+    user.getPasswordChangedAt().isAfter(tokenPasswordChangedAt)) {
+    LOG.warn("JWT rejected: password changed after token was issued");
+    throw new JwtException("Token invalidated due to password change");
+}
+```
+
+**Verification (YOLO Mode):**
+- ✅ Code compiles successfully
+- ✅ Spotless style check passes
+- ✅ Liquibase migration registered in master.xml
+- ✅ No mock patterns
+- ✅ Real database integration via UserRepository
+
+#### Feature #29: ROLE_OPERATOR can record harvests ✅
+**Status:** PASSING
+**Implementation:**
+- Added @PreAuthorize annotations to all HarvestRecordResource endpoints
+- CREATE/UPDATE: ROLE_ADMIN, ROLE_MANAGER, ROLE_OPERATOR allowed
+- READ: All authenticated users (ADMIN, MANAGER, OPERATOR, USER)
+- DELETE: Only ROLE_ADMIN and ROLE_MANAGER (OPERATOR cannot delete)
+
+**Permission Matrix:**
+| Operation | ADMIN | MANAGER | OPERATOR | USER |
+|-----------|-------|---------|----------|------|
+| Create    | ✅    | ✅      | ✅       | ❌   |
+| Read      | ✅    | ✅      | ✅       | ✅   |
+| Update    | ✅    | ✅      | ✅       | ❌   |
+| Delete    | ✅    | ✅      | ❌       | ❌   |
+
+**Code Evidence:**
+```java
+// HarvestRecordResource.java
+@PostMapping("")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+public ResponseEntity<HarvestRecord> createHarvestRecord(...)
+
+@DeleteMapping("/{id}")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<Void> deleteHarvestRecord(...)
+```
+
+**Spec Compliance:**
+- ✅ ROLE_OPERATOR: "Record harvests and flush cycles" - CREATE/UPDATE granted
+- ✅ ROLE_MANAGER: "Full CRUD on production entities" - All operations granted
+- ✅ ROLE_USER: "Read-only dashboard access" - READ-only granted
+
+**Verification (YOLO Mode):**
+- ✅ Code compiles successfully
+- ✅ Spotless style check passes
+- ✅ Security annotations applied correctly
+- ✅ Real database via HarvestRecordRepository
+
+---
+
+### Previous Sessions
+
+### Completed Features (21/405 - 5.2%)
 
 #### Feature #26: Financial report generation is audit logged ✅
 **Status:** PASSING
