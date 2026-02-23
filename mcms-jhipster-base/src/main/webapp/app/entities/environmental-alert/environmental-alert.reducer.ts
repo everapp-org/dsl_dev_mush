@@ -77,6 +77,17 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const acknowledgeAlert = createAsyncThunk(
+  'environmentalAlert/acknowledge_alert',
+  async ({ id, resolutionNote }: { id: string | number; resolutionNote: string }, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/acknowledge`;
+    const result = await axios.put<IEnvironmentalAlert>(requestUrl, { resolutionNote });
+    thunkAPI.dispatch(getEntity(id));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const EnvironmentalAlertSlice = createEntitySlice({
@@ -109,7 +120,7 @@ export const EnvironmentalAlertSlice = createEntitySlice({
           }),
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, acknowledgeAlert), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -120,7 +131,7 @@ export const EnvironmentalAlertSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, acknowledgeAlert), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

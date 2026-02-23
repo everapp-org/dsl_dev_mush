@@ -2,11 +2,15 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.EnvironmentalAlert;
 import com.mcms.repository.EnvironmentalAlertRepository;
+import com.mcms.security.AuthoritiesConstants;
+import com.mcms.web.rest.dto.AcknowledgeAlertRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +53,7 @@ public class EnvironmentalAlertResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalAlert> createEnvironmentalAlert(@Valid @RequestBody EnvironmentalAlert environmentalAlert)
         throws URISyntaxException {
         LOG.debug("REST request to save EnvironmentalAlert : {}", environmentalAlert);
@@ -71,6 +77,7 @@ public class EnvironmentalAlertResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalAlert> updateEnvironmentalAlert(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody EnvironmentalAlert environmentalAlert
@@ -105,6 +112,7 @@ public class EnvironmentalAlertResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<EnvironmentalAlert> partialUpdateEnvironmentalAlert(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody EnvironmentalAlert environmentalAlert
@@ -172,6 +180,7 @@ public class EnvironmentalAlertResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of environmentalAlerts in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "')")
     public List<EnvironmentalAlert> getAllEnvironmentalAlerts(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -190,6 +199,7 @@ public class EnvironmentalAlertResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the environmentalAlert, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "')")
     public ResponseEntity<EnvironmentalAlert> getEnvironmentalAlert(@PathVariable("id") Long id) {
         LOG.debug("REST request to get EnvironmentalAlert : {}", id);
         Optional<EnvironmentalAlert> environmentalAlert = environmentalAlertRepository.findOneWithEagerRelationships(id);
@@ -203,11 +213,49 @@ public class EnvironmentalAlertResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Void> deleteEnvironmentalAlert(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete EnvironmentalAlert : {}", id);
         environmentalAlertRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code PUT  /environmental-alerts/:id/acknowledge} : Acknowledge an environmental alert.
+     * Operators can acknowledge alerts for their rooms.
+     *
+     * @param id the id of the environmentalAlert to acknowledge.
+     * @param request the acknowledgement request with resolution note.
+     * @param principal the current user.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated environmentalAlert.
+     */
+    @PutMapping("/{id}/acknowledge")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "')")
+    public ResponseEntity<EnvironmentalAlert> acknowledgeAlert(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody AcknowledgeAlertRequest request,
+        Principal principal
+    ) {
+        LOG.debug("REST request to acknowledge EnvironmentalAlert : {}", id);
+
+        Optional<EnvironmentalAlert> result = environmentalAlertRepository
+            .findById(id)
+            .map(alert -> {
+                alert.setAcknowledged(true);
+                alert.setAcknowledgedBy(principal.getName());
+                alert.setAcknowledgedAt(Instant.now());
+                alert.setResolutionNote(request.getResolutionNote());
+                return environmentalAlertRepository.save(alert);
+            });
+
+        if (result.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .body(result.get());
     }
 }

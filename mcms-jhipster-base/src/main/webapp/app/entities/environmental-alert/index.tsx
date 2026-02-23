@@ -7,6 +7,7 @@ import EnvironmentalAlert from './environmental-alert';
 import EnvironmentalAlertDetail from './environmental-alert-detail';
 import EnvironmentalAlertUpdate from './environmental-alert-update';
 import EnvironmentalAlertDeleteDialog from './environmental-alert-delete-dialog';
+import EnvironmentalAlertAcknowledgeDialog from './environmental-alert-acknowledge-dialog';
 
 const EnvironmentalAlertRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -16,6 +17,7 @@ const EnvironmentalAlertRoutes = () => (
       <Route index element={<EnvironmentalAlertDetail />} />
       <Route path="edit" element={<EnvironmentalAlertUpdate />} />
       <Route path="delete" element={<EnvironmentalAlertDeleteDialog />} />
+      <Route path="acknowledge" element={<EnvironmentalAlertAcknowledgeDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

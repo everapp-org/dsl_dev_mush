@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class SensorReadingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
     public ResponseEntity<SensorReading> createSensorReading(@Valid @RequestBody SensorReading sensorReading) throws URISyntaxException {
         LOG.debug("REST request to save SensorReading : {}", sensorReading);
         if (sensorReading.getId() != null) {
@@ -70,6 +72,7 @@ public class SensorReadingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<SensorReading> updateSensorReading(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody SensorReading sensorReading
@@ -104,6 +107,7 @@ public class SensorReadingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<SensorReading> partialUpdateSensorReading(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody SensorReading sensorReading
@@ -150,6 +154,7 @@ public class SensorReadingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of sensorReadings in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<SensorReading> getAllSensorReadings(
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
@@ -168,6 +173,7 @@ public class SensorReadingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the sensorReading, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<SensorReading> getSensorReading(@PathVariable("id") Long id) {
         LOG.debug("REST request to get SensorReading : {}", id);
         Optional<SensorReading> sensorReading = sensorReadingRepository.findOneWithEagerRelationships(id);
@@ -181,6 +187,7 @@ public class SensorReadingResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteSensorReading(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete SensorReading : {}", id);
         sensorReadingRepository.deleteById(id);

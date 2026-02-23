@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +49,7 @@ public class SensorResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Sensor> createSensor(@Valid @RequestBody Sensor sensor) throws URISyntaxException {
         LOG.debug("REST request to save Sensor : {}", sensor);
         if (sensor.getId() != null) {
@@ -70,6 +72,7 @@ public class SensorResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Sensor> updateSensor(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Sensor sensor
@@ -104,6 +107,7 @@ public class SensorResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Sensor> partialUpdateSensor(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Sensor sensor
@@ -165,6 +169,7 @@ public class SensorResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of sensors in body.
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<Sensor> getAllSensors(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
         LOG.debug("REST request to get all Sensors");
         if (eagerload) {
@@ -181,6 +186,7 @@ public class SensorResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the sensor, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<Sensor> getSensor(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Sensor : {}", id);
         Optional<Sensor> sensor = sensorRepository.findOneWithEagerRelationships(id);
@@ -194,6 +200,7 @@ public class SensorResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteSensor(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Sensor : {}", id);
         sensorRepository.deleteById(id);

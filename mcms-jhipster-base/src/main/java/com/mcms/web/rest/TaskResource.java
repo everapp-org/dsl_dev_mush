@@ -2,18 +2,23 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.Task;
 import com.mcms.repository.TaskRepository;
+import com.mcms.security.AuthoritiesConstants;
+import com.mcms.security.SecurityUtils;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -48,6 +53,7 @@ public class TaskResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) throws URISyntaxException {
         LOG.debug("REST request to save Task : {}", task);
         if (task.getId() != null) {
@@ -70,6 +76,7 @@ public class TaskResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Task> updateTask(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Task task)
         throws URISyntaxException {
         LOG.debug("REST request to update Task : {}, {}", id, task);
@@ -158,18 +165,37 @@ public class TaskResource {
 
     /**
      * {@code GET  /tasks} : get all the tasks.
+     * For ROLE_OPERATOR, only returns tasks assigned to them.
      *
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tasks in body.
      */
     @GetMapping("")
+    @PreAuthorize("isAuthenticated()")
     public List<Task> getAllTasks(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
         LOG.debug("REST request to get all Tasks");
+        List<Task> tasks;
         if (eagerload) {
-            return taskRepository.findAllWithEagerRelationships();
+            tasks = taskRepository.findAllWithEagerRelationships();
         } else {
-            return taskRepository.findAll();
+            tasks = taskRepository.findAll();
         }
+
+        // Filter tasks for ROLE_OPERATOR - they can only see tasks assigned to them
+        if (SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.OPERATOR)) {
+            String currentUserLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+            if (currentUserLogin != null) {
+                LOG.debug("Filtering tasks for ROLE_OPERATOR: {}", currentUserLogin);
+                tasks = tasks.stream()
+                    .filter(task -> currentUserLogin.equals(task.getAssignedTo()))
+                    .collect(Collectors.toList());
+            } else {
+                // If no login found, return empty list
+                return List.of();
+            }
+        }
+
+        return tasks;
     }
 
     /**
@@ -192,11 +218,50 @@ public class TaskResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "')")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Task : {}", id);
         taskRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code POST  /tasks/:id/complete} : Mark a task as complete.
+     * ROLE_OPERATOR can complete tasks assigned to them.
+     * ROLE_ADMIN and ROLE_MANAGER can complete any task.
+     *
+     * @param id the id of the task to complete.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated task.
+     */
+    @PostMapping("/{id}/complete")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "')")
+    public ResponseEntity<Task> completeTask(@PathVariable("id") Long id) {
+        LOG.debug("REST request to complete Task : {}", id);
+
+        Optional<Task> taskOptional = taskRepository.findById(id);
+        if (taskOptional.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Task task = taskOptional.get();
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+
+        // ROLE_OPERATOR can only complete tasks assigned to them
+        if (SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.OPERATOR)) {
+            if (currentUserLogin == null || !currentUserLogin.equals(task.getAssignedTo())) {
+                throw new BadRequestAlertException("Operators can only complete tasks assigned to them", ENTITY_NAME, "accessdenied");
+            }
+        }
+
+        // Mark task as complete
+        task.setCompleted(true);
+        task.setCompletedDate(LocalDate.now());
+        task = taskRepository.save(task);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, task.getId().toString()))
+            .body(task);
     }
 }

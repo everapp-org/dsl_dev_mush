@@ -4,8 +4,9 @@ import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { APP_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntity } from './environmental-alert.reducer';
 
@@ -19,6 +20,9 @@ export const EnvironmentalAlertDetail = () => {
   }, []);
 
   const environmentalAlertEntity = useAppSelector(state => state.environmentalAlert.entity);
+  const canAcknowledge = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
+  );
   return (
     <Row>
       <Col md="8">
@@ -97,6 +101,14 @@ export const EnvironmentalAlertDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
         &nbsp;
+        {canAcknowledge && !environmentalAlertEntity.acknowledged && (
+          <>
+            <Button tag={Link} to={`/environmental-alert/${environmentalAlertEntity.id}/acknowledge`} replace color="success">
+              <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Acknowledge</span>
+            </Button>
+            &nbsp;
+          </>
+        )}
         <Button tag={Link} to={`/environmental-alert/${environmentalAlertEntity.id}/edit`} replace color="primary">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
