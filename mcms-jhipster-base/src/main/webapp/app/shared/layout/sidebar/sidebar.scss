@@ -141,6 +141,78 @@
   }
 }
 
+// Mobile hamburger menu button
+.mobile-menu-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background: #2c3e50;
+  border: none;
+  color: #ecf0f1;
+  width: 45px;
+  height: 45px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #34495e;
+  }
+
+  svg {
+    font-size: 20px;
+  }
+}
+
+// Overlay for mobile menu
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Mobile sidebar styles
+.sidebar.sidebar-mobile {
+  position: fixed;
+  left: -260px;
+  width: 260px !important;
+  top: 0;
+  bottom: 0;
+  transition: left 0.3s ease;
+  z-index: 1000;
+
+  &.sidebar-mobile-open {
+    left: 0;
+  }
+
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .sidebar-content {
+    padding-top: 20px;
+  }
+}
+
 // Adjust main content when sidebar is present
 .app-container.with-sidebar {
   .view-container {
@@ -150,5 +222,12 @@
 
   &.sidebar-closed .view-container {
     margin-left: 50px;
+  }
+}
+
+// Mobile responsive adjustments
+@media (max-width: 768px) {
+  .app-container.with-sidebar .view-container {
+    margin-left: 0 !important;
   }
 }
