@@ -1,6 +1,114 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-24 04:22 (Session 20)
+## Latest Session: 2026-02-24 04:36 (Session 22)
+
+### Completed Features (54/405 - 13.3%)
+
+#### Feature #57: ROLE_ADMIN can deactivate strains ✅
+**Status:** PASSING
+**Implementation:**
+- Backend activate/deactivate endpoints already implemented in previous session (commit 6a4b14a)
+- Added Activate/Deactivate buttons to strain detail page (strain-detail.tsx)
+- Buttons only visible to ROLE_ADMIN users
+- Conditional button rendering based on current strain.active status
+
+**Backend Endpoints (Already Implemented):**
+```java
+// POST /api/strains/{id}/activate - Activate a strain
+@PostMapping("/{id}/activate")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<Strain> activateStrain(@PathVariable("id") Long id)
+
+// POST /api/strains/{id}/deactivate - Deactivate a strain
+@PostMapping("/{id}/deactivate")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<Strain> deactivateStrain(@PathVariable("id") Long id)
+```
+
+**Frontend Changes (This Session):**
+- strain-detail.tsx: Added activate/deactivate button handlers
+- Buttons show conditionally: "Deactivate" for active strains, "Activate" for inactive
+- Only displayed to users with ROLE_ADMIN authority
+- Uses hasAnyAuthority helper from shared/auth/private-route
+
+**Security:**
+- ✅ Only ROLE_ADMIN can activate/deactivate strains (strictest control)
+- ✅ Backend enforces authorization at API level
+- ✅ Frontend hides buttons from non-admin users
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt: Admin manages strain catalog including activation/deactivation
+- ✅ Prevents unauthorized strain state changes
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (Maven compile passed)
+- ✅ Frontend compiles successfully (TypeScript check passed)
+- ✅ Server running without errors
+- ✅ Endpoints secured with @PreAuthorize
+
+**Git Commit:**
+```
+7ffc8ef feat: add activate/deactivate buttons to strain detail page (feature #57)
+```
+
+---
+
+#### Feature #11: ROLE_OPERATOR blocked from admin routes ✅
+**Status:** PASSING (Already Implemented)
+**Verification:**
+- Feature #11 was already fully implemented in JHipster base configuration
+- All admin functionality properly restricted to ROLE_ADMIN only
+
+**Backend Security:**
+- UserResource.java mapped to `/api/admin` with all endpoints using:
+  ```java
+  @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+  ```
+- Operators get HTTP 403 Forbidden when attempting to access admin API endpoints
+
+**Frontend Security:**
+1. **Route Protection** (routes.tsx lines 60-66):
+   ```tsx
+   <Route path="admin/*" element={
+     <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
+       <Admin />
+     </PrivateRoute>
+   } />
+   ```
+
+2. **Menu Visibility** (header.tsx lines 44-46):
+   ```tsx
+   {props.isAuthenticated && props.isAdmin && (
+     <AdminMenu showOpenAPI={props.isOpenAPIEnabled} showDatabase={!props.isInProduction} />
+   )}
+   ```
+
+3. **Error Message** (private-route.tsx lines 32-36):
+   - Non-admin users see: "You are not authorized to access this page."
+   - Displayed when attempting to access admin routes
+
+**Security Matrix:**
+| Feature              | ADMIN | MANAGER | OPERATOR | USER |
+|----------------------|-------|---------|----------|------|
+| Access /admin/* API  | ✅    | ❌      | ❌       | ❌   |
+| Access /admin/* UI   | ✅    | ❌      | ❌       | ❌   |
+| See Admin Menu       | ✅    | ❌      | ❌       | ❌   |
+| User Management      | ✅    | ❌      | ❌       | ❌   |
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt line 64: "Full system administration including user management, role assignment" (ADMIN only)
+- ✅ ROLE_OPERATOR cannot access admin routes
+- ✅ Error message shown for unauthorized attempts
+- ✅ Admin menu hidden for non-admin users
+
+**Git Commit:**
+```
+b1c9565 feat: verify ROLE_OPERATOR blocked from admin routes (feature #11)
+```
+
+---
+
+## Previous Session: 2026-02-24 04:22 (Session 21)
 
 ### Completed Features (50/405 - 12.3%)
 
