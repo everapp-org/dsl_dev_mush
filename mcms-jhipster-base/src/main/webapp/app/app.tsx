@@ -13,6 +13,7 @@ import { getProfile } from 'app/shared/reducers/application-profile';
 import Header from 'app/shared/layout/header/header';
 import Sidebar from 'app/shared/layout/sidebar/sidebar';
 import Footer from 'app/shared/layout/footer/footer';
+import BreadcrumbNav from 'app/shared/layout/breadcrumb/breadcrumb';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import ErrorBoundary from 'app/shared/error/error-boundary';
 import { AUTHORITIES } from 'app/config/constants';
@@ -54,6 +55,7 @@ export const App = () => {
         <div className="container-fluid view-container" id="app-view-container">
           <Card className="jh-card">
             <ErrorBoundary>
+              {isAuthenticated && <BreadcrumbNav />}
               <AppRoutes />
             </ErrorBoundary>
           </Card>
