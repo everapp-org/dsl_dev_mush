@@ -221,4 +221,48 @@ public class StrainResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code POST  /strains/:id/activate} : activate the "id" strain.
+     *
+     * @param id the id of the strain to activate.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated strain.
+     */
+    @PostMapping("/{id}/activate")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Strain> activateStrain(@PathVariable("id") Long id) {
+        LOG.debug("REST request to activate Strain : {}", id);
+        Optional<Strain> strainOptional = strainRepository.findById(id);
+        if (strainOptional.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+        Strain strain = strainOptional.get();
+        strain.setActive(true);
+        strain = strainRepository.save(strain);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, strain.getId().toString()))
+            .body(strain);
+    }
+
+    /**
+     * {@code POST  /strains/:id/deactivate} : deactivate the "id" strain.
+     *
+     * @param id the id of the strain to deactivate.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated strain.
+     */
+    @PostMapping("/{id}/deactivate")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Strain> deactivateStrain(@PathVariable("id") Long id) {
+        LOG.debug("REST request to deactivate Strain : {}", id);
+        Optional<Strain> strainOptional = strainRepository.findById(id);
+        if (strainOptional.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+        Strain strain = strainOptional.get();
+        strain.setActive(false);
+        strain = strainRepository.save(strain);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, strain.getId().toString()))
+            .body(strain);
+    }
 }

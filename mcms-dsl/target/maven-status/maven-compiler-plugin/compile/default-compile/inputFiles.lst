@@ -1,3 +1,9 @@
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLBaseListener.java
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLBaseVisitor.java
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLLexer.java
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLListener.java
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLParser.java
+/home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/KernelDSLVisitor.java
 /home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/TestDSLBaseListener.java
 /home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/TestDSLBaseVisitor.java
 /home/gpetrov/src/dsl_dev_mush/mcms-dsl/target/generated-sources/antlr4/com/mcms/dsl/TestDSLLexer.java

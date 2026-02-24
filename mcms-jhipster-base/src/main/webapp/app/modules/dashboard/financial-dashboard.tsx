@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, CardBody, CardTitle } from 'reactstrap';
+import { Row, Col, Card, CardBody, CardTitle, Button } from 'reactstrap';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faDollarSign, faMoneyBillTrendUp, faPercent } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faDollarSign, faMoneyBillTrendUp, faPercent, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 interface FinancialDashboardData {
   totalCosts: number;
@@ -74,10 +74,16 @@ export const FinancialDashboard = () => {
 
   return (
     <div>
-      <h2 className="mb-4">
-        <FontAwesomeIcon icon={faChartLine} className="me-2" />
-        Financial Dashboard
-      </h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0">
+          <FontAwesomeIcon icon={faChartLine} className="me-2" />
+          Financial Dashboard
+        </h2>
+        <Button color="success" tag="a" href="/api/dashboard/financial/export">
+          <FontAwesomeIcon icon={faDownload} className="me-2" />
+          Export to CSV
+        </Button>
+      </div>
 
       <Row>
         <Col md="3" className="mb-4">

@@ -7,8 +7,10 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntities } from './strain.reducer';
+import { getEntities, activateStrain, deactivateStrain } from './strain.reducer';
 
 export const Strain = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +22,7 @@ export const Strain = () => {
 
   const strainList = useAppSelector(state => state.strain.entities);
   const loading = useAppSelector(state => state.strain.loading);
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
 
   const getAllEntities = () => {
     dispatch(
@@ -51,6 +54,14 @@ export const Strain = () => {
 
   const handleSyncList = () => {
     sortEntities();
+  };
+
+  const handleActivate = (id: number) => {
+    dispatch(activateStrain(id));
+  };
+
+  const handleDeactivate = (id: number) => {
+    dispatch(deactivateStrain(id));
   };
 
   const getSortIconByFieldName = (fieldName: string) => {
@@ -159,6 +170,19 @@ export const Strain = () => {
                       <Button tag={Link} to={`/strain/${strain.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
+                      {isAdmin && (
+                        <>
+                          {strain.active ? (
+                            <Button onClick={() => handleDeactivate(strain.id)} color="warning" size="sm" data-cy="entityDeactivateButton">
+                              <FontAwesomeIcon icon="ban" /> <span className="d-none d-md-inline">Deactivate</span>
+                            </Button>
+                          ) : (
+                            <Button onClick={() => handleActivate(strain.id)} color="success" size="sm" data-cy="entityActivateButton">
+                              <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Activate</span>
+                            </Button>
+                          )}
+                        </>
+                      )}
                       <Button
                         onClick={() => (window.location.href = `/strain/${strain.id}/delete`)}
                         color="danger"

@@ -143,6 +143,15 @@ export const BatchDetail = () => {
             >
               <FontAwesomeIcon icon="exchange-alt" /> <span className="d-none d-md-inline">Force Transition</span>
             </Button>
+            &nbsp;
+            <Button
+              tag="a"
+              href={`/api/batches/${batchEntity.id}/export-traceability`}
+              color="success"
+              data-cy="entityExportTraceabilityButton"
+            >
+              <FontAwesomeIcon icon="download" /> <span className="d-none d-md-inline">Export Traceability</span>
+            </Button>
           </>
         )}
       </Col>

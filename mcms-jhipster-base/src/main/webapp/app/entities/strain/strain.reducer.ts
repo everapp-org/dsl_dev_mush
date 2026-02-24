@@ -77,6 +77,28 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const activateStrain = createAsyncThunk(
+  'strain/activate_strain',
+  async (id: string | number, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/activate`;
+    const result = await axios.post<IStrain>(requestUrl);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
+export const deactivateStrain = createAsyncThunk(
+  'strain/deactivate_strain',
+  async (id: string | number, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}/deactivate`;
+    const result = await axios.post<IStrain>(requestUrl);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const StrainSlice = createEntitySlice({
@@ -109,7 +131,7 @@ export const StrainSlice = createEntitySlice({
           }),
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, activateStrain, deactivateStrain), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -120,7 +142,7 @@ export const StrainSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, activateStrain, deactivateStrain), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

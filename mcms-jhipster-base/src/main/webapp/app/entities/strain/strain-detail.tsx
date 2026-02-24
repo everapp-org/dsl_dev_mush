@@ -5,8 +5,10 @@ import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntity } from './strain.reducer';
+import { getEntity, activateStrain, deactivateStrain } from './strain.reducer';
 
 export const StrainDetail = () => {
   const dispatch = useAppDispatch();

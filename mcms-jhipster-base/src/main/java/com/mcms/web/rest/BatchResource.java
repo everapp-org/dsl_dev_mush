@@ -2,8 +2,14 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.Batch;
 import com.mcms.domain.BatchAuditLog;
+import com.mcms.domain.BatchMaterialUsage;
+import com.mcms.domain.InventoryLot;
+import com.mcms.domain.SalesOrderLine;
+import com.mcms.domain.SupplyOrderLine;
 import com.mcms.repository.BatchAuditLogRepository;
+import com.mcms.repository.BatchMaterialUsageRepository;
 import com.mcms.repository.BatchRepository;
+import com.mcms.repository.SalesOrderLineRepository;
 import com.mcms.repository.UserRepository;
 import com.mcms.web.rest.dto.DiscardBatchRequest;
 import com.mcms.web.rest.dto.ForceTransitionRequest;
@@ -17,10 +23,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,17 +58,23 @@ public class BatchResource {
     private final BatchAuditLogRepository auditLogRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final BatchMaterialUsageRepository batchMaterialUsageRepository;
+    private final SalesOrderLineRepository salesOrderLineRepository;
 
     public BatchResource(
         BatchRepository batchRepository,
         BatchAuditLogRepository auditLogRepository,
         PasswordEncoder passwordEncoder,
-        UserRepository userRepository
+        UserRepository userRepository,
+        BatchMaterialUsageRepository batchMaterialUsageRepository,
+        SalesOrderLineRepository salesOrderLineRepository
     ) {
         this.batchRepository = batchRepository;
         this.auditLogRepository = auditLogRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.batchMaterialUsageRepository = batchMaterialUsageRepository;
+        this.salesOrderLineRepository = salesOrderLineRepository;
     }
 
     /**
@@ -341,6 +356,125 @@ public class BatchResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
             .body(batch);
+    }
+
+    /**
+     * {@code GET  /batches/:id/export-traceability} : export traceability report for batch.
+     *
+     * @param id the id of the batch.
+     * @return CSV file with full supply chain traceability.
+     */
+    @GetMapping("/{id}/export-traceability")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> exportTraceability(@PathVariable("id") Long id) {
+        LOG.debug("REST request to export traceability for Batch : {}", id);
+
+        Optional<Batch> batchOptional = batchRepository.findById(id);
+        if (batchOptional.isEmpty()) {
+            throw new BadRequestAlertException("Batch not found", ENTITY_NAME, "notfound");
+        }
+
+        Batch batch = batchOptional.get();
+
+        // Build CSV content
+        StringBuilder csv = new StringBuilder();
+        csv.append("Batch Traceability Report\n");
+        csv.append("Batch Code,").append(batch.getBatchCode()).append("\n");
+        csv.append("Start Date,").append(batch.getStartDate()).append("\n");
+        csv.append("Current Phase,").append(batch.getCurrentPhase()).append("\n\n");
+
+        // Section 1: Materials used (suppliers)
+        csv.append("MATERIALS USED (FROM SUPPLIERS)\n");
+        csv.append("Material,Supplier,Supply Order,Lot Number,Quantity Used,Unit,Usage Date\n");
+
+        List<BatchMaterialUsage> materialUsages = batchMaterialUsageRepository.findAll().stream()
+            .filter(usage -> usage.getBatch() != null && usage.getBatch().getId().equals(id))
+            .collect(Collectors.toList());
+
+        for (BatchMaterialUsage usage : materialUsages) {
+            String materialName = usage.getMaterial() != null ? usage.getMaterial().getName() : "N/A";
+            InventoryLot lot = usage.getInventoryLot();
+            String lotCode = lot != null ? lot.getLotCode() : "N/A";
+
+            String supplierName = "N/A";
+            String supplyOrderCode = "N/A";
+            if (lot != null && lot.getSupplyOrderLine() != null) {
+                SupplyOrderLine supplyLine = lot.getSupplyOrderLine();
+                if (supplyLine.getSupplyOrder() != null) {
+                    supplyOrderCode = supplyLine.getSupplyOrder().getOrderCode();
+                    if (supplyLine.getSupplyOrder().getSupplier() != null) {
+                        supplierName = supplyLine.getSupplyOrder().getSupplier().getName();
+                    }
+                }
+            }
+
+            csv.append(escapeCSV(materialName)).append(",");
+            csv.append(escapeCSV(supplierName)).append(",");
+            csv.append(escapeCSV(supplyOrderCode)).append(",");
+            csv.append(escapeCSV(lotCode)).append(",");
+            csv.append(usage.getQuantityUsed()).append(",");
+            csv.append(usage.getUnit()).append(",");
+            csv.append(usage.getUsageDate()).append("\n");
+        }
+
+        // Section 2: Sales (to customers)
+        csv.append("\nSALES (TO CUSTOMERS)\n");
+        csv.append("Customer,Sales Order,Product,Quantity,Unit,Order Date,Delivery Date\n");
+
+        List<SalesOrderLine> salesLines = salesOrderLineRepository.findAll().stream()
+            .filter(line -> line.getBatch() != null && line.getBatch().getId().equals(id))
+            .collect(Collectors.toList());
+
+        for (SalesOrderLine line : salesLines) {
+            String customerName = "N/A";
+            String salesOrderCode = "N/A";
+            String orderDate = "N/A";
+            String deliveryDate = "N/A";
+
+            if (line.getSalesOrder() != null) {
+                salesOrderCode = line.getSalesOrder().getOrderCode();
+                orderDate = line.getSalesOrder().getOrderDate() != null ?
+                    line.getSalesOrder().getOrderDate().toString() : "N/A";
+                deliveryDate = line.getSalesOrder().getActualDeliveryDate() != null ?
+                    line.getSalesOrder().getActualDeliveryDate().toString() : "N/A";
+
+                if (line.getSalesOrder().getCustomer() != null) {
+                    customerName = line.getSalesOrder().getCustomer().getName();
+                }
+            }
+
+            String productName = line.getProduct() != null ? line.getProduct().getName() : "N/A";
+
+            csv.append(escapeCSV(customerName)).append(",");
+            csv.append(escapeCSV(salesOrderCode)).append(",");
+            csv.append(escapeCSV(productName)).append(",");
+            csv.append(line.getWeightKg()).append(",");
+            csv.append(line.getUnit() != null ? line.getUnit().toString() : "kg").append(",");
+            csv.append(escapeCSV(orderDate)).append(",");
+            csv.append(escapeCSV(deliveryDate)).append("\n");
+        }
+
+        // Return CSV file
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "traceability-" + batch.getBatchCode() + ".csv");
+
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(csv.toString());
+    }
+
+    /**
+     * Escape CSV values to handle commas and quotes.
+     */
+    private String escapeCSV(String value) {
+        if (value == null) {
+            return "";
+        }
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 
     /**
