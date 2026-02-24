@@ -11,6 +11,7 @@ const initialState: EntityState<IBatch> = {
   entities: [],
   entity: defaultValue,
   updating: false,
+  totalItems: 0,
   updateSuccess: false,
 };
 
@@ -20,8 +21,8 @@ const apiUrl = 'api/batches';
 
 export const getEntities = createAsyncThunk(
   'batch/fetch_entity_list',
-  async ({ sort }: IQueryParams) => {
-    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+  async ({ page, size, sort }: IQueryParams) => {
+    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}${page !== undefined ? `page=${page}&` : ''}${size !== undefined ? `size=${size}&` : ''}cacheBuster=${new Date().getTime()}`;
     return axios.get<IBatch[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },
@@ -105,11 +106,12 @@ export const BatchSlice = createEntitySlice({
         state.entity = {};
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
-        const { data } = action.payload;
+        const { data, headers } = action.payload;
 
         return {
           ...state,
           loading: false,
+          totalItems: parseInt(headers['x-total-count'], 10),
           entities: data.sort((a, b) => {
             if (!action.meta?.arg?.sort) {
               return 1;
