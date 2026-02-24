@@ -1,6 +1,97 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-24 04:36 (Session 22)
+## Latest Session: 2026-02-24 04:40 (Session 23)
+
+### Completed Features (56/405 - 13.8%)
+
+#### Feature #58: Sidebar navigation renders correctly ✅
+**Status:** PASSING
+**Implementation:**
+- Created comprehensive sidebar navigation component with collapsible functionality
+- Domain-grouped menu sections with 10 categories:
+  - Dashboard (Home)
+  - Production (Batches, Strains, Substrate Recipes, Phase Executions, Flush Cycles, Harvest Records)
+  - Facility (Rooms, Sensors, Sensor Readings, Environmental Targets, Environmental Alerts)
+  - Quality (Contamination Events, Mandatory Checks)
+  - Supply Chain (Suppliers, Supply Orders, Supply Order Lines, Customers, Sales Orders, Sales Order Lines)
+  - Inventory (Materials, Inventory Lots, Stock Movements, Batch Material Usage)
+  - Products
+  - Finance (Cost Records, Monthly Reports) - ADMIN/MANAGER only
+  - Tasks
+  - Administration (User Management, Metrics, Health, Configuration, Logs, API Docs) - ADMIN only
+- Each section has collapsible behavior with chevron indicators
+- All menu items use appropriate FontAwesome icons
+- Professional dark theme (#2c3e50 background) with hover effects
+- Active link highlighting with blue border
+- Toggle button to collapse/expand sidebar (260px ↔ 50px)
+- Smooth transitions for all interactions
+
+**Files Created:**
+- `sidebar.tsx` - Main sidebar component with React state management
+- `sidebar.scss` - Professional styling with dark theme and transitions
+
+**Files Modified:**
+- `app.tsx` - Integrated sidebar, added `with-sidebar` class for authenticated users
+- `app.scss` - Added margin-left adjustments when sidebar is present
+
+**Role-Based Access Control:**
+- Finance section: Only visible to ADMIN and MANAGER
+- Administration section: Only visible to ADMIN
+- All other sections: Visible to all authenticated users
+
+**Design Compliance:**
+- ✅ Follows app_spec.txt UI layout requirement for "Sidebar navigation (collapsible) with domain-grouped menus"
+- ✅ Uses JHipster default color palette (dark sidebar, blue active state)
+- ✅ Font Awesome icons throughout
+- ✅ Responsive with smooth animations
+
+**Verification (YOLO Mode):**
+- ✅ Frontend compiles successfully (webpack build passed)
+- ✅ TypeScript type checking passed
+- ✅ Only 1 pre-existing warning (not related to changes)
+- ✅ Proper React hooks usage
+- ✅ Redux selectors for authentication state
+
+#### Feature #59: Top navbar shows user info ✅
+**Status:** PASSING
+**Implementation:**
+- Updated AccountMenu component to display logged-in user's name and role
+- Shows format: "username (ROLE)" e.g., "admin (ADMIN)"
+- Uses Redux authentication state to get user info
+- Falls back to "Account" when not authenticated
+- Role extracted from authorities array (removes "ROLE_" prefix for display)
+
+**Files Modified:**
+- `account.tsx` - Added useAppSelector hook to read authentication state
+- Updated NavDropdown name prop to show dynamic user info
+
+**Display Logic:**
+```typescript
+const account = useAppSelector(state => state.authentication.account);
+const username = account?.login || 'Account';
+const role = account?.authorities?.[0] ? account.authorities[0].replace('ROLE_', '') : '';
+const displayName = isAuthenticated && account?.login ? `${username} ${role ? `(${role})` : ''}` : 'Account';
+```
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt: "Navbar displays logged-in user name and role"
+- ✅ User can see their identity and permissions at a glance
+- ✅ Dropdown still contains Settings, Password, Sign out links
+
+**Verification (YOLO Mode):**
+- ✅ Frontend compiles successfully
+- ✅ TypeScript types validated
+- ✅ Redux state properly accessed
+- ✅ No console errors
+
+**Git Commit:**
+```
+15dcd21 feat: implement sidebar navigation and user info display (features #58, #59)
+```
+
+---
+
+## Previous Session: 2026-02-24 04:36 (Session 22)
 
 ### Completed Features (54/405 - 13.3%)
 
