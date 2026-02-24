@@ -40,6 +40,14 @@ a {
       }
     }
   }
+
+  // Add sidebar margin when authenticated
+  &.with-sidebar {
+    .view-container {
+      margin-left: 260px;
+      transition: margin-left 0.3s ease;
+    }
+  }
 }
 
 .fullscreen {

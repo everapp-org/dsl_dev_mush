@@ -1,5 +1,6 @@
 import React from 'react';
 import MenuItem from 'app/shared/layout/menus/menu-item';
+import { useAppSelector } from 'app/config/store';
 
 import { NavDropdown } from './menu-components';
 
@@ -28,11 +29,19 @@ const accountMenuItems = () => (
   </>
 );
 
-export const AccountMenu = ({ isAuthenticated = false }) => (
-  <NavDropdown icon="user" name="Account" id="account-menu" data-cy="accountMenu">
-    {isAuthenticated && accountMenuItemsAuthenticated()}
-    {!isAuthenticated && accountMenuItems()}
-  </NavDropdown>
-);
+export const AccountMenu = ({ isAuthenticated = false }) => {
+  const account = useAppSelector(state => state.authentication.account);
+  const username = account?.login || 'Account';
+  const role = account?.authorities?.[0] ? account.authorities[0].replace('ROLE_', '') : '';
+
+  const displayName = isAuthenticated && account?.login ? `${username} ${role ? `(${role})` : ''}` : 'Account';
+
+  return (
+    <NavDropdown icon="user" name={displayName} id="account-menu" data-cy="accountMenu">
+      {isAuthenticated && accountMenuItemsAuthenticated()}
+      {!isAuthenticated && accountMenuItems()}
+    </NavDropdown>
+  );
+};
 
 export default AccountMenu;

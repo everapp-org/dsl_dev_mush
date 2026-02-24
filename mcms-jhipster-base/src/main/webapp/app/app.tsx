@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getSession } from 'app/shared/reducers/authentication';
 import { getProfile } from 'app/shared/reducers/application-profile';
 import Header from 'app/shared/layout/header/header';
+import Sidebar from 'app/shared/layout/sidebar/sidebar';
 import Footer from 'app/shared/layout/footer/footer';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import ErrorBoundary from 'app/shared/error/error-boundary';
@@ -36,7 +37,7 @@ export const App = () => {
   const paddingTop = '60px';
   return (
     <BrowserRouter basename={baseHref}>
-      <div className="app-container" style={{ paddingTop }}>
+      <div className={`app-container ${isAuthenticated ? 'with-sidebar' : ''}`} style={{ paddingTop }}>
         <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" />
         <ErrorBoundary>
           <Header
@@ -46,6 +47,9 @@ export const App = () => {
             isInProduction={isInProduction}
             isOpenAPIEnabled={isOpenAPIEnabled}
           />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <Sidebar isAuthenticated={isAuthenticated} />
         </ErrorBoundary>
         <div className="container-fluid view-container" id="app-view-container">
           <Card className="jh-card">
