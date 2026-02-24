@@ -20,6 +20,15 @@ export const StrainDetail = () => {
   }, []);
 
   const strainEntity = useAppSelector(state => state.strain.entity);
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+
+  const handleActivate = () => {
+    dispatch(activateStrain(id));
+  };
+
+  const handleDeactivate = () => {
+    dispatch(deactivateStrain(id));
+  };
   return (
     <Row>
       <Col md="8">
@@ -107,6 +116,20 @@ export const StrainDetail = () => {
         <Button tag={Link} to={`/strain/${strainEntity.id}/edit`} replace color="primary">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
+        {isAdmin && (
+          <>
+            &nbsp;
+            {strainEntity.active ? (
+              <Button onClick={handleDeactivate} color="warning" data-cy="entityDeactivateButton">
+                <FontAwesomeIcon icon="ban" /> <span className="d-none d-md-inline">Deactivate</span>
+              </Button>
+            ) : (
+              <Button onClick={handleActivate} color="success" data-cy="entityActivateButton">
+                <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Activate</span>
+              </Button>
+            )}
+          </>
+        )}
       </Col>
     </Row>
   );
