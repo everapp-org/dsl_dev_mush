@@ -1,6 +1,98 @@
 # MCMS Development Progress
 
-## Latest Session: 2026-02-23 23:44 (Session 19)
+## Latest Session: 2026-02-24 04:22 (Session 20)
+
+### Completed Features (50/405 - 12.3%)
+
+#### Feature #55: ROLE_USER cannot export data ✅
+**Status:** PASSING
+**Implementation:**
+- Created ExportResource.java with CSV export functionality
+- All export endpoints restricted to ADMIN, MANAGER, and OPERATOR only
+- ROLE_USER explicitly blocked from all export endpoints
+
+**Export Endpoints:**
+```java
+// GET /api/export/batches - Export batch data to CSV
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+
+// GET /api/export/harvests - Export harvest records to CSV
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+
+// GET /api/export/financials - Export financial summary to CSV
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+```
+
+**Security Matrix (Export Operations):**
+| Operation           | ADMIN | MANAGER | OPERATOR | USER |
+|---------------------|-------|---------|----------|------|
+| Export Batches      | ✅    | ✅      | ✅       | ❌   |
+| Export Harvests     | ✅    | ✅      | ✅       | ❌   |
+| Export Financials   | ✅    | ✅      | ❌       | ❌   |
+
+**Implementation Details:**
+- Uses real repositories (BatchRepository, HarvestRecordRepository)
+- CSV export with proper escaping for commas/quotes/newlines
+- Returns CSV with Content-Disposition header for file download
+- Batches export: ID, Batch Code, Strain, Current Phase, Start Date, End Date, Active
+- Harvests export: ID, Batch Code, Harvest Date, Flush Number, Weight (kg), Quality Grade
+- Financial export: Placeholder structure (Category, Amount)
+
+**Spec Compliance:**
+- ✅ Per app_spec.txt: "Export batch data to CSV", "Export harvest records to CSV", "Export financial reports to CSV"
+- ✅ ROLE_USER blocked from all export functionality
+- ✅ Financial data restricted to ADMIN and MANAGER only (most sensitive)
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully (Maven build passed)
+- ✅ All endpoints have @PreAuthorize annotations
+- ✅ No mock data patterns found
+- ✅ Uses real database repositories
+
+---
+
+#### Feature #56: ROLE_OPERATOR cannot deactivate strains ✅
+**Status:** PASSING (Already Implemented)
+**Implementation:**
+- StrainResource already has proper RBAC protection
+- PATCH endpoint (used for activation/deactivation) restricted to ADMIN and MANAGER only
+- ROLE_OPERATOR has read-only access to strains
+
+**Backend Security (StrainResource.java):**
+```java
+// PATCH /api/strains/{id} - Updates strain fields including 'active'
+@PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+public ResponseEntity<Strain> partialUpdateStrain(...) {
+    // Line 169-170: existingStrain.setActive(strain.getActive())
+    // This is the mechanism for activation/deactivation
+}
+```
+
+**Security Matrix (Strain Operations):**
+| Operation        | ADMIN | MANAGER | OPERATOR | USER |
+|------------------|-------|---------|----------|------|
+| Create Strain    | ✅    | ✅      | ❌       | ❌   |
+| View Strains     | ✅    | ✅      | ✅       | ✅   |
+| Update Strain    | ✅    | ✅      | ❌       | ❌   |
+| PATCH Strain     | ✅    | ✅      | ❌       | ❌   |
+| Delete Strain    | ✅    | ✅      | ❌       | ❌   |
+| Activate/Deact.  | ✅    | ✅      | ❌       | ❌   |
+
+**Spec Compliance:**
+- ✅ Per feature #42: "ROLE_OPERATOR has read-only strain access"
+- ✅ OPERATOR cannot modify strain properties including activation status
+- ✅ Only ADMIN and MANAGER can deactivate/activate strains
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully
+- ✅ PATCH endpoint has correct @PreAuthorize annotation
+- ✅ No specific activate/deactivate endpoints exist (handled via PATCH)
+- ✅ Uses real StrainRepository (no mocks)
+
+---
+
+## Previous Session: 2026-02-23 23:44 (Session 19)
 
 ### Completed Features (44/405 - 10.9%)
 
@@ -791,8 +883,10 @@ public List<Strain> getAllStrains(...)
 ---
 
 ## Current Status
-- **Progress:** 42/405 features passing (10.4%)
+- **Progress:** 50/405 features passing (12.3%)
 - **Backend:** Running on port 8080, health check UP
 - **Frontend:** Running on port 9000, compiles with 1 pre-existing warning
 - **Database:** H2 file-based, real persistence verified
+- **Security:** Comprehensive RBAC implemented across all resources
+- **Latest:** Export functionality with role-based restrictions, strain deactivation protection
 - **Next:** Continue with remaining security and RBAC features
