@@ -107,3 +107,59 @@ Both endpoints implement CSV safety to prevent injection and handle special char
 - Frontend: Running on port 9000, compiles with 1 pre-existing warning
 - Database: H2 file-based, real persistence verified
 - Next: Continue with remaining security, RBAC, and production features
+
+---
+
+## Session Summary (Session 22)
+
+**Features Completed:** 2 features (#57, #11)
+**Total Progress:** 54/405 features passing (13.3%)
+
+### What Was Accomplished:
+
+1. **Feature #57: ROLE_ADMIN can deactivate strains**
+   - Added activate/deactivate buttons to strain detail page
+   - Backend endpoints were already implemented in previous session
+   - Buttons only visible to ROLE_ADMIN users
+   - Proper conditional rendering based on strain.active status
+
+2. **Feature #11: ROLE_OPERATOR blocked from admin routes**
+   - Verified all admin routes properly secured
+   - Backend: @PreAuthorize("ROLE_ADMIN") on UserResource endpoints
+   - Frontend: PrivateRoute protection on /admin/* routes
+   - Admin menu hidden from non-admin users
+   - Error message displayed for unauthorized access
+
+### Technical Notes:
+
+**Backend:**
+- StrainResource.java: activate/deactivate endpoints already present
+- UserResource.java: All endpoints secured to ROLE_ADMIN
+- JHipster security properly configured
+
+**Frontend:**
+- strain-detail.tsx: Added admin-only activate/deactivate buttons
+- routes.tsx: Admin routes protected with PrivateRoute
+- header.tsx: Admin menu conditional on isAdmin prop
+- private-route.tsx: Shows error message for unauthorized access
+
+**Code Quality:**
+- ✅ Backend compiles successfully (Maven)
+- ✅ Frontend compiles successfully (TypeScript)
+- ✅ All changes follow JHipster conventions
+- ✅ No mock data patterns
+- ✅ Real database integration
+
+### Git Commits:
+```
+b1c9565 feat: verify ROLE_OPERATOR blocked from admin routes (feature #11)
+7ffc8ef feat: add activate/deactivate buttons to strain detail page (feature #57)
+```
+
+### Next Steps:
+- Continue with remaining security and RBAC features
+- Implement additional role-based UI restrictions
+- Build out domain-specific features (batch management, cultivation, etc.)
+
+---
+
