@@ -112,7 +112,6 @@ export const SupplierDetail = () => {
         <Button tag={Link} to={`/supplier/${supplierEntity.id}/edit`} replace color="primary">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
-
         {/* Order History Section */}
         <h3 className="mt-4">Order History</h3>
         {loadingOrders ? (
@@ -144,9 +143,7 @@ export const SupplierDetail = () => {
                   <td>
                     <Badge color={getStatusBadgeColor(order.status)}>{order.status}</Badge>
                   </td>
-                  <td>
-                    {order.totalAmount != null ? `${order.totalAmount.toFixed(2)} ${order.currency}` : 'N/A'}
-                  </td>
+                  <td>{order.totalAmount != null ? `${order.totalAmount.toFixed(2)} ${order.currency}` : 'N/A'}</td>
                   <td>
                     <Button tag={Link} to={`/supply-order/${order.id}`} color="info" size="sm">
                       <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
