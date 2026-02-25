@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane, Table, Alert } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { AUTHORITIES } from 'app/config/constants';
+import axios from 'axios';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -14,12 +15,64 @@ import { getEntity } from './batch.reducer';
 export const BatchDetail = () => {
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState('overview');
+  const [phaseExecutions, setPhaseExecutions] = useState([]);
+  const [flushCycles, setFlushCycles] = useState([]);
+  const [costRecords, setCostRecords] = useState([]);
+  const [materialUsages, setMaterialUsages] = useState([]);
+  const [contaminationEvents, setContaminationEvents] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
 
   const { id } = useParams<'id'>();
 
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
+
+  useEffect(() => {
+    if (id && activeTab !== 'overview') {
+      loadRelatedData();
+    }
+  }, [id, activeTab]);
+
+  const loadRelatedData = async () => {
+    if (!id) return;
+    setLoadingRelated(true);
+    try {
+      switch (activeTab) {
+        case 'phaseHistory': {
+          const phaseRes = await axios.get(`/api/phase-executions/by-batch/${id}`);
+          setPhaseExecutions(phaseRes.data);
+          break;
+        }
+        case 'harvests': {
+          const flushRes = await axios.get(`/api/flush-cycles/by-batch/${id}`);
+          setFlushCycles(flushRes.data);
+          break;
+        }
+        case 'costs': {
+          const costRes = await axios.get(`/api/cost-records/by-batch/${id}`);
+          setCostRecords(costRes.data);
+          break;
+        }
+        case 'materials': {
+          const materialRes = await axios.get(`/api/batch-material-usages/by-batch/${id}`);
+          setMaterialUsages(materialRes.data);
+          break;
+        }
+        case 'contamination': {
+          const contaminationRes = await axios.get(`/api/contamination-events/by-batch/${id}`);
+          setContaminationEvents(contaminationRes.data);
+          break;
+        }
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error('Error loading related data:', error);
+    } finally {
+      setLoadingRelated(false);
+    }
+  };
 
   const batchEntity = useAppSelector(state => state.batch.entity);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
@@ -130,6 +183,15 @@ export const BatchDetail = () => {
               Materials
             </NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink
+              className={activeTab === 'contamination' ? 'active' : ''}
+              onClick={() => toggleTab('contamination')}
+              style={{ cursor: 'pointer' }}
+            >
+              Contamination
+            </NavLink>
+          </NavItem>
         </Nav>
 
         <TabContent activeTab={activeTab} className="mt-3">
@@ -220,42 +282,229 @@ export const BatchDetail = () => {
 
           <TabPane tabId="phaseHistory">
             <h4>Phase Execution History</h4>
-            <p className="text-muted">
-              <em>Phase execution records will be displayed here.</em>
-            </p>
-            <div className="alert alert-info">
-              <FontAwesomeIcon icon="info-circle" /> Phase execution tracking shows the batch lifecycle through the 10-phase state machine.
-            </div>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : phaseExecutions.length > 0 ? (
+              <Table striped responsive>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Phase</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Duration (days)</th>
+                    <th>Room</th>
+                    <th>Responsible</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {phaseExecutions.map((phase: any, idx) => (
+                    <tr key={phase.id}>
+                      <td>{phase.sequenceOrder}</td>
+                      <td>{phase.phase}</td>
+                      <td>
+                        <TextFormat value={phase.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                      </td>
+                      <td>{phase.endDate ? <TextFormat value={phase.endDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}</td>
+                      <td>{phase.actualDurationDays || '-'}</td>
+                      <td>{phase.room ? phase.room.name : '-'}</td>
+                      <td>{phase.responsiblePerson || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <Alert color="info">
+                <FontAwesomeIcon icon="info-circle" /> No phase execution records found for this batch.
+              </Alert>
+            )}
           </TabPane>
 
           <TabPane tabId="harvests">
-            <h4>Harvest Records</h4>
-            <p className="text-muted">
-              <em>Harvest records for this batch will be displayed here.</em>
-            </p>
-            <div className="alert alert-info">
-              <FontAwesomeIcon icon="info-circle" /> Track flush cycles and harvest yields across the batch lifecycle.
-            </div>
+            <h4>Flush Cycles</h4>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : flushCycles.length > 0 ? (
+              <Table striped responsive>
+                <thead>
+                  <tr>
+                    <th>Flush #</th>
+                    <th>Harvest Start</th>
+                    <th>Harvest End</th>
+                    <th>Yield (kg)</th>
+                    <th>Bags Harvested</th>
+                    <th>Avg Fruit Weight (g)</th>
+                    <th>Rehydrated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {flushCycles.map((flush: any) => (
+                    <tr key={flush.id}>
+                      <td>{flush.flushNumber}</td>
+                      <td>
+                        {flush.harvestStartDate ? (
+                          <TextFormat value={flush.harvestStartDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                      <td>
+                        {flush.harvestEndDate ? <TextFormat value={flush.harvestEndDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}
+                      </td>
+                      <td>{flush.yieldKg || '-'}</td>
+                      <td>{flush.yieldBagsHarvested || '-'}</td>
+                      <td>{flush.avgFruitBodyWeightG || '-'}</td>
+                      <td>{flush.rehydrationDone ? 'Yes' : 'No'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <Alert color="info">
+                <FontAwesomeIcon icon="info-circle" /> No flush cycles found for this batch.
+              </Alert>
+            )}
           </TabPane>
 
           <TabPane tabId="costs">
-            <h4>Cost Analysis</h4>
-            <p className="text-muted">
-              <em>Cost breakdown and financial analysis will be displayed here.</em>
-            </p>
-            <div className="alert alert-info">
-              <FontAwesomeIcon icon="info-circle" /> Material costs, labor, overhead, and profitability metrics for this batch.
-            </div>
+            <h4>Cost Records</h4>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : costRecords.length > 0 ? (
+              <>
+                <Table striped responsive>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Category</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Currency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {costRecords.map((cost: any) => (
+                      <tr key={cost.id}>
+                        <td>
+                          <TextFormat value={cost.recordDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                        </td>
+                        <td>{cost.category}</td>
+                        <td>{cost.description || '-'}</td>
+                        <td className="text-end">{cost.amount}</td>
+                        <td>{cost.currency}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="table-active">
+                      <td colSpan={3} className="text-end">
+                        <strong>Total:</strong>
+                      </td>
+                      <td className="text-end">
+                        <strong>{costRecords.reduce((sum: number, cost: any) => sum + (cost.amount || 0), 0).toFixed(2)}</strong>
+                      </td>
+                      <td>{costRecords[0]?.currency || ''}</td>
+                    </tr>
+                  </tfoot>
+                </Table>
+              </>
+            ) : (
+              <Alert color="info">
+                <FontAwesomeIcon icon="info-circle" /> No cost records found for this batch.
+              </Alert>
+            )}
           </TabPane>
 
           <TabPane tabId="materials">
-            <h4>Materials Used</h4>
-            <p className="text-muted">
-              <em>Material consumption and inventory tracking will be displayed here.</em>
-            </p>
-            <div className="alert alert-info">
-              <FontAwesomeIcon icon="info-circle" /> Substrate materials, spawn, supplements, and other consumables used in this batch.
-            </div>
+            <h4>Material Usage</h4>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : materialUsages.length > 0 ? (
+              <Table striped responsive>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Material</th>
+                    <th>Quantity Used</th>
+                    <th>Unit</th>
+                    <th>Purpose</th>
+                    <th>Lot</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {materialUsages.map((usage: any) => (
+                    <tr key={usage.id}>
+                      <td>
+                        <TextFormat value={usage.usageDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                      </td>
+                      <td>{usage.material ? usage.material.name : '-'}</td>
+                      <td>{usage.quantityUsed}</td>
+                      <td>{usage.unit}</td>
+                      <td>{usage.purpose || '-'}</td>
+                      <td>{usage.inventoryLot ? usage.inventoryLot.lotCode : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <Alert color="info">
+                <FontAwesomeIcon icon="info-circle" /> No material usage records found for this batch.
+              </Alert>
+            )}
+          </TabPane>
+
+          <TabPane tabId="contamination">
+            <h4>Contamination Events</h4>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : contaminationEvents.length > 0 ? (
+              <Table striped responsive>
+                <thead>
+                  <tr>
+                    <th>Detected Date</th>
+                    <th>Type</th>
+                    <th>Severity</th>
+                    <th>Affected Bags</th>
+                    <th>Loss (kg)</th>
+                    <th>Action Taken</th>
+                    <th>Resolved</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contaminationEvents.map((event: any) => (
+                    <tr key={event.id}>
+                      <td>
+                        <TextFormat value={event.detectedDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                      </td>
+                      <td>{event.type}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            event.severity === 'CRITICAL'
+                              ? 'bg-danger'
+                              : event.severity === 'HIGH'
+                                ? 'bg-warning'
+                                : event.severity === 'MEDIUM'
+                                  ? 'bg-info'
+                                  : 'bg-secondary'
+                          }`}
+                        >
+                          {event.severity}
+                        </span>
+                      </td>
+                      <td>{event.affectedBags || '-'}</td>
+                      <td>{event.lossKg || '-'}</td>
+                      <td>{event.actionTaken || '-'}</td>
+                      <td>{event.resolvedDate ? 'Yes' : 'No'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <Alert color="success">
+                <FontAwesomeIcon icon="check-circle" /> No contamination events recorded for this batch.
+              </Alert>
+            )}
           </TabPane>
         </TabContent>
       </Col>

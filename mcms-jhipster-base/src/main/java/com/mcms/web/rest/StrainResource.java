@@ -1,6 +1,8 @@
 package com.mcms.web.rest;
 
+import com.mcms.domain.Batch;
 import com.mcms.domain.Strain;
+import com.mcms.repository.BatchRepository;
 import com.mcms.repository.StrainRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +39,11 @@ public class StrainResource {
     private String applicationName;
 
     private final StrainRepository strainRepository;
+    private final BatchRepository batchRepository;
 
-    public StrainResource(StrainRepository strainRepository) {
+    public StrainResource(StrainRepository strainRepository, BatchRepository batchRepository) {
         this.strainRepository = strainRepository;
+        this.batchRepository = batchRepository;
     }
 
     /**
@@ -268,5 +273,18 @@ public class StrainResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, strain.getId().toString()))
             .body(strain);
+    }
+
+    /**
+     * {@code GET  /strains/:id/batches} : get all batches using this strain.
+     *
+     * @param id the id of the strain.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of batches in body.
+     */
+    @GetMapping("/{id}/batches")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<Batch> getBatchesByStrain(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get Batches by Strain : {}", id);
+        return batchRepository.findAllWithFilters(null, id, null, null, null, Pageable.unpaged()).getContent();
     }
 }
