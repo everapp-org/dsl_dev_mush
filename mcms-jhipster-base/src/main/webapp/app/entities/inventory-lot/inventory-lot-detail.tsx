@@ -86,9 +86,23 @@ export const InventoryLotDetail = () => {
           </dt>
           <dd>{inventoryLotEntity.note}</dd>
           <dt>Material</dt>
-          <dd>{inventoryLotEntity.material ? inventoryLotEntity.material.name : ''}</dd>
+          <dd>
+            {inventoryLotEntity.material ? (
+              <Link to={`/material/${inventoryLotEntity.material.id}`}>{inventoryLotEntity.material.name}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
           <dt>Supply Order Line</dt>
-          <dd>{inventoryLotEntity.supplyOrderLine ? inventoryLotEntity.supplyOrderLine.id : ''}</dd>
+          <dd>
+            {inventoryLotEntity.supplyOrderLine ? (
+              <Link to={`/supply-order-line/${inventoryLotEntity.supplyOrderLine.id}`}>
+                {inventoryLotEntity.supplyOrderLine.id}
+              </Link>
+            ) : (
+              ''
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/inventory-lot" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

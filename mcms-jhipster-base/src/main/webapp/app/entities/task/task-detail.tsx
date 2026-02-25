@@ -98,9 +98,13 @@ export const TaskDetail = () => {
           </dt>
           <dd>{taskEntity.note}</dd>
           <dt>Batch</dt>
-          <dd>{taskEntity.batch ? taskEntity.batch.batchCode : ''}</dd>
+          <dd>
+            {taskEntity.batch ? <Link to={`/batch/${taskEntity.batch.id}`}>{taskEntity.batch.batchCode}</Link> : ''}
+          </dd>
           <dt>Room</dt>
-          <dd>{taskEntity.room ? taskEntity.room.name : ''}</dd>
+          <dd>
+            {taskEntity.room ? <Link to={`/room/${taskEntity.room.id}`}>{taskEntity.room.name}</Link> : ''}
+          </dd>
         </dl>
         <Button tag={Link} to="/task" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

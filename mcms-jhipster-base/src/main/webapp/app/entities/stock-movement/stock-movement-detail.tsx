@@ -72,9 +72,23 @@ export const StockMovementDetail = () => {
           </dt>
           <dd>{stockMovementEntity.note}</dd>
           <dt>Inventory Lot</dt>
-          <dd>{stockMovementEntity.inventoryLot ? stockMovementEntity.inventoryLot.lotCode : ''}</dd>
+          <dd>
+            {stockMovementEntity.inventoryLot ? (
+              <Link to={`/inventory-lot/${stockMovementEntity.inventoryLot.id}`}>
+                {stockMovementEntity.inventoryLot.lotCode}
+              </Link>
+            ) : (
+              ''
+            )}
+          </dd>
           <dt>Batch</dt>
-          <dd>{stockMovementEntity.batch ? stockMovementEntity.batch.batchCode : ''}</dd>
+          <dd>
+            {stockMovementEntity.batch ? (
+              <Link to={`/batch/${stockMovementEntity.batch.id}`}>{stockMovementEntity.batch.batchCode}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/stock-movement" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
