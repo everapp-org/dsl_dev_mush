@@ -19,10 +19,29 @@ const apiUrl = 'api/batches';
 
 // Actions
 
+export interface IQueryParamsWithFilters extends IQueryParams {
+  phase?: string;
+  strainId?: number;
+  isActive?: boolean;
+  startDateFrom?: string;
+  startDateTo?: string;
+}
+
 export const getEntities = createAsyncThunk(
   'batch/fetch_entity_list',
-  async ({ page, size, sort }: IQueryParams) => {
-    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}${page !== undefined ? `page=${page}&` : ''}${size !== undefined ? `size=${size}&` : ''}cacheBuster=${new Date().getTime()}`;
+  async ({ page, size, sort, phase, strainId, isActive, startDateFrom, startDateTo }: IQueryParamsWithFilters) => {
+    const params = new URLSearchParams();
+    if (sort) params.append('sort', sort);
+    if (page !== undefined) params.append('page', page.toString());
+    if (size !== undefined) params.append('size', size.toString());
+    if (phase) params.append('phase', phase);
+    if (strainId !== undefined) params.append('strainId', strainId.toString());
+    if (isActive !== undefined) params.append('isActive', isActive.toString());
+    if (startDateFrom) params.append('startDateFrom', startDateFrom);
+    if (startDateTo) params.append('startDateTo', startDateTo);
+    params.append('cacheBuster', new Date().getTime().toString());
+
+    const requestUrl = `${apiUrl}?${params.toString()}`;
     return axios.get<IBatch[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },

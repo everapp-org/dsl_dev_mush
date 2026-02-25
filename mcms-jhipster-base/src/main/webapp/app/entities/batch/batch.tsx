@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Input } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -49,7 +49,7 @@ export const Batch = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.itemsPerPage]);
 
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
@@ -82,6 +82,15 @@ export const Batch = () => {
 
   const handleSyncList = () => {
     sortEntities();
+  };
+
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSize = parseInt(event.target.value, 10);
+    setPaginationState({
+      ...paginationState,
+      itemsPerPage: newSize,
+      activePage: 1, // Reset to first page when changing page size
+    });
   };
 
   const getSortIconByFieldName = (fieldName: string) => {
@@ -224,8 +233,22 @@ export const Batch = () => {
       </div>
       {totalItems ? (
         <div className={batchList && batchList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
+          <div className="justify-content-center d-flex align-items-center">
             <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
+            <div className="ms-3">
+              <span className="me-2">Items per page:</span>
+              <Input
+                type="select"
+                value={paginationState.itemsPerPage}
+                onChange={handlePageSizeChange}
+                style={{ width: 'auto', display: 'inline-block' }}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </Input>
+            </div>
           </div>
           <div className="justify-content-center d-flex">
             <JhiPagination

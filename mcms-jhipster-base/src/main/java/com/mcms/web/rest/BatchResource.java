@@ -229,15 +229,32 @@ public class BatchResource {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public ResponseEntity<List<Batch>> getAllBatches(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @RequestParam(name = "phase", required = false) String phase,
+        @RequestParam(name = "strainId", required = false) Long strainId,
+        @RequestParam(name = "isActive", required = false) Boolean isActive,
+        @RequestParam(name = "startDateFrom", required = false) LocalDate startDateFrom,
+        @RequestParam(name = "startDateTo", required = false) LocalDate startDateTo
     ) {
-        LOG.debug("REST request to get a page of Batches");
+        LOG.debug("REST request to get a page of Batches with filters: phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}",
+            phase, strainId, isActive, startDateFrom, startDateTo);
+
         Page<Batch> page;
-        if (eagerload) {
+
+        // Check if any filters are applied
+        boolean hasFilters = phase != null || strainId != null || isActive != null || startDateFrom != null || startDateTo != null;
+
+        if (hasFilters) {
+            // Use filtered query
+            page = batchRepository.findAllWithFilters(phase, strainId, isActive, startDateFrom, startDateTo, pageable);
+        } else if (eagerload) {
+            // Use eager loading without filters
             page = batchRepository.findAllWithEagerRelationships(pageable);
         } else {
+            // Simple query without filters or eager loading
             page = batchRepository.findAll(pageable);
         }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
