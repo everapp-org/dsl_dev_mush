@@ -1,6 +1,7 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.Supplier;
+import com.mcms.domain.SupplyOrder;
 import com.mcms.repository.SupplierRepository;
 import com.mcms.repository.SupplyOrderRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
@@ -211,5 +212,18 @@ public class SupplierResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /suppliers/:id/supply-orders} : get all supply orders for this supplier.
+     *
+     * @param id the id of the supplier.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of supply orders in body.
+     */
+    @GetMapping("/{id}/supply-orders")
+    public ResponseEntity<List<SupplyOrder>> getSupplyOrdersForSupplier(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get SupplyOrders for Supplier : {}", id);
+        List<SupplyOrder> supplyOrders = supplyOrderRepository.findBySupplierId(id);
+        return ResponseEntity.ok().body(supplyOrders);
     }
 }

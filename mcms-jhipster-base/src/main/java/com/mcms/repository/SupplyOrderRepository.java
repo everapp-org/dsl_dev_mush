@@ -40,4 +40,7 @@ public interface SupplyOrderRepository extends JpaRepository<SupplyOrder, Long> 
 
     @Query("select count(supplyOrder) > 0 from SupplyOrder supplyOrder where supplyOrder.supplier.id = :supplierId")
     boolean existsBySupplierId(@Param("supplierId") Long supplierId);
+
+    @Query("select supplyOrder from SupplyOrder supplyOrder left join fetch supplyOrder.supplier where supplyOrder.supplier.id = :supplierId")
+    List<SupplyOrder> findBySupplierId(@Param("supplierId") Long supplierId);
 }
