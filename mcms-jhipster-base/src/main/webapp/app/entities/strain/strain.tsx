@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Input } from 'reactstrap';
 import { getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +19,7 @@ export const Strain = () => {
   const navigate = useNavigate();
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+  const [searchTerm, setSearchTerm] = useState('');
 
   const strainList = useAppSelector(state => state.strain.entities);
   const loading = useAppSelector(state => state.strain.loading);
@@ -28,6 +29,7 @@ export const Strain = () => {
     dispatch(
       getEntities({
         sort: `${sortState.sort},${sortState.order}`,
+        query: searchTerm,
       }),
     );
   };
@@ -42,7 +44,7 @@ export const Strain = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [sortState.order, sortState.sort]);
+  }, [sortState.order, sortState.sort, searchTerm]);
 
   const sort = p => () => {
     setSortState({
@@ -87,6 +89,15 @@ export const Strain = () => {
           </Link>
         </div>
       </h2>
+      <div className="mb-3">
+        <Input
+          type="text"
+          placeholder="Search by name, species, or variety..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          data-cy="strainSearchInput"
+        />
+      </div>
       <div className="table-responsive">
         {strainList && strainList.length > 0 ? (
           <Table responsive>

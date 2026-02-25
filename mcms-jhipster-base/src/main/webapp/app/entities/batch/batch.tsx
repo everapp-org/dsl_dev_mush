@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input } from 'reactstrap';
+import { Button, Table, Input, Spinner } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -119,7 +119,13 @@ export const Batch = () => {
         </div>
       </h2>
       <div className="table-responsive">
-        {batchList && batchList.length > 0 ? (
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}>
+              Loading...
+            </Spinner>
+          </div>
+        ) : batchList && batchList.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>

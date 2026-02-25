@@ -20,8 +20,8 @@ const apiUrl = 'api/strains';
 
 export const getEntities = createAsyncThunk(
   'strain/fetch_entity_list',
-  async ({ sort }: IQueryParams) => {
-    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+  async ({ sort, query }: IQueryParams) => {
+    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}${query ? `search=${query}&` : ''}cacheBuster=${new Date().getTime()}`;
     return axios.get<IStrain[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },

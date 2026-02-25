@@ -183,12 +183,16 @@ public class StrainResource {
     /**
      * {@code GET  /strains} : get all the strains.
      *
+     * @param search optional search term to filter strains by name, species, or variety
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of strains in body.
      */
     @GetMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
-    public List<Strain> getAllStrains() {
-        LOG.debug("REST request to get all Strains");
+    public List<Strain> getAllStrains(@RequestParam(required = false) String search) {
+        LOG.debug("REST request to get all Strains with search term: {}", search);
+        if (search != null && !search.trim().isEmpty()) {
+            return strainRepository.searchStrains(search.trim());
+        }
         return strainRepository.findAll();
     }
 
