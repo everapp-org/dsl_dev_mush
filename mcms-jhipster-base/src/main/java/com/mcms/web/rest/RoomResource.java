@@ -1,6 +1,8 @@
 package com.mcms.web.rest;
 
+import com.mcms.domain.Batch;
 import com.mcms.domain.Room;
+import com.mcms.repository.PhaseExecutionRepository;
 import com.mcms.repository.RoomRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -10,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,9 +39,11 @@ public class RoomResource {
     private String applicationName;
 
     private final RoomRepository roomRepository;
+    private final PhaseExecutionRepository phaseExecutionRepository;
 
-    public RoomResource(RoomRepository roomRepository) {
+    public RoomResource(RoomRepository roomRepository, PhaseExecutionRepository phaseExecutionRepository) {
         this.roomRepository = roomRepository;
+        this.phaseExecutionRepository = phaseExecutionRepository;
     }
 
     /**
@@ -209,5 +214,27 @@ public class RoomResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /rooms/:id/batches} : get all batches currently in the room.
+     *
+     * @param id the id of the room.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of batches in body.
+     */
+    @GetMapping("/{id}/batches")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<Batch> getBatchesInRoom(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get Batches in Room : {}", id);
+        // Find all phase executions for this room where endDate is null (ongoing phases)
+        List<Batch> batches = phaseExecutionRepository
+            .findAllWithEagerRelationships()
+            .stream()
+            .filter(pe -> pe.getRoom() != null && pe.getRoom().getId().equals(id))
+            .filter(pe -> pe.getEndDate() == null) // Only ongoing phases
+            .map(pe -> pe.getBatch())
+            .distinct()
+            .collect(Collectors.toList());
+        return batches;
     }
 }

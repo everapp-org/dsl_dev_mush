@@ -4,14 +4,20 @@ import { ASC } from 'app/shared/util/pagination.constants';
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IRoom, defaultValue } from 'app/shared/model/room.model';
+import { IBatch } from 'app/shared/model/batch.model';
 
-const initialState: EntityState<IRoom> = {
+interface RoomState extends EntityState<IRoom> {
+  batchesInRoom: IBatch[];
+}
+
+const initialState: RoomState = {
   loading: false,
   errorMessage: null,
   entities: [],
   entity: defaultValue,
   updating: false,
   updateSuccess: false,
+  batchesInRoom: [],
 };
 
 const apiUrl = 'api/rooms';
@@ -77,6 +83,15 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getBatchesInRoom = createAsyncThunk(
+  'room/fetch_batches_in_room',
+  async (id: string | number) => {
+    const requestUrl = `${apiUrl}/${id}/batches`;
+    return axios.get<IBatch[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const RoomSlice = createEntitySlice({
@@ -92,6 +107,10 @@ export const RoomSlice = createEntitySlice({
         state.updating = false;
         state.updateSuccess = true;
         state.entity = {};
+      })
+      .addCase(getBatchesInRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        state.batchesInRoom = action.payload.data;
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data } = action.payload;
@@ -115,7 +134,7 @@ export const RoomSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity), state => {
+      .addMatcher(isPending(getEntities, getEntity, getBatchesInRoom), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

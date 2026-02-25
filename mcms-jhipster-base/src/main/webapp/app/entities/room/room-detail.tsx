@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,7 +8,7 @@ import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntity } from './room.reducer';
+import { getEntity, getBatchesInRoom } from './room.reducer';
 
 export const RoomDetail = () => {
   const dispatch = useAppDispatch();
@@ -17,9 +17,11 @@ export const RoomDetail = () => {
 
   useEffect(() => {
     dispatch(getEntity(id));
+    dispatch(getBatchesInRoom(id));
   }, []);
 
   const roomEntity = useAppSelector(state => state.room.entity);
+  const batchesInRoom = useAppSelector(state => state.room.batchesInRoom);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
 
   return (
@@ -90,6 +92,50 @@ export const RoomDetail = () => {
           </dt>
           <dd>{roomEntity.note}</dd>
         </dl>
+
+        <h3 className="mt-4">Current Occupancy</h3>
+        {batchesInRoom && batchesInRoom.length > 0 ? (
+          <>
+            <p>
+              <strong>Batches in Room:</strong> {batchesInRoom.length} / Capacity: {roomEntity.capacityBags || 'N/A'} bags
+            </p>
+            <Table responsive striped>
+              <thead>
+                <tr>
+                  <th>Batch Code</th>
+                  <th>Strain</th>
+                  <th>Current Phase</th>
+                  <th>Start Date</th>
+                  <th>Bag Count</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {batchesInRoom.map(batch => (
+                  <tr key={batch.id}>
+                    <td>
+                      <Link to={`/batch/${batch.id}`}>{batch.batchCode}</Link>
+                    </td>
+                    <td>{batch.strain ? batch.strain.name : ''}</td>
+                    <td>{batch.currentPhase}</td>
+                    <td>
+                      {batch.startDate ? <TextFormat value={batch.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
+                    </td>
+                    <td>{batch.numberOfBags}</td>
+                    <td>
+                      <Button tag={Link} to={`/batch/${batch.id}`} color="info" size="sm">
+                        <FontAwesomeIcon icon="eye" /> View
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        ) : (
+          <p className="text-muted">No batches currently in this room.</p>
+        )}
+
         <Button tag={Link} to="/room" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
