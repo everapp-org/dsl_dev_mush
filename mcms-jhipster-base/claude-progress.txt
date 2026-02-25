@@ -722,3 +722,102 @@ The enhanced empty state provides better UX than simple warning messages:
 - Bootstrap alert-info for visual consistency
 - Can be reused across other entity lists
 
+
+---
+
+## Session: 2026-02-25 16:18 (Session 31)
+
+### Completed Features (79/405 - 19.5%)
+
+#### Feature #85: Customer detail shows order history ✅
+**Status:** PASSING
+**Implementation:**
+- Added GET /api/customers/{id}/sales-orders endpoint to CustomerResource
+- Backend: Added findByCustomerId query to SalesOrderRepository
+- Orders fetched with eager customer relationship loading
+- Orders sorted by order date descending (most recent first)
+- Frontend: Updated customer-detail.tsx to fetch and display sales orders
+- Shows order history table with:
+  - Order code (clickable link to sales order detail)
+  - Order date (formatted with TextFormat)
+  - Status badge (color-coded: green for DELIVERED, blue for ORDERED, yellow for others)
+  - Payment status badge (green for PAID, red for UNPAID, yellow for others)
+  - Total revenue with currency
+  - View button for each order
+- Displays total revenue calculation summing all customer orders
+- Shows empty state message when customer has no orders
+- Loading spinner while fetching data
+
+**Spec Compliance:**
+- ✅ Per feature requirement: Customer detail lists all sales orders
+- ✅ Shows order history section
+- ✅ Sales orders displayed in table
+- ✅ Total revenue calculated and displayed
+- ✅ Orders are clickable links to sales order detail
+- ✅ Real database queries via SalesOrderRepository
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully
+- ✅ Frontend compiles successfully
+- ✅ Backend API responds (HTTP 401 expected without auth)
+- ✅ No mock data patterns found
+
+---
+
+#### Feature #86: Product detail shows linked strain ✅
+**Status:** PASSING
+**Implementation:**
+- Updated product-detail.tsx to make strain name a clickable link
+- Strain name now displays as `<Link to={`/strain/${productEntity.strain.id}`}>`
+- Links to strain detail page showing full strain information
+- Maintains existing strain display when present
+- Shows empty string when no strain associated
+
+**Spec Compliance:**
+- ✅ Per feature requirement: Product detail shows associated strain info
+- ✅ Strain name displayed
+- ✅ Strain is a clickable link
+- ✅ Navigates to strain detail page
+- ✅ Real database via Product->Strain FK relationship
+
+**Additional Fixes:**
+- Fixed TypeScript issue in supplier-detail.tsx with TextFormat component
+- Applied same Dayjs type casting pattern as customer-detail and substrate-recipe-detail
+- Ensures consistent date formatting across all detail pages
+
+**Verification (YOLO Mode):**
+- ✅ Frontend compiles successfully
+- ✅ No TypeScript errors
+- ✅ No mock data patterns found
+- ✅ Real database via ProductRepository
+
+---
+
+## Current Status
+- **Progress:** 79/405 features passing (19.5%)
+- **Backend:** Running on port 8080, responds to API calls
+- **Frontend:** Running on port 9000, compiles successfully
+- **Database:** H2 file-based, real persistence verified
+- **Latest:** Navigation integrity features - customer order history and product strain linking
+- **Next:** Continue with remaining navigation and data integrity features
+
+## Technical Notes
+
+**TypeScript Date Handling Pattern:**
+Throughout the session, we established a consistent pattern for handling Dayjs dates with TextFormat component:
+```tsx
+<TextFormat type="date" value={dateField as unknown as string} format={APP_LOCAL_DATE_FORMAT} />
+```
+
+This pattern was applied to:
+- customer-detail.tsx (order dates)
+- substrate-recipe-detail.tsx (batch start dates)
+- supplier-detail.tsx (order dates)
+
+**Backend Endpoint Pattern:**
+Established pattern for related entity endpoints:
+- GET /api/{parent-entity}/{id}/{related-entity-plural}
+- Example: GET /api/customers/1/sales-orders
+- Returns list of related entities with eager loading
+- Validates parent entity exists before query
+
