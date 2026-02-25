@@ -110,7 +110,7 @@ export const RoomSlice = createEntitySlice({
       })
       .addCase(getBatchesInRoom.fulfilled, (state, action) => {
         state.loading = false;
-        const roomState = state as RoomState;
+        const roomState = state as unknown as RoomState;
         roomState.batchesInRoom = action.payload.data;
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {

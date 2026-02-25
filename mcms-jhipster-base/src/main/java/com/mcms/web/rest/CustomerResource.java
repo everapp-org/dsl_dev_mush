@@ -1,6 +1,7 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.Customer;
+import com.mcms.domain.SalesOrder;
 import com.mcms.repository.CustomerRepository;
 import com.mcms.repository.SalesOrderRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
@@ -186,6 +187,25 @@ public class CustomerResource {
         LOG.debug("REST request to get Customer : {}", id);
         Optional<Customer> customer = customerRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(customer);
+    }
+
+    /**
+     * {@code GET  /customers/:id/sales-orders} : get all sales orders for a customer.
+     *
+     * @param id the id of the customer to retrieve sales orders for.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of sales orders in body.
+     */
+    @GetMapping("/{id}/sales-orders")
+    public ResponseEntity<List<SalesOrder>> getCustomerSalesOrders(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get sales orders for Customer : {}", id);
+
+        // Verify customer exists
+        if (!customerRepository.existsById(id)) {
+            throw new BadRequestAlertException("Customer not found", ENTITY_NAME, "idnotfound");
+        }
+
+        List<SalesOrder> salesOrders = salesOrderRepository.findByCustomerId(id);
+        return ResponseEntity.ok().body(salesOrders);
     }
 
     /**

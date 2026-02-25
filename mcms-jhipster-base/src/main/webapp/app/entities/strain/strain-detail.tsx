@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { AUTHORITIES } from 'app/config/constants';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntity, activateStrain, deactivateStrain } from './strain.reducer';
+import { getEntity, activateStrain, deactivateStrain, getBatchesByStrain } from './strain.reducer';
 
 export const StrainDetail = () => {
   const dispatch = useAppDispatch();
@@ -17,9 +17,11 @@ export const StrainDetail = () => {
 
   useEffect(() => {
     dispatch(getEntity(id));
+    dispatch(getBatchesByStrain(id));
   }, []);
 
   const strainEntity = useAppSelector(state => state.strain.entity);
+  const relatedBatches = useAppSelector(state => state.strain.batchesForStrain);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
 
   const handleActivate = () => {
@@ -109,6 +111,41 @@ export const StrainDetail = () => {
           </dt>
           <dd>{strainEntity.active ? 'true' : 'false'}</dd>
         </dl>
+        <h3 className="mt-4">Related Batches</h3>
+        {relatedBatches && relatedBatches.length > 0 ? (
+          <Table responsive>
+            <thead>
+              <tr>
+                <th>Batch Code</th>
+                <th>Start Date</th>
+                <th>Current Phase</th>
+                <th>Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {relatedBatches.map(batch => (
+                <tr key={batch.id}>
+                  <td>
+                    <Link to={`/batch/${batch.id}`}>{batch.batchCode}</Link>
+                  </td>
+                  <td>{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : ''}</td>
+                  <td>{batch.currentPhase}</td>
+                  <td>{batch.isActive ? 'Yes' : 'No'}</td>
+                  <td>
+                    <Button tag={Link} to={`/batch/${batch.id}`} color="primary" size="sm">
+                      <FontAwesomeIcon icon="eye" /> View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <div className="alert alert-warning">
+            <p>No batches found using this strain.</p>
+          </div>
+        )}
         <Button tag={Link} to="/strain" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>

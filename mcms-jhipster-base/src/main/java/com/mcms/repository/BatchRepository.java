@@ -62,4 +62,7 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         @Param("startDateTo") java.time.LocalDate startDateTo,
         Pageable pageable
     );
+
+    @Query("select batch from Batch batch left join fetch batch.strain left join fetch batch.recipe where batch.recipe.id = :recipeId")
+    List<Batch> findByRecipeId(@Param("recipeId") Long recipeId);
 }

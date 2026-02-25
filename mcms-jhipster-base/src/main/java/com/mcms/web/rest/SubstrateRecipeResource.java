@@ -1,6 +1,8 @@
 package com.mcms.web.rest;
 
+import com.mcms.domain.Batch;
 import com.mcms.domain.SubstrateRecipe;
+import com.mcms.repository.BatchRepository;
 import com.mcms.repository.SubstrateRecipeRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -36,9 +38,11 @@ public class SubstrateRecipeResource {
     private String applicationName;
 
     private final SubstrateRecipeRepository substrateRecipeRepository;
+    private final BatchRepository batchRepository;
 
-    public SubstrateRecipeResource(SubstrateRecipeRepository substrateRecipeRepository) {
+    public SubstrateRecipeResource(SubstrateRecipeRepository substrateRecipeRepository, BatchRepository batchRepository) {
         this.substrateRecipeRepository = substrateRecipeRepository;
+        this.batchRepository = batchRepository;
     }
 
     /**
@@ -206,5 +210,19 @@ public class SubstrateRecipeResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /substrate-recipes/:id/batches} : get all batches using this recipe.
+     *
+     * @param id the id of the substrateRecipe.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of batches in body.
+     */
+    @GetMapping("/{id}/batches")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public ResponseEntity<List<Batch>> getBatchesForRecipe(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get Batches for SubstrateRecipe : {}", id);
+        List<Batch> batches = batchRepository.findByRecipeId(id);
+        return ResponseEntity.ok().body(batches);
     }
 }

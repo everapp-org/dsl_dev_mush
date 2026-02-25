@@ -349,7 +349,11 @@ export const BatchDetail = () => {
                         )}
                       </td>
                       <td>
-                        {flush.harvestEndDate ? <TextFormat value={flush.harvestEndDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}
+                        {flush.harvestEndDate ? (
+                          <TextFormat value={flush.harvestEndDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                        ) : (
+                          '-'
+                        )}
                       </td>
                       <td>{flush.yieldKg || '-'}</td>
                       <td>{flush.yieldBagsHarvested || '-'}</td>

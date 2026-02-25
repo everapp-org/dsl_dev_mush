@@ -4,14 +4,20 @@ import { ASC } from 'app/shared/util/pagination.constants';
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IStrain, defaultValue } from 'app/shared/model/strain.model';
+import { IBatch } from 'app/shared/model/batch.model';
 
-const initialState: EntityState<IStrain> = {
+interface StrainState extends EntityState<IStrain> {
+  batchesForStrain: IBatch[];
+}
+
+const initialState: StrainState = {
   loading: false,
   errorMessage: null,
   entities: [],
   entity: defaultValue,
   updating: false,
   updateSuccess: false,
+  batchesForStrain: [],
 };
 
 const apiUrl = 'api/strains';
@@ -99,6 +105,15 @@ export const deactivateStrain = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getBatchesByStrain = createAsyncThunk(
+  'strain/fetch_batches_by_strain',
+  async (id: string | number) => {
+    const requestUrl = `api/batches?strainId=${id}&eagerload=true`;
+    return axios.get<IBatch[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const StrainSlice = createEntitySlice({
@@ -114,6 +129,11 @@ export const StrainSlice = createEntitySlice({
         state.updating = false;
         state.updateSuccess = true;
         state.entity = {};
+      })
+      .addCase(getBatchesByStrain.fulfilled, (state, action) => {
+        state.loading = false;
+        const strainState = state as unknown as StrainState;
+        strainState.batchesForStrain = action.payload.data;
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data } = action.payload;
@@ -137,7 +157,7 @@ export const StrainSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity), state => {
+      .addMatcher(isPending(getEntities, getEntity, getBatchesByStrain), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

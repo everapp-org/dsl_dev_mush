@@ -40,4 +40,7 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long> {
 
     @Query("select count(salesOrder) > 0 from SalesOrder salesOrder where salesOrder.customer.id = :customerId")
     boolean existsByCustomerId(@Param("customerId") Long customerId);
+
+    @Query("select salesOrder from SalesOrder salesOrder left join fetch salesOrder.customer where salesOrder.customer.id = :customerId order by salesOrder.orderDate desc")
+    List<SalesOrder> findByCustomerId(@Param("customerId") Long customerId);
 }

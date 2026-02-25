@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { TextFormat } from 'react-jhipster';
+import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { AUTHORITIES } from 'app/config/constants';
+import { IBatch } from 'app/shared/model/batch.model';
+import axios from 'axios';
 
 import { getEntity } from './substrate-recipe.reducer';
 
@@ -14,10 +18,26 @@ export const SubstrateRecipeDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
+  const [relatedBatches, setRelatedBatches] = useState<IBatch[]>([]);
+  const [loadingBatches, setLoadingBatches] = useState(false);
 
   useEffect(() => {
     dispatch(getEntity(id));
-  }, []);
+
+    // Fetch related batches
+    if (id) {
+      setLoadingBatches(true);
+      axios
+        .get<IBatch[]>(`api/substrate-recipes/${id}/batches`)
+        .then(response => {
+          setRelatedBatches(response.data);
+          setLoadingBatches(false);
+        })
+        .catch(() => {
+          setLoadingBatches(false);
+        });
+    }
+  }, [id]);
 
   const substrateRecipeEntity = useAppSelector(state => state.substrateRecipe.entity);
   const isAdminOrManager = useAppSelector(state =>
@@ -88,6 +108,54 @@ export const SubstrateRecipeDetail = () => {
           <Button tag={Link} to={`/substrate-recipe/${substrateRecipeEntity.id}/edit`} replace color="primary">
             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
           </Button>
+        )}
+        {/* Related Batches Section */}
+        <h3 className="mt-4">Related Batches</h3>
+        {loadingBatches ? (
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : relatedBatches.length === 0 ? (
+          <div className="alert alert-warning">No batches have been created using this recipe yet.</div>
+        ) : (
+          <Table responsive>
+            <thead>
+              <tr>
+                <th>Batch Code</th>
+                <th>Start Date</th>
+                <th>Current Phase</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {relatedBatches.map(batch => (
+                <tr key={batch.id}>
+                  <td>
+                    <Link to={`/batch/${batch.id}`}>{batch.batchCode}</Link>
+                  </td>
+                  <td>
+                    {batch.startDate ? (
+                      <TextFormat type="date" value={batch.startDate as unknown as string} format={APP_LOCAL_DATE_FORMAT} />
+                    ) : null}
+                  </td>
+                  <td>{batch.currentPhase}</td>
+                  <td>
+                    <span className={`badge ${batch.isActive ? 'bg-success' : 'bg-secondary'}`}>
+                      {batch.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    <Button tag={Link} to={`/batch/${batch.id}`} color="info" size="sm">
+                      <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         )}
       </Col>
     </Row>
