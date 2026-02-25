@@ -61,8 +61,13 @@ export const CostRecordDetail = () => {
             <span id="note">Note</span>
           </dt>
           <dd>{costRecordEntity.note}</dd>
-          <dt>Batch</dt>
-          <dd>{costRecordEntity.batch ? costRecordEntity.batch.batchCode : ''}</dd>
+          <dt>
+            <span id="batch">Batch</span>
+            <UncontrolledTooltip target="batch">Batch associated with this cost</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {costRecordEntity.batch ? <Link to={`/batch/${costRecordEntity.batch.id}`}>{costRecordEntity.batch.batchCode}</Link> : ''}
+          </dd>
         </dl>
         <Button tag={Link} to="/cost-record" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

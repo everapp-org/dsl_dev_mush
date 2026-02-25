@@ -75,9 +75,7 @@ export const BatchMaterialUsageDetail = () => {
           </dt>
           <dd>
             {batchMaterialUsageEntity.inventoryLot ? (
-              <Link to={`/inventory-lot/${batchMaterialUsageEntity.inventoryLot.id}`}>
-                {batchMaterialUsageEntity.inventoryLot.lotCode}
-              </Link>
+              <Link to={`/inventory-lot/${batchMaterialUsageEntity.inventoryLot.id}`}>{batchMaterialUsageEntity.inventoryLot.lotCode}</Link>
             ) : (
               ''
             )}

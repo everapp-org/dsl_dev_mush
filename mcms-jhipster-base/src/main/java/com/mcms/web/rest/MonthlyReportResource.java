@@ -45,10 +45,16 @@ public class MonthlyReportResource {
 
     private final MonthlyReportRepository monthlyReportRepository;
     private final ReportAuditLogRepository reportAuditLogRepository;
+    private final BatchRepository batchRepository;
 
-    public MonthlyReportResource(MonthlyReportRepository monthlyReportRepository, ReportAuditLogRepository reportAuditLogRepository) {
+    public MonthlyReportResource(
+        MonthlyReportRepository monthlyReportRepository,
+        ReportAuditLogRepository reportAuditLogRepository,
+        BatchRepository batchRepository
+    ) {
         this.monthlyReportRepository = monthlyReportRepository;
         this.reportAuditLogRepository = reportAuditLogRepository;
+        this.batchRepository = batchRepository;
     }
 
     /**
@@ -262,6 +268,25 @@ public class MonthlyReportResource {
         return ResponseEntity.created(new URI("/api/monthly-reports/" + monthlyReport.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, monthlyReport.getId().toString()))
             .body(monthlyReport);
+    }
+
+    /**
+     * {@code GET  /monthly-reports/:id/batches} : get batches for the monthly report period.
+     *
+     * @param id the id of the monthlyReport.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of batches in body.
+     */
+    @GetMapping("/{id}/batches")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER')")
+    public ResponseEntity<List<Batch>> getBatchesForReport(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get batches for MonthlyReport : {}", id);
+        Optional<MonthlyReport> monthlyReportOpt = monthlyReportRepository.findById(id);
+        if (monthlyReportOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        MonthlyReport report = monthlyReportOpt.get();
+        List<Batch> batches = batchRepository.findByYearAndMonth(report.getYear(), report.getMonth());
+        return ResponseEntity.ok(batches);
     }
 
     /**
