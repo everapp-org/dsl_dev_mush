@@ -37,4 +37,7 @@ public interface CostRecordRepository extends JpaRepository<CostRecord, Long> {
 
     @Query("select costRecord from CostRecord costRecord left join fetch costRecord.batch where costRecord.id =:id")
     Optional<CostRecord> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query("select costRecord from CostRecord costRecord where costRecord.batch.id = :batchId order by costRecord.recordDate desc")
+    List<CostRecord> findByBatchIdOrderByRecordDateDesc(@Param("batchId") Long batchId);
 }

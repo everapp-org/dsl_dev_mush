@@ -204,4 +204,16 @@ public class PhaseExecutionResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET  /phase-executions/by-batch/:batchId} : get all phase executions for a batch.
+     *
+     * @param batchId the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of phaseExecutions in body.
+     */
+    @GetMapping("/by-batch/{batchId}")
+    public List<PhaseExecution> getPhaseExecutionsByBatch(@PathVariable("batchId") Long batchId) {
+        LOG.debug("REST request to get PhaseExecutions by Batch : {}", batchId);
+        return phaseExecutionRepository.findByBatchIdOrderBySequenceOrder(batchId);
+    }
 }

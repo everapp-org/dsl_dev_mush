@@ -41,4 +41,9 @@ public interface ContaminationEventRepository extends JpaRepository<Contaminatio
         "select contaminationEvent from ContaminationEvent contaminationEvent left join fetch contaminationEvent.batch left join fetch contaminationEvent.room where contaminationEvent.id =:id"
     )
     Optional<ContaminationEvent> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select contaminationEvent from ContaminationEvent contaminationEvent left join fetch contaminationEvent.room where contaminationEvent.batch.id = :batchId order by contaminationEvent.detectedDate desc"
+    )
+    List<ContaminationEvent> findByBatchIdOrderByDetectedDateDesc(@Param("batchId") Long batchId);
 }

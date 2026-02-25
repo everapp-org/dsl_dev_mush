@@ -209,7 +209,18 @@ export const Strain = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Strains found</div>
+          !loading && (
+            <div className="text-center my-5">
+              <div className="alert alert-info d-inline-block">
+                <h4>No Strains Found</h4>
+                <p className="mb-3">There are no strains in the system yet. Get started by creating your first strain.</p>
+                <Link to="/strain/new" className="btn btn-primary btn-lg" data-cy="emptyStateCreateButton">
+                  <FontAwesomeIcon icon="plus" />
+                  &nbsp; Create Your First Strain
+                </Link>
+              </div>
+            </div>
+          )
         )}
       </div>
     </div>

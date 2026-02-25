@@ -226,4 +226,17 @@ public class ContaminationEventResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET  /contamination-events/by-batch/:batchId} : get all contamination events for a batch.
+     *
+     * @param batchId the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of contaminationEvents in body.
+     */
+    @GetMapping("/by-batch/{batchId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<ContaminationEvent> getContaminationEventsByBatch(@PathVariable("batchId") Long batchId) {
+        LOG.debug("REST request to get ContaminationEvents by Batch : {}", batchId);
+        return contaminationEventRepository.findByBatchIdOrderByDetectedDateDesc(batchId);
+    }
 }

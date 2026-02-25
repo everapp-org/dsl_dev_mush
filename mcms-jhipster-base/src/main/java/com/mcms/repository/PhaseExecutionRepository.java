@@ -41,4 +41,9 @@ public interface PhaseExecutionRepository extends JpaRepository<PhaseExecution, 
         "select phaseExecution from PhaseExecution phaseExecution left join fetch phaseExecution.batch left join fetch phaseExecution.room where phaseExecution.id =:id"
     )
     Optional<PhaseExecution> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select phaseExecution from PhaseExecution phaseExecution left join fetch phaseExecution.room where phaseExecution.batch.id = :batchId order by phaseExecution.sequenceOrder asc"
+    )
+    List<PhaseExecution> findByBatchIdOrderBySequenceOrder(@Param("batchId") Long batchId);
 }

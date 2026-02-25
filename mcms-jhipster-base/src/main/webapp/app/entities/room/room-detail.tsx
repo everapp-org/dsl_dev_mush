@@ -92,7 +92,6 @@ export const RoomDetail = () => {
           </dt>
           <dd>{roomEntity.note}</dd>
         </dl>
-
         <h3 className="mt-4">Current Occupancy</h3>
         {batchesInRoom && batchesInRoom.length > 0 ? (
           <>
@@ -118,9 +117,7 @@ export const RoomDetail = () => {
                     </td>
                     <td>{batch.strain ? batch.strain.name : ''}</td>
                     <td>{batch.currentPhase}</td>
-                    <td>
-                      {batch.startDate ? <TextFormat value={batch.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
-                    </td>
+                    <td>{batch.startDate ? <TextFormat value={batch.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
                     <td>{batch.numberOfBags}</td>
                     <td>
                       <Button tag={Link} to={`/batch/${batch.id}`} color="info" size="sm">
@@ -135,7 +132,6 @@ export const RoomDetail = () => {
         ) : (
           <p className="text-muted">No batches currently in this room.</p>
         )}
-
         <Button tag={Link} to="/room" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>

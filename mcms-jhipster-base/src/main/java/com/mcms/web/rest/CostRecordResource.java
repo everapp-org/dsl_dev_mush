@@ -204,4 +204,17 @@ public class CostRecordResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET  /cost-records/by-batch/:batchId} : get all cost records for a batch.
+     *
+     * @param batchId the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of costRecords in body.
+     */
+    @GetMapping("/by-batch/{batchId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<CostRecord> getCostRecordsByBatch(@PathVariable("batchId") Long batchId) {
+        LOG.debug("REST request to get CostRecords by Batch : {}", batchId);
+        return costRecordRepository.findByBatchIdOrderByRecordDateDesc(batchId);
+    }
 }

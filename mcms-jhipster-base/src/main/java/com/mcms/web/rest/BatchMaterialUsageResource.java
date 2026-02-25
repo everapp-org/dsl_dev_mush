@@ -195,4 +195,16 @@ public class BatchMaterialUsageResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    /**
+     * {@code GET  /batch-material-usages/by-batch/:batchId} : get all material usages for a batch.
+     *
+     * @param batchId the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of batchMaterialUsages in body.
+     */
+    @GetMapping("/by-batch/{batchId}")
+    public List<BatchMaterialUsage> getBatchMaterialUsagesByBatch(@PathVariable("batchId") Long batchId) {
+        LOG.debug("REST request to get BatchMaterialUsages by Batch : {}", batchId);
+        return batchMaterialUsageRepository.findByBatchIdOrderByUsageDateDesc(batchId);
+    }
 }

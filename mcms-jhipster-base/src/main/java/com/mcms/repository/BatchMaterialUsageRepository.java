@@ -41,4 +41,9 @@ public interface BatchMaterialUsageRepository extends JpaRepository<BatchMateria
         "select batchMaterialUsage from BatchMaterialUsage batchMaterialUsage left join fetch batchMaterialUsage.batch left join fetch batchMaterialUsage.inventoryLot left join fetch batchMaterialUsage.material where batchMaterialUsage.id =:id"
     )
     Optional<BatchMaterialUsage> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select batchMaterialUsage from BatchMaterialUsage batchMaterialUsage left join fetch batchMaterialUsage.inventoryLot left join fetch batchMaterialUsage.material where batchMaterialUsage.batch.id = :batchId order by batchMaterialUsage.usageDate desc"
+    )
+    List<BatchMaterialUsage> findByBatchIdOrderByUsageDateDesc(@Param("batchId") Long batchId);
 }
