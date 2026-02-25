@@ -106,11 +106,23 @@ export const ContaminationEventDetail = () => {
           </dt>
           <dd>{contaminationEventEntity.note}</dd>
           <dt>Batch</dt>
-          <dd>{contaminationEventEntity.batch ? contaminationEventEntity.batch.batchCode : ''}</dd>
+          <dd>
+            {contaminationEventEntity.batch ? (
+              <Link to={`/batch/${contaminationEventEntity.batch.id}`}>{contaminationEventEntity.batch.batchCode}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
           <dt>Phase Execution</dt>
           <dd>{contaminationEventEntity.phaseExecution ? contaminationEventEntity.phaseExecution.id : ''}</dd>
           <dt>Room</dt>
-          <dd>{contaminationEventEntity.room ? contaminationEventEntity.room.name : ''}</dd>
+          <dd>
+            {contaminationEventEntity.room ? (
+              <Link to={`/room/${contaminationEventEntity.room.id}`}>{contaminationEventEntity.room.name}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/contamination-event" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

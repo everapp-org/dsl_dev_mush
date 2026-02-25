@@ -90,12 +90,39 @@ export const EnvironmentalAlertDetail = () => {
             <UncontrolledTooltip target="resolutionNote">What was done about it</UncontrolledTooltip>
           </dt>
           <dd>{environmentalAlertEntity.resolutionNote}</dd>
-          <dt>Room</dt>
-          <dd>{environmentalAlertEntity.room ? environmentalAlertEntity.room.name : ''}</dd>
-          <dt>Sensor</dt>
-          <dd>{environmentalAlertEntity.sensor ? environmentalAlertEntity.sensor.sensorCode : ''}</dd>
-          <dt>Batch</dt>
-          <dd>{environmentalAlertEntity.batch ? environmentalAlertEntity.batch.batchCode : ''}</dd>
+          <dt>
+            <span id="room">Room</span>
+            <UncontrolledTooltip target="room">Room where alert occurred</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {environmentalAlertEntity.room ? (
+              <Link to={`/room/${environmentalAlertEntity.room.id}`}>{environmentalAlertEntity.room.name}</Link>
+            ) : (
+              <span className="text-muted">No room</span>
+            )}
+          </dd>
+          <dt>
+            <span id="sensor">Sensor</span>
+            <UncontrolledTooltip target="sensor">Sensor that triggered alert</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {environmentalAlertEntity.sensor ? (
+              <Link to={`/sensor/${environmentalAlertEntity.sensor.id}`}>{environmentalAlertEntity.sensor.sensorCode}</Link>
+            ) : (
+              <span className="text-muted">No sensor linked</span>
+            )}
+          </dd>
+          <dt>
+            <span id="batch">Affected Batch</span>
+            <UncontrolledTooltip target="batch">Batch affected by this alert</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {environmentalAlertEntity.batch ? (
+              <Link to={`/batch/${environmentalAlertEntity.batch.id}`}>{environmentalAlertEntity.batch.batchCode}</Link>
+            ) : (
+              <span className="text-muted">No batch affected</span>
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/environmental-alert" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
