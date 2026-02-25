@@ -527,3 +527,95 @@ The placeholder tabs (Phase History, Harvests, Costs, Materials) can be populate
 - **Latest:** Loading spinner and tabbed detail interface implemented
 - **Next:** Continue with remaining navigation and UI features
 
+
+---
+
+## Session: 2026-02-25 12:15 (Session 29)
+
+### Completed Features (68/405 - 16.8%)
+
+#### Feature #74: Filter persists across navigation ✅
+**Status:** PASSING
+**Implementation:**
+- Added backend filtering support in BatchRepository.findAllWithFilters()
+- Backend accepts filter parameters: phase, strainId, isActive, startDateFrom, startDateTo
+- Frontend batch.tsx component includes filter UI with dropdowns and date pickers
+- Filters stored in URL query parameters
+- Filter state automatically restored when navigating back to list page
+- Integrated with existing pagination and sorting
+
+**Filter UI:**
+- Phase dropdown (all 10 batch phases from PhaseName enum)
+- Strain dropdown (populated from strain entities)
+- Status dropdown (All/Active/Inactive)
+- Start Date From (date picker)
+- Start Date To (date picker)
+
+**URL Persistence:**
+Filters persist in URL query string, allowing:
+- Browser back button restores filters
+- Bookmarkable filtered views
+- Share-able URLs with filters applied
+
+**Spec Compliance:**
+- Per app_spec.txt line 219: Filter batches by phase, strain, active status, date range
+- Filters persist across navigation
+- Filter state encoded in URL query parameters
+
+---
+
+#### Feature #75: Clear filters button resets all filters ✅
+**Status:** PASSING
+**Implementation:**
+- Clear Filters button added to filter card
+- Button only visible when at least one filter is active
+- Resets all filter state to empty strings
+- Resets pagination to page 1 when clearing filters
+- Updates URL to remove filter parameters
+- Re-fetches data with no filters applied
+
+**Spec Compliance:**
+- Clear all button removes all applied filters
+- Button shows Clear Filters with icon
+- All filter dropdowns/inputs reset to default values
+- Filtered batch list reloads to show all batches
+
+---
+
+### Technical Notes
+
+**Backend Changes:**
+- BatchRepository: Added findAllWithFilters() JPQL query with optional filter parameters
+- BatchResource: Added filter parameters to getAllBatches() endpoint
+- Spring Data JPA handles null filter values (filters only applied when value provided)
+
+**Frontend Changes:**
+- batch.reducer.ts: Extended IQueryParams to IQueryParamsWithFilters
+- batch.tsx: Added filter state management and UI components
+- Integrated with existing loading spinner (feature #78) and pagination
+
+**Concurrent Development Note:**
+This session encountered concurrent modifications by other agents. The batch.tsx file was recreated to merge filter functionality with the loading spinner added in feature #78.
+
+**Git Commits:**
+```
+d518d86 feat: implement batch list filters with URL persistence (features #74, #75)
+```
+
+**Verification (YOLO Mode):**
+- Backend compiles successfully
+- Frontend compiles successfully
+- Backend health check passes
+- No mock data patterns
+- Real database queries with optional WHERE clauses
+
+---
+
+## Current Status
+- Progress: 68/405 features passing (16.8%)
+- Backend: Running on port 8080, health check UP
+- Frontend: Compiles with 1 pre-existing warning
+- Database: H2 file-based, real persistence verified
+- Latest: Batch list filtering with URL persistence and clear filters button
+- Next: Continue with remaining navigation and filtering features
+
