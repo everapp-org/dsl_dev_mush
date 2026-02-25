@@ -80,8 +80,17 @@ export const SensorDetail = () => {
             <span id="note">Note</span>
           </dt>
           <dd>{sensorEntity.note}</dd>
-          <dt>Room</dt>
-          <dd>{sensorEntity.room ? sensorEntity.room.name : ''}</dd>
+          <dt>
+            <span id="room">Assigned Room</span>
+            <UncontrolledTooltip target="room">Room where sensor is installed</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {sensorEntity.room ? (
+              <Link to={`/room/${sensorEntity.room.id}`}>{sensorEntity.room.name}</Link>
+            ) : (
+              <span className="text-muted">No room assigned</span>
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/sensor" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

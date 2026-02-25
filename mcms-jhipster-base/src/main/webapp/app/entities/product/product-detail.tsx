@@ -72,13 +72,7 @@ export const ProductDetail = () => {
           </dt>
           <dd>{productEntity.note}</dd>
           <dt>Strain</dt>
-          <dd>
-            {productEntity.strain ? (
-              <Link to={`/strain/${productEntity.strain.id}`}>{productEntity.strain.name}</Link>
-            ) : (
-              ''
-            )}
-          </dd>
+          <dd>{productEntity.strain ? <Link to={`/strain/${productEntity.strain.id}`}>{productEntity.strain.name}</Link> : ''}</dd>
         </dl>
         <Button tag={Link} to="/product" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

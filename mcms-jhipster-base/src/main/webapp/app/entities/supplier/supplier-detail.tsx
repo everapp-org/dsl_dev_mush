@@ -139,7 +139,11 @@ export const SupplierDetail = () => {
                   <td>
                     <Link to={`/supply-order/${order.id}`}>{order.orderCode}</Link>
                   </td>
-                  <td>{order.orderDate ? <TextFormat type="date" value={order.orderDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
+                  <td>
+                    {order.orderDate ? (
+                      <TextFormat type="date" value={order.orderDate as unknown as string} format={APP_LOCAL_DATE_FORMAT} />
+                    ) : null}
+                  </td>
                   <td>
                     <Badge color={getStatusBadgeColor(order.status)}>{order.status}</Badge>
                   </td>
