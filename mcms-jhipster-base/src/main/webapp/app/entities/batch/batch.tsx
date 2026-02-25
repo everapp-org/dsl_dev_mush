@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input, Spinner } from 'reactstrap';
+import { Button, Table, Input, Spinner, Row, Col, FormGroup, Label, Card, CardBody } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -9,8 +9,10 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
 
 import { getEntities } from './batch.reducer';
+import { getEntities as getStrains } from '../strain/strain.reducer';
 
 export const Batch = () => {
   const dispatch = useAppDispatch();
@@ -22,12 +24,39 @@ export const Batch = () => {
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
 
+  // Filter state
+  const [filters, setFilters] = useState({
+    phase: '',
+    strainId: '',
+    isActive: '',
+    startDateFrom: '',
+    startDateTo: '',
+  });
+
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
   const totalItems = useAppSelector(state => state.batch.totalItems);
+  const strainList = useAppSelector(state => state.strain.entities);
   const canModifyBatch = useAppSelector(state =>
     hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
   );
+
+  // Load strains for dropdown
+  useEffect(() => {
+    dispatch(getStrains({ sort: 'name,asc' }));
+  }, []);
+
+  // Initialize filters from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    setFilters({
+      phase: params.get('phase') || '',
+      strainId: params.get('strainId') || '',
+      isActive: params.get('isActive') || '',
+      startDateFrom: params.get('startDateFrom') || '',
+      startDateTo: params.get('startDateTo') || '',
+    });
+  }, []);
 
   const getAllEntities = () => {
     dispatch(
@@ -35,13 +64,32 @@ export const Batch = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        phase: filters.phase || undefined,
+        strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
+        isActive: filters.isActive ? filters.isActive === 'true' : undefined,
+        startDateFrom: filters.startDateFrom || undefined,
+        startDateTo: filters.startDateTo || undefined,
       }),
     );
   };
 
+  const buildURL = () => {
+    const params = new URLSearchParams();
+    params.set('page', paginationState.activePage.toString());
+    params.set('sort', `${paginationState.sort},${paginationState.order}`);
+
+    if (filters.phase) params.set('phase', filters.phase);
+    if (filters.strainId) params.set('strainId', filters.strainId);
+    if (filters.isActive) params.set('isActive', filters.isActive);
+    if (filters.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
+    if (filters.startDateTo) params.set('startDateTo', filters.startDateTo);
+
+    return `?${params.toString()}`;
+  };
+
   const sortEntities = () => {
     getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
+    const endURL = buildURL();
     if (pageLocation.search !== endURL) {
       navigate(`${pageLocation.pathname}${endURL}`);
     }
@@ -49,7 +97,7 @@ export const Batch = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.itemsPerPage]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.itemsPerPage, filters]);
 
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
@@ -89,9 +137,37 @@ export const Batch = () => {
     setPaginationState({
       ...paginationState,
       itemsPerPage: newSize,
-      activePage: 1, // Reset to first page when changing page size
+      activePage: 1,
     });
   };
+
+  const handleFilterChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters({
+      ...filters,
+      [field]: event.target.value,
+    });
+    // Reset to first page when filters change
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+    });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      phase: '',
+      strainId: '',
+      isActive: '',
+      startDateFrom: '',
+      startDateTo: '',
+    });
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+    });
+  };
+
+  const hasActiveFilters = filters.phase || filters.strainId || filters.isActive || filters.startDateFrom || filters.startDateTo;
 
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = paginationState.sort;
@@ -118,6 +194,72 @@ export const Batch = () => {
           )}
         </div>
       </h2>
+
+      {/* Filter Section */}
+      <Card className="mb-3">
+        <CardBody>
+          <Row>
+            <Col md="3">
+              <FormGroup>
+                <Label for="phase-filter">Phase</Label>
+                <Input type="select" id="phase-filter" value={filters.phase} onChange={handleFilterChange('phase')}>
+                  <option value="">All Phases</option>
+                  {Object.values(PhaseName).map(phase => (
+                    <option key={phase} value={phase}>
+                      {phase}
+                    </option>
+                  ))}
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              <FormGroup>
+                <Label for="strain-filter">Strain</Label>
+                <Input type="select" id="strain-filter" value={filters.strainId} onChange={handleFilterChange('strainId')}>
+                  <option value="">All Strains</option>
+                  {strainList.map(strain => (
+                    <option key={strain.id} value={strain.id}>
+                      {strain.name}
+                    </option>
+                  ))}
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="active-filter">Status</Label>
+                <Input type="select" id="active-filter" value={filters.isActive} onChange={handleFilterChange('isActive')}>
+                  <option value="">All</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="start-date-from">Start Date From</Label>
+                <Input type="date" id="start-date-from" value={filters.startDateFrom} onChange={handleFilterChange('startDateFrom')} />
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="start-date-to">Start Date To</Label>
+                <Input type="date" id="start-date-to" value={filters.startDateTo} onChange={handleFilterChange('startDateTo')} />
+              </FormGroup>
+            </Col>
+          </Row>
+          {hasActiveFilters && (
+            <Row>
+              <Col>
+                <Button color="secondary" size="sm" onClick={handleClearFilters}>
+                  <FontAwesomeIcon icon="times" /> Clear Filters
+                </Button>
+              </Col>
+            </Row>
+          )}
+        </CardBody>
+      </Card>
+
       <div className="table-responsive">
         {loading ? (
           <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
