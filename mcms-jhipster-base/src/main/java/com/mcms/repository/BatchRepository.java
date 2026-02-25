@@ -65,4 +65,10 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 
     @Query("select batch from Batch batch left join fetch batch.strain left join fetch batch.recipe where batch.recipe.id = :recipeId")
     List<Batch> findByRecipeId(@Param("recipeId") Long recipeId);
+
+    @Query(
+        "select batch from Batch batch left join fetch batch.strain left join fetch batch.recipe " +
+        "where YEAR(batch.startDate) = :year and MONTH(batch.startDate) = :month"
+    )
+    List<Batch> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
 }

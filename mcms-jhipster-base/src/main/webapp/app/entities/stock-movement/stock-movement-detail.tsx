@@ -74,9 +74,7 @@ export const StockMovementDetail = () => {
           <dt>Inventory Lot</dt>
           <dd>
             {stockMovementEntity.inventoryLot ? (
-              <Link to={`/inventory-lot/${stockMovementEntity.inventoryLot.id}`}>
-                {stockMovementEntity.inventoryLot.lotCode}
-              </Link>
+              <Link to={`/inventory-lot/${stockMovementEntity.inventoryLot.id}`}>{stockMovementEntity.inventoryLot.lotCode}</Link>
             ) : (
               ''
             )}

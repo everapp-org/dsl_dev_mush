@@ -96,9 +96,7 @@ export const InventoryLotDetail = () => {
           <dt>Supply Order Line</dt>
           <dd>
             {inventoryLotEntity.supplyOrderLine ? (
-              <Link to={`/supply-order-line/${inventoryLotEntity.supplyOrderLine.id}`}>
-                {inventoryLotEntity.supplyOrderLine.id}
-              </Link>
+              <Link to={`/supply-order-line/${inventoryLotEntity.supplyOrderLine.id}`}>{inventoryLotEntity.supplyOrderLine.id}</Link>
             ) : (
               ''
             )}

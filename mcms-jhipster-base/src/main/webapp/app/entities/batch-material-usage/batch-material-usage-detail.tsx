@@ -58,12 +58,41 @@ export const BatchMaterialUsageDetail = () => {
             <span id="note">Note</span>
           </dt>
           <dd>{batchMaterialUsageEntity.note}</dd>
-          <dt>Batch</dt>
-          <dd>{batchMaterialUsageEntity.batch ? batchMaterialUsageEntity.batch.batchCode : ''}</dd>
-          <dt>Inventory Lot</dt>
-          <dd>{batchMaterialUsageEntity.inventoryLot ? batchMaterialUsageEntity.inventoryLot.lotCode : ''}</dd>
-          <dt>Material</dt>
-          <dd>{batchMaterialUsageEntity.material ? batchMaterialUsageEntity.material.name : ''}</dd>
+          <dt>
+            <span id="batch">Batch</span>
+            <UncontrolledTooltip target="batch">Batch that used this material</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {batchMaterialUsageEntity.batch ? (
+              <Link to={`/batch/${batchMaterialUsageEntity.batch.id}`}>{batchMaterialUsageEntity.batch.batchCode}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
+          <dt>
+            <span id="inventoryLot">Inventory Lot</span>
+            <UncontrolledTooltip target="inventoryLot">Inventory lot from which material was drawn</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {batchMaterialUsageEntity.inventoryLot ? (
+              <Link to={`/inventory-lot/${batchMaterialUsageEntity.inventoryLot.id}`}>
+                {batchMaterialUsageEntity.inventoryLot.lotCode}
+              </Link>
+            ) : (
+              ''
+            )}
+          </dd>
+          <dt>
+            <span id="material">Material</span>
+            <UncontrolledTooltip target="material">Type of material used</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {batchMaterialUsageEntity.material ? (
+              <Link to={`/material/${batchMaterialUsageEntity.material.id}`}>{batchMaterialUsageEntity.material.name}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
         </dl>
         <Button tag={Link} to="/batch-material-usage" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

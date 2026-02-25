@@ -1,7 +1,9 @@
 package com.mcms.web.rest;
 
+import com.mcms.domain.Batch;
 import com.mcms.domain.MonthlyReport;
 import com.mcms.domain.ReportAuditLog;
+import com.mcms.repository.BatchRepository;
 import com.mcms.repository.MonthlyReportRepository;
 import com.mcms.repository.ReportAuditLogRepository;
 import com.mcms.web.rest.dto.GenerateReportRequest;
