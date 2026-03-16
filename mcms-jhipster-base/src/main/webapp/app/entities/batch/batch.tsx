@@ -376,7 +376,22 @@ export const Batch = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Batches found</div>
+          !loading && (
+            <div className="alert alert-warning">
+              {hasActiveFilters ? (
+                <>
+                  <div className="mb-2">
+                    <FontAwesomeIcon icon="filter" /> No batches match your current filters.
+                  </div>
+                  <Button color="primary" size="sm" onClick={handleClearFilters}>
+                    <FontAwesomeIcon icon="times" /> Clear All Filters
+                  </Button>
+                </>
+              ) : (
+                'No Batches found'
+              )}
+            </div>
+          )
         )}
       </div>
       {totalItems ? (

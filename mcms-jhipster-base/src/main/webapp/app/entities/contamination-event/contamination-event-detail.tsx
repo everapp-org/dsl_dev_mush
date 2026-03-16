@@ -8,6 +8,7 @@ import { AUTHORITIES } from 'app/config/constants';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { ImageWithFallback } from 'app/shared/components/ImageWithFallback';
 
 import { getEntity } from './contamination-event.reducer';
 
@@ -100,7 +101,22 @@ export const ContaminationEventDetail = () => {
             <span id="photosReference">Photos Reference</span>
             <UncontrolledTooltip target="photosReference">Path/URL to photo evidence</UncontrolledTooltip>
           </dt>
-          <dd>{contaminationEventEntity.photosReference}</dd>
+          <dd>
+            {contaminationEventEntity.photosReference && (
+              <div style={{ marginBottom: '10px' }}>
+                <ImageWithFallback
+                  src={contaminationEventEntity.photosReference}
+                  alt="Contamination event photo"
+                  width="400"
+                  height="300"
+                  style={{ maxWidth: '100%', height: 'auto' }}
+                />
+              </div>
+            )}
+            <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+              {contaminationEventEntity.photosReference || 'No photo uploaded'}
+            </div>
+          </dd>
           <dt>
             <span id="note">Note</span>
           </dt>
