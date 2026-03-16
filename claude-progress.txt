@@ -6072,3 +6072,121 @@ This uses today's date in YYYY-MM-DD format as the maximum allowed date, ensurin
 - All servers healthy and running
 - No outstanding issues or technical debt
 - Progress: 173/405 features (42.7%)
+
+---
+
+## Session: 2026-03-17 (Session 55)
+
+### Completed Features (175/405 - 43.2%)
+
+#### Feature #179: Unique constraint violation handled ✅
+**Status:** PASSING
+**Category:** Error Handling
+
+**Implementation:**
+Enhanced `ExceptionTranslator` to detect and handle `DataIntegrityViolationException` with unique constraint violations.
+
+**Changes:**
+- Added import for `DataIntegrityViolationException`
+- Implemented `extractUniqueConstraintMessage()` method
+- Parses constraint names (e.g., `ux_batch__batch_code`)
+- Extracts field name and converts to readable format
+- Returns user-friendly messages (e.g., "Batch code already exists")
+- Returns HTTP 400 (Bad Request) for proper frontend error display
+
+**Example Messages:**
+- Duplicate batch code: "Batch code already exists"
+- Duplicate room code: "Code already exists"
+- Generic fallback: "This value already exists. Please use a unique value."
+
+**Verification:**
+- ✅ Backend compiles successfully
+- ✅ Frontend lints successfully
+- ✅ Server health check passes
+- ✅ No mock data patterns (0 matches)
+- ✅ Logic verified through code inspection
+
+---
+
+#### Feature #180: Foreign key constraint error shown ✅
+**Status:** PASSING
+**Category:** Error Handling
+
+**Implementation:**
+Enhanced `ExceptionTranslator` to detect and handle foreign key constraint violations when deleting entities with dependencies.
+
+**Changes:**
+- Extended `extractUniqueConstraintMessage()` to handle FK violations
+- Implemented `extractEntityNameFromForeignKey()` helper method
+- Parses FK constraint names (e.g., `fk_batch__strain_id`)
+- Extracts referencing table name and converts to readable format
+- Returns context-aware messages about dependencies
+
+**Example Messages:**
+- Delete strain with batches: "Cannot delete this record. It is being used by Batch records."
+- Generic fallback: "Cannot delete this record. It is referenced by other records."
+
+**Verification:**
+- ✅ Backend compiles successfully
+- ✅ Frontend lints successfully
+- ✅ Server health check passes
+- ✅ No mock data patterns
+- ✅ Logic verified through code inspection
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both error handling)
+- **Approach:** Backend exception handling enhancement
+- **Code Changes:** 1 file modified (ExceptionTranslator.java, +53 lines, -3 lines)
+- **Progress:** 175/405 features (43.2%)
+- **Session Type:** YOLO mode verification
+- **Commits:** 1 commit
+
+---
+
+## Technical Notes - Session 55
+
+### Error Handling Strategy
+Both features implemented in a single file (`ExceptionTranslator.java`) using Spring's exception handling framework.
+
+**HTTP Status Codes:**
+- Unique constraint violations: 400 (Bad Request)
+- Foreign key violations: 400 (Bad Request)
+- Optimistic locking: 409 (Conflict) - existing implementation
+
+**Frontend Integration:**
+- HTTP 400 errors are handled by the generic error handler in `notification-middleware.ts`
+- Error detail field contains the custom message
+- Toast notification displays the user-friendly message
+
+### Constraint Naming Patterns
+**Unique Constraints:**
+- Pattern: `ux_{table_name}__{column_name}`
+- Example: `ux_batch__batch_code`, `ux_sensor__sensor_code`
+
+**Foreign Key Constraints:**
+- Pattern: `fk_{referencing_table}__{referenced_table}_id`
+- Example: `fk_batch__strain_id` (batch references strain)
+
+### Message Parsing Logic
+1. Extract constraint name from exception message
+2. Parse table/field names from constraint name
+3. Convert snake_case to readable format
+4. Capitalize and format for user display
+5. Return contextual error message
+
+### Testing Approach (YOLO Mode)
+Since browser automation is disabled:
+- ✅ Code compiles without errors
+- ✅ Lint passes (no new errors/warnings)
+- ✅ Server restarts and health check passes
+- ✅ No mock data patterns detected
+- ✅ Code logic verified through inspection
+- ✅ Spring Boot DevTools auto-reloaded changes
+
+### Next Session Recommendations
+- Continue with remaining error handling features
+- All database constraint violations now have user-friendly messages
+- Backend and frontend servers are stable
+- Progress approaching 44% completion
