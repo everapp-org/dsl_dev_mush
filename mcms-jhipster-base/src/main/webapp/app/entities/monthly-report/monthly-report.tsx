@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@ import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntities } from './monthly-report.reducer';
+import { getEntities, generateReport } from './monthly-report.reducer';
 
 export const MonthlyReport = () => {
   const dispatch = useAppDispatch();
@@ -18,9 +18,14 @@ export const MonthlyReport = () => {
   const navigate = useNavigate();
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+  const [generateModalOpen, setGenerateModalOpen] = useState(false);
+  const [reportYear, setReportYear] = useState(new Date().getFullYear());
+  const [reportMonth, setReportMonth] = useState(new Date().getMonth() + 1);
 
   const monthlyReportList = useAppSelector(state => state.monthlyReport.entities);
   const loading = useAppSelector(state => state.monthlyReport.loading);
+  const updating = useAppSelector(state => state.monthlyReport.updating);
+  const updateSuccess = useAppSelector(state => state.monthlyReport.updateSuccess);
 
   const getAllEntities = () => {
     dispatch(
@@ -54,6 +59,18 @@ export const MonthlyReport = () => {
     sortEntities();
   };
 
+  const toggleGenerateModal = () => setGenerateModalOpen(!generateModalOpen);
+
+  const handleGenerateReport = () => {
+    dispatch(generateReport({ year: reportYear, month: reportMonth }));
+  };
+
+  useEffect(() => {
+    if (updateSuccess && generateModalOpen) {
+      setGenerateModalOpen(false);
+    }
+  }, [updateSuccess]);
+
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = sortState.sort;
     const order = sortState.order;
@@ -70,6 +87,10 @@ export const MonthlyReport = () => {
         <div className="d-flex justify-content-end">
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+          </Button>
+          <Button className="me-2" color="success" onClick={toggleGenerateModal} id="jh-generate-report">
+            <FontAwesomeIcon icon="chart-line" />
+            &nbsp; Generate Report
           </Button>
           <Link to="/monthly-report/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
             <FontAwesomeIcon icon="plus" />
@@ -176,6 +197,50 @@ export const MonthlyReport = () => {
           !loading && <div className="alert alert-warning">No Monthly Reports found</div>
         )}
       </div>
+
+      <Modal isOpen={generateModalOpen} toggle={toggleGenerateModal}>
+        <ModalHeader toggle={toggleGenerateModal}>Generate Monthly Report</ModalHeader>
+        <ModalBody>
+          <Form>
+            <FormGroup>
+              <Label for="report-year">Year</Label>
+              <Input
+                type="number"
+                id="report-year"
+                value={reportYear}
+                onChange={e => setReportYear(parseInt(e.target.value, 10))}
+                min="2000"
+                max="2100"
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="report-month">Month</Label>
+              <Input type="select" id="report-month" value={reportMonth} onChange={e => setReportMonth(parseInt(e.target.value, 10))}>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </Input>
+            </FormGroup>
+          </Form>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleGenerateModal}>
+            Cancel
+          </Button>
+          <Button color="success" onClick={handleGenerateReport} disabled={updating}>
+            {updating ? 'Generating...' : 'Generate Report'}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

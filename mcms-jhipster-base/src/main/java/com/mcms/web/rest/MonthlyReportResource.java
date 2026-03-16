@@ -4,8 +4,11 @@ import com.mcms.domain.Batch;
 import com.mcms.domain.MonthlyReport;
 import com.mcms.domain.ReportAuditLog;
 import com.mcms.repository.BatchRepository;
+import com.mcms.repository.ContaminationEventRepository;
+import com.mcms.repository.CostRecordRepository;
 import com.mcms.repository.MonthlyReportRepository;
 import com.mcms.repository.ReportAuditLogRepository;
+import com.mcms.repository.SalesOrderLineRepository;
 import com.mcms.web.rest.dto.GenerateReportRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -46,15 +49,24 @@ public class MonthlyReportResource {
     private final MonthlyReportRepository monthlyReportRepository;
     private final ReportAuditLogRepository reportAuditLogRepository;
     private final BatchRepository batchRepository;
+    private final CostRecordRepository costRecordRepository;
+    private final SalesOrderLineRepository salesOrderLineRepository;
+    private final ContaminationEventRepository contaminationEventRepository;
 
     public MonthlyReportResource(
         MonthlyReportRepository monthlyReportRepository,
         ReportAuditLogRepository reportAuditLogRepository,
-        BatchRepository batchRepository
+        BatchRepository batchRepository,
+        CostRecordRepository costRecordRepository,
+        SalesOrderLineRepository salesOrderLineRepository,
+        ContaminationEventRepository contaminationEventRepository
     ) {
         this.monthlyReportRepository = monthlyReportRepository;
         this.reportAuditLogRepository = reportAuditLogRepository;
         this.batchRepository = batchRepository;
+        this.costRecordRepository = costRecordRepository;
+        this.salesOrderLineRepository = salesOrderLineRepository;
+        this.contaminationEventRepository = contaminationEventRepository;
     }
 
     /**
@@ -240,15 +252,67 @@ public class MonthlyReportResource {
         monthlyReport.setMonth(request.getMonth());
         monthlyReport.setGeneratedAt(now);
 
-        // TODO: Aggregate data from batches, costs, revenues, contamination events, etc.
-        // For now, set placeholder values
-        monthlyReport.setTotalYieldKg(BigDecimal.ZERO);
-        monthlyReport.setTotalCost(BigDecimal.ZERO);
-        monthlyReport.setTotalRevenue(BigDecimal.ZERO);
-        monthlyReport.setProfitMarginPercent(BigDecimal.ZERO);
-        monthlyReport.setTotalContaminationEvents(0);
-        monthlyReport.setTotalMissingFields(0);
-        monthlyReport.setSummary("Monthly report for " + request.getYear() + "-" + request.getMonth());
+        // Get all batches started in this month/year
+        List<Batch> batches = batchRepository.findByYearAndMonth(request.getYear(), request.getMonth());
+        List<Long> batchIds = batches.stream().map(Batch::getId).toList();
+
+        // 1. Aggregate total yield from batches
+        BigDecimal totalYield = batches.stream()
+            .map(b -> b.getActualTotalYieldKg() != null ? b.getActualTotalYieldKg() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        monthlyReport.setTotalYieldKg(totalYield);
+
+        // 2. Aggregate total costs from cost records
+        BigDecimal totalCost = BigDecimal.ZERO;
+        for (Long batchId : batchIds) {
+            totalCost = totalCost.add(
+                costRecordRepository.findByBatchIdOrderByRecordDateDesc(batchId).stream()
+                    .map(cr -> cr.getAmount() != null ? cr.getAmount() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+            );
+        }
+        monthlyReport.setTotalCost(totalCost);
+
+        // 3. Aggregate total revenue from sales order lines
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        for (Long batchId : batchIds) {
+            totalRevenue = totalRevenue.add(
+                salesOrderLineRepository.findByBatchId(batchId).stream()
+                    .map(line -> line.getLineTotal() != null ? line.getLineTotal() : BigDecimal.ZERO)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+            );
+        }
+        monthlyReport.setTotalRevenue(totalRevenue);
+
+        // 4. Calculate profit margin: ((revenue - cost) / revenue) × 100
+        BigDecimal profitMargin = BigDecimal.ZERO;
+        if (totalRevenue.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal profit = totalRevenue.subtract(totalCost);
+            profitMargin = profit.multiply(BigDecimal.valueOf(100))
+                .divide(totalRevenue, 2, java.math.RoundingMode.HALF_UP);
+        }
+        monthlyReport.setProfitMarginPercent(profitMargin);
+
+        // 5. Count contamination events
+        int contaminationCount = 0;
+        for (Long batchId : batchIds) {
+            contaminationCount += contaminationEventRepository.findByBatchIdOrderByDetectedDateDesc(batchId).size();
+        }
+        monthlyReport.setTotalContaminationEvents(contaminationCount);
+
+        // 6. Count missing mandatory fields across batches
+        int missingFields = (int) batches.stream()
+            .filter(b -> b.getBatchCode() == null || b.getStartDate() == null ||
+                        b.getTargetYieldKg() == null || b.getSubstrateWeightKg() == null)
+            .count();
+        monthlyReport.setTotalMissingFields(missingFields);
+
+        // 7. Generate summary
+        String summary = String.format(
+            "Monthly report for %d-%02d: %d batches, %.2f kg yield, $%.2f cost, $%.2f revenue, %.1f%% profit margin, %d contamination events",
+            request.getYear(), request.getMonth(), batches.size(), totalYield, totalCost, totalRevenue, profitMargin, contaminationCount
+        );
+        monthlyReport.setSummary(summary);
 
         // Save the report
         monthlyReport = monthlyReportRepository.save(monthlyReport);

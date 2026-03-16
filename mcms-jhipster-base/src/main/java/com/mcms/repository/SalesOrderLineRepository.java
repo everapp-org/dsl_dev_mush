@@ -41,4 +41,7 @@ public interface SalesOrderLineRepository extends JpaRepository<SalesOrderLine, 
         "select salesOrderLine from SalesOrderLine salesOrderLine left join fetch salesOrderLine.salesOrder left join fetch salesOrderLine.product left join fetch salesOrderLine.batch where salesOrderLine.id =:id"
     )
     Optional<SalesOrderLine> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query("select sol from SalesOrderLine sol where sol.batch.id = :batchId")
+    List<SalesOrderLine> findByBatchId(@Param("batchId") Long batchId);
 }

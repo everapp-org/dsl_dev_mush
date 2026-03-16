@@ -94,6 +94,16 @@ export const getBatchesForReport = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const generateReport = createAsyncThunk(
+  'monthlyReport/generate_report',
+  async (request: { year: number; month: number }, thunkAPI) => {
+    const result = await axios.post<IMonthlyReport>(`${apiUrl}/generate`, request);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const MonthlyReportSlice = createEntitySlice({
@@ -137,7 +147,7 @@ export const MonthlyReportSlice = createEntitySlice({
           }),
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, generateReport), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -148,7 +158,7 @@ export const MonthlyReportSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, generateReport), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;
