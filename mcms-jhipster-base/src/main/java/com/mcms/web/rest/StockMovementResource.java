@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.StockMovement;
 import com.mcms.repository.StockMovementRepository;
+import com.mcms.service.StockMovementService;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,9 +37,14 @@ public class StockMovementResource {
     private String applicationName;
 
     private final StockMovementRepository stockMovementRepository;
+    private final StockMovementService stockMovementService;
 
-    public StockMovementResource(StockMovementRepository stockMovementRepository) {
+    public StockMovementResource(
+        StockMovementRepository stockMovementRepository,
+        StockMovementService stockMovementService
+    ) {
         this.stockMovementRepository = stockMovementRepository;
+        this.stockMovementService = stockMovementService;
     }
 
     /**
@@ -55,7 +61,8 @@ public class StockMovementResource {
         if (stockMovement.getId() != null) {
             throw new BadRequestAlertException("A new stockMovement cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        stockMovement = stockMovementRepository.save(stockMovement);
+        // Use service to automatically update inventory lot quantity
+        stockMovement = stockMovementService.createStockMovement(stockMovement);
         return ResponseEntity.created(new URI("/api/stock-movements/" + stockMovement.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, stockMovement.getId().toString()))
             .body(stockMovement);

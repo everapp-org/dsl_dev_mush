@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.BatchMaterialUsage;
 import com.mcms.repository.BatchMaterialUsageRepository;
+import com.mcms.service.BatchMaterialUsageService;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,14 @@ public class BatchMaterialUsageResource {
     private String applicationName;
 
     private final BatchMaterialUsageRepository batchMaterialUsageRepository;
+    private final BatchMaterialUsageService batchMaterialUsageService;
 
-    public BatchMaterialUsageResource(BatchMaterialUsageRepository batchMaterialUsageRepository) {
+    public BatchMaterialUsageResource(
+        BatchMaterialUsageRepository batchMaterialUsageRepository,
+        BatchMaterialUsageService batchMaterialUsageService
+    ) {
         this.batchMaterialUsageRepository = batchMaterialUsageRepository;
+        this.batchMaterialUsageService = batchMaterialUsageService;
     }
 
     /**
@@ -54,7 +60,8 @@ public class BatchMaterialUsageResource {
         if (batchMaterialUsage.getId() != null) {
             throw new BadRequestAlertException("A new batchMaterialUsage cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        batchMaterialUsage = batchMaterialUsageRepository.save(batchMaterialUsage);
+        // Use service to automatically create stock movement and update inventory
+        batchMaterialUsage = batchMaterialUsageService.createBatchMaterialUsage(batchMaterialUsage);
         return ResponseEntity.created(new URI("/api/batch-material-usages/" + batchMaterialUsage.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, batchMaterialUsage.getId().toString()))
             .body(batchMaterialUsage);
