@@ -143,7 +143,16 @@ export const BatchUpdate = () => {
                 ))}
               </ValidatedField>
               <UncontrolledTooltip target="currentPhaseLabel">Current lifecycle phase (state machine)</UncontrolledTooltip>
-              <ValidatedField label="Number Of Bags" id="batch-numberOfBags" name="numberOfBags" data-cy="numberOfBags" type="text" />
+              <ValidatedField
+                label="Number Of Bags"
+                id="batch-numberOfBags"
+                name="numberOfBags"
+                data-cy="numberOfBags"
+                type="text"
+                validate={{
+                  min: { value: 1, message: 'Number of bags must be > 0' },
+                }}
+              />
               <UncontrolledTooltip target="numberOfBagsLabel">Total substrate bags/blocks in batch</UncontrolledTooltip>
               <ValidatedField
                 label="Substrate Weight Kg"

@@ -47,7 +47,7 @@ export default () => next => action => {
       } else if (response.status === 0) {
         // connection refused, server not reachable
         addErrorAlert({
-          message: 'Server not reachable',
+          message: 'Network error, please try again',
         });
       } else if (response.status === 404) {
         addErrorAlert({
@@ -73,7 +73,8 @@ export default () => next => action => {
       /* eslint-disable no-console */
       console.log('Authentication Error: Trying to access url api/account with GET.');
     } else {
-      addErrorAlert({ message: error.message ?? 'Unknown error!' });
+      // Network error (e.g., no internet, DNS failure, timeout)
+      addErrorAlert({ message: 'Network error, please try again' });
     }
   } else if (error) {
     addErrorAlert({ message: error.message ?? 'Unknown error!' });

@@ -113,7 +113,7 @@ export const StrainUpdate = () => {
                 data-cy="name"
                 type="text"
                 validate={{
-                  required: { value: true, message: 'This field is required.' },
+                  required: { value: true, message: 'Name is required' },
                 }}
               />
               <UncontrolledTooltip target="nameLabel">e.g. &#34;Pleurotus ostreatus - Grey Dove&#34;</UncontrolledTooltip>
