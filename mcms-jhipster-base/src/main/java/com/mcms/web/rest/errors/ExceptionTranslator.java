@@ -223,9 +223,26 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             return "Data integrity violation";
         }
 
+        String lowerMessage = message.toLowerCase();
+
+        // Check for foreign key constraint violations (deletion with dependencies)
+        if (lowerMessage.contains("foreign key") || lowerMessage.contains("fk_") ||
+            lowerMessage.contains("violates foreign key constraint") ||
+            lowerMessage.contains("referential integrity constraint")) {
+
+            // Try to extract referenced table name
+            String entityName = extractEntityNameFromForeignKey(message);
+            if (entityName != null) {
+                return "Cannot delete this record. It is being used by " + entityName + " records.";
+            }
+
+            // Fallback message for foreign key violations
+            return "Cannot delete this record. It is referenced by other records.";
+        }
+
         // Check for unique constraint violation patterns
-        if (message.contains("ux_") || message.toLowerCase().contains("unique constraint") ||
-            message.toLowerCase().contains("duplicate")) {
+        if (message.contains("ux_") || lowerMessage.contains("unique constraint") ||
+            lowerMessage.contains("duplicate")) {
 
             // Try to extract field name from constraint name (ux_table__field_name)
             if (message.contains("ux_")) {
@@ -258,12 +275,45 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return "Data integrity violation";
     }
 
+    private String extractEntityNameFromForeignKey(String message) {
+        // Try to extract the referenced table name from the foreign key constraint
+        // Pattern examples:
+        // - fk_batch__strain_id
+        // - constraint "fk_batch__strain_id" on table "batch"
+
+        if (message.contains("fk_")) {
+            int fkIndex = message.indexOf("fk_");
+            int endIndex = message.indexOf("\"", fkIndex);
+            if (endIndex == -1) {
+                endIndex = message.indexOf("'", fkIndex);
+            }
+            if (endIndex == -1) {
+                endIndex = message.indexOf(" ", fkIndex);
+            }
+
+            if (endIndex > fkIndex) {
+                String constraintName = message.substring(fkIndex, endIndex);
+                // Pattern: fk_referencing_table__referenced_table_id
+                // Example: fk_batch__strain_id means batch references strain
+                int doubleUnderscoreIndex = constraintName.indexOf("__");
+                if (doubleUnderscoreIndex > 3) {
+                    // Extract the referencing table name (e.g., "batch" from "fk_batch__strain_id")
+                    String referencingTable = constraintName.substring(3, doubleUnderscoreIndex);
+                    // Convert to readable format: batch -> Batch
+                    return referencingTable.substring(0, 1).toUpperCase() + referencingTable.substring(1);
+                }
+            }
+        }
+
+        return null;
+    }
+
     private HttpStatus getMappedStatus(Throwable err) {
         // Where we disagree with Spring defaults
         if (err instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
         if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
-        if (err instanceof DataIntegrityViolationException) return HttpStatus.CONFLICT;
+        if (err instanceof DataIntegrityViolationException) return HttpStatus.BAD_REQUEST;
         return null;
     }
 
