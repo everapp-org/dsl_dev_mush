@@ -132,7 +132,17 @@ export const RoomUpdate = () => {
                 ))}
               </ValidatedField>
               <UncontrolledTooltip target="statusLabel">Current operational status</UncontrolledTooltip>
-              <ValidatedField label="Capacity Bags" id="room-capacityBags" name="capacityBags" data-cy="capacityBags" type="text" />
+              <ValidatedField
+                label="Capacity Bags"
+                id="room-capacityBags"
+                name="capacityBags"
+                data-cy="capacityBags"
+                type="number"
+                validate={{
+                  min: { value: 0, message: 'Must be a positive number' },
+                  pattern: { value: /^[0-9]+$/, message: 'Must be a number' },
+                }}
+              />
               <UncontrolledTooltip target="capacityBagsLabel">Max bag/block capacity</UncontrolledTooltip>
               <ValidatedField
                 label="Current Occupancy"
@@ -154,6 +164,9 @@ export const RoomUpdate = () => {
                 name="lastDisinfectionDate"
                 data-cy="lastDisinfectionDate"
                 type="date"
+                validate={{
+                  max: { value: new Date().toISOString().split('T')[0], message: 'Date cannot be in the future' },
+                }}
               />
               <UncontrolledTooltip target="lastDisinfectionDateLabel">When was it last disinfected?</UncontrolledTooltip>
               <ValidatedField label="Note" id="room-note" name="note" data-cy="note" type="textarea" />

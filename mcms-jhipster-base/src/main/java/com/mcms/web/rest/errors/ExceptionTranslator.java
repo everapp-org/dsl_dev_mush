@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -191,16 +192,22 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             return ErrorConstants.ERR_VALIDATION;
         } else if (err instanceof ConcurrencyFailureException || err.getCause() instanceof ConcurrencyFailureException) {
             return ErrorConstants.ERR_CONCURRENCY_FAILURE;
+        } else if (err instanceof DataIntegrityViolationException) {
+            return ErrorConstants.ERR_VALIDATION;
         }
         return null;
     }
 
     private String getCustomizedTitle(Throwable err) {
         if (err instanceof MethodArgumentNotValidException) return "Method argument not valid";
+        if (err instanceof DataIntegrityViolationException) return "Data integrity violation";
         return null;
     }
 
     private String getCustomizedErrorDetails(Throwable err) {
+        if (err instanceof DataIntegrityViolationException) {
+            return extractUniqueConstraintMessage((DataIntegrityViolationException) err);
+        }
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             if (err instanceof HttpMessageConversionException) return "Unable to convert http message";
@@ -210,11 +217,53 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return err.getCause() != null ? err.getCause().getMessage() : err.getMessage();
     }
 
+    private String extractUniqueConstraintMessage(DataIntegrityViolationException ex) {
+        String message = ex.getMostSpecificCause().getMessage();
+        if (message == null) {
+            return "Data integrity violation";
+        }
+
+        // Check for unique constraint violation patterns
+        if (message.contains("ux_") || message.toLowerCase().contains("unique constraint") ||
+            message.toLowerCase().contains("duplicate")) {
+
+            // Try to extract field name from constraint name (ux_table__field_name)
+            if (message.contains("ux_")) {
+                int uxIndex = message.indexOf("ux_");
+                int endIndex = message.indexOf("\"", uxIndex);
+                if (endIndex == -1) {
+                    endIndex = message.indexOf("'", uxIndex);
+                }
+                if (endIndex == -1) {
+                    endIndex = message.indexOf(" ", uxIndex);
+                }
+
+                if (endIndex > uxIndex) {
+                    String constraintName = message.substring(uxIndex, endIndex);
+                    // Extract field name after the last __ in pattern ux_table__field_name
+                    int doubleUnderscoreIndex = constraintName.lastIndexOf("__");
+                    if (doubleUnderscoreIndex > 0 && doubleUnderscoreIndex < constraintName.length() - 2) {
+                        String fieldName = constraintName.substring(doubleUnderscoreIndex + 2);
+                        // Convert snake_case to readable format
+                        fieldName = fieldName.replace("_", " ");
+                        return fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1) + " already exists";
+                    }
+                }
+            }
+
+            // Fallback for other unique constraint patterns
+            return "This value already exists. Please use a unique value.";
+        }
+
+        return "Data integrity violation";
+    }
+
     private HttpStatus getMappedStatus(Throwable err) {
         // Where we disagree with Spring defaults
         if (err instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
         if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
+        if (err instanceof DataIntegrityViolationException) return HttpStatus.CONFLICT;
         return null;
     }
 

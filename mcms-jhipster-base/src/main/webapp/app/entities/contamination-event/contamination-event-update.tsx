@@ -123,6 +123,7 @@ export const ContaminationEventUpdate = () => {
                 type="date"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
+                  max: { value: new Date().toISOString().split('T')[0], message: 'Date cannot be in the future' },
                 }}
               />
               <UncontrolledTooltip target="detectedDateLabel">When contamination was first observed</UncontrolledTooltip>
@@ -178,6 +179,9 @@ export const ContaminationEventUpdate = () => {
                 name="resolvedDate"
                 data-cy="resolvedDate"
                 type="date"
+                validate={{
+                  max: { value: new Date().toISOString().split('T')[0], message: 'Date cannot be in the future' },
+                }}
               />
               <UncontrolledTooltip target="resolvedDateLabel">When issue was resolved (null if ongoing)</UncontrolledTooltip>
               <ValidatedField label="Loss Kg" id="contamination-event-lossKg" name="lossKg" data-cy="lossKg" type="text" />

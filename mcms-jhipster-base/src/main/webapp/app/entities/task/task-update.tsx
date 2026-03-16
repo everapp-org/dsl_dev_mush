@@ -119,7 +119,16 @@ export const TaskUpdate = () => {
               <UncontrolledTooltip target="dueDateLabel">When it&#39;s due</UncontrolledTooltip>
               <ValidatedField label="Completed" id="task-completed" name="completed" data-cy="completed" check type="checkbox" />
               <UncontrolledTooltip target="completedLabel">Is it done?</UncontrolledTooltip>
-              <ValidatedField label="Completed Date" id="task-completedDate" name="completedDate" data-cy="completedDate" type="date" />
+              <ValidatedField
+                label="Completed Date"
+                id="task-completedDate"
+                name="completedDate"
+                data-cy="completedDate"
+                type="date"
+                validate={{
+                  max: { value: new Date().toISOString().split('T')[0], message: 'Date cannot be in the future' },
+                }}
+              />
               <UncontrolledTooltip target="completedDateLabel">When it was completed</UncontrolledTooltip>
               <ValidatedField
                 label="Priority"
