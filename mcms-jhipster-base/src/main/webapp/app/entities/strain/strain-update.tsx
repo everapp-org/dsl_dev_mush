@@ -207,8 +207,8 @@ export const StrainUpdate = () => {
               </Button>
               &nbsp;
               <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp; Save
+                <FontAwesomeIcon icon={updating ? 'spinner' : 'save'} spin={updating} />
+                &nbsp; {updating ? 'Saving...' : 'Save'}
               </Button>
             </ValidatedForm>
           )}

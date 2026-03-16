@@ -72,8 +72,11 @@ export default () => next => action => {
     } else if (error.config?.url?.endsWith('api/account') && error.config?.method === 'get') {
       /* eslint-disable no-console */
       console.log('Authentication Error: Trying to access url api/account with GET.');
+    } else if (error.code === 'ECONNABORTED') {
+      // Timeout error
+      addErrorAlert({ message: 'Request timed out, please try again' });
     } else {
-      // Network error (e.g., no internet, DNS failure, timeout)
+      // Network error (e.g., no internet, DNS failure)
       addErrorAlert({ message: 'Network error, please try again' });
     }
   } else if (error) {
