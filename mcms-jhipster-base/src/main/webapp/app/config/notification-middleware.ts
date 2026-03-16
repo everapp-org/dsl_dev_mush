@@ -41,7 +41,12 @@ export default () => next => action => {
     if (error.response) {
       const { response } = error;
       if (response.status === 401) {
-        // Ignore, page will be redirected to login.
+        // Show session expired message for 401 errors (except for login/account check endpoints)
+        if (!error.config?.url?.endsWith('api/account') && !error.config?.url?.endsWith('api/authenticate')) {
+          addErrorAlert({
+            message: 'Session expired',
+          });
+        }
       } else if (error.config?.url?.endsWith('api/account') || error.config?.url?.endsWith('api/authenticate')) {
         // Ignore, authentication status check and authentication are treated differently.
       } else if (response.status === 0) {

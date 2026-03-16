@@ -10,6 +10,7 @@ export const Login = () => {
   const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
   const loginError = useAppSelector(state => state.authentication.loginError);
   const showModalLogin = useAppSelector(state => state.authentication.showModalLogin);
+  const redirectMessage = useAppSelector(state => state.authentication.redirectMessage);
   const [showModal, setShowModal] = useState(showModalLogin);
   const navigate = useNavigate();
   const pageLocation = useLocation();
@@ -29,7 +30,15 @@ export const Login = () => {
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
   }
-  return <LoginModal showModal={showModal} handleLogin={handleLogin} handleClose={handleClose} loginError={loginError} />;
+  return (
+    <LoginModal
+      showModal={showModal}
+      handleLogin={handleLogin}
+      handleClose={handleClose}
+      loginError={loginError}
+      redirectMessage={redirectMessage}
+    />
+  );
 };
 
 export default Login;

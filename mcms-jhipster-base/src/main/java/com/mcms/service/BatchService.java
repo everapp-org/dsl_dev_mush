@@ -29,15 +29,18 @@ public class BatchService {
     private final BatchRepository batchRepository;
     private final PhaseExecutionRepository phaseExecutionRepository;
     private final FlushCycleRepository flushCycleRepository;
+    private final BatchStateMachineValidator stateMachineValidator;
 
     public BatchService(
         BatchRepository batchRepository,
         PhaseExecutionRepository phaseExecutionRepository,
-        FlushCycleRepository flushCycleRepository
+        FlushCycleRepository flushCycleRepository,
+        BatchStateMachineValidator stateMachineValidator
     ) {
         this.batchRepository = batchRepository;
         this.phaseExecutionRepository = phaseExecutionRepository;
         this.flushCycleRepository = flushCycleRepository;
+        this.stateMachineValidator = stateMachineValidator;
     }
 
     /**
@@ -57,6 +60,9 @@ public class BatchService {
 
         Batch batch = batchOpt.get();
         PhaseName oldPhase = batch.getCurrentPhase();
+
+        // Validate the transition using state machine rules
+        stateMachineValidator.validateTransition(oldPhase, targetPhase);
 
         // Close previous phase execution if exists
         List<PhaseExecution> activePhases = phaseExecutionRepository.findByBatchAndEndDateIsNull(batch);

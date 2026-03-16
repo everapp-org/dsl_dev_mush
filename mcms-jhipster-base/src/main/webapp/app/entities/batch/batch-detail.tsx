@@ -104,6 +104,21 @@ export const BatchDetail = () => {
                 <Button tag={Link} to={`/batch/${batchEntity.id}/edit`} replace color="primary" size="sm">
                   <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                 </Button>
+                {batchEntity.isActive && batchEntity.currentPhase !== 'COMPLETED' && (
+                  <>
+                    {' '}
+                    <Button
+                      tag={Link}
+                      to={`/batch/${batchEntity.id}/transition`}
+                      replace
+                      color="success"
+                      size="sm"
+                      data-cy="entityTransitionButton"
+                    >
+                      <FontAwesomeIcon icon="arrow-right" /> <span className="d-none d-md-inline">Transition</span>
+                    </Button>
+                  </>
+                )}
               </>
             )}
             {isAdminOrManager && batchEntity.isActive && (

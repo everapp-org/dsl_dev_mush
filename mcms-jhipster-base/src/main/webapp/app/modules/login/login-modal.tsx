@@ -7,6 +7,7 @@ import { type FieldError, useForm } from 'react-hook-form';
 export interface ILoginModalProps {
   showModal: boolean;
   loginError: boolean;
+  redirectMessage?: string;
   handleLogin: (username: string, password: string, rememberMe: boolean) => void;
   handleClose: () => void;
 }
@@ -22,7 +23,7 @@ const LoginModal = (props: ILoginModalProps) => {
     formState: { errors, touchedFields },
   } = useForm({ mode: 'onTouched' });
 
-  const { loginError, handleClose } = props;
+  const { loginError, redirectMessage, handleClose } = props;
 
   const handleLoginSubmit = e => {
     handleSubmit(login)(e);
@@ -37,6 +38,11 @@ const LoginModal = (props: ILoginModalProps) => {
         <ModalBody>
           <Row>
             <Col md="12">
+              {redirectMessage ? (
+                <Alert color="warning" data-cy="redirectMessage">
+                  {redirectMessage}
+                </Alert>
+              ) : null}
               {loginError ? (
                 <Alert color="danger" data-cy="loginError">
                   <strong>Failed to sign in!</strong> Please check your credentials and try again.

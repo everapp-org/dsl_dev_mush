@@ -13,6 +13,7 @@ import com.mcms.repository.BatchRepository;
 import com.mcms.repository.SalesOrderLineRepository;
 import com.mcms.repository.UserRepository;
 import com.mcms.service.BatchService;
+import com.mcms.service.exception.InvalidTransitionException;
 import com.mcms.web.rest.dto.DiscardBatchRequest;
 import com.mcms.web.rest.dto.ForceTransitionRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
@@ -530,6 +531,8 @@ public class BatchResource {
             return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
                 .body(batch);
+        } catch (InvalidTransitionException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "invalidtransition");
         } catch (IllegalArgumentException e) {
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "transitionfailed");
         }

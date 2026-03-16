@@ -13,7 +13,7 @@ import { loadIcons } from 'app/config/icon-loader';
 const store = getStore();
 
 const actions = bindActionCreators({ clearAuthentication }, store.dispatch);
-setupAxiosInterceptors(() => actions.clearAuthentication('login.error.unauthorized'));
+setupAxiosInterceptors(() => actions.clearAuthentication('Session expired'));
 
 loadIcons();
 
