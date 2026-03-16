@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input, Spinner, Row, Col, FormGroup, Label, Card, CardBody } from 'reactstrap';
+import { Button, Table, Input, Spinner, Row, Col, FormGroup, Label, Card, CardBody, Alert } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -32,6 +32,9 @@ export const Batch = () => {
     startDateFrom: '',
     startDateTo: '',
   });
+
+  // Track invalid page redirect
+  const [showInvalidPageMessage, setShowInvalidPageMessage] = useState(false);
 
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
@@ -114,6 +117,23 @@ export const Batch = () => {
     }
   }, [pageLocation.search]);
 
+  // Validate page number after data loads
+  useEffect(() => {
+    if (totalItems > 0 && !loading) {
+      const maxPage = Math.ceil(totalItems / paginationState.itemsPerPage);
+      if (paginationState.activePage > maxPage) {
+        // Redirect to last valid page
+        setShowInvalidPageMessage(true);
+        setPaginationState({
+          ...paginationState,
+          activePage: maxPage,
+        });
+        // Auto-hide message after 5 seconds
+        setTimeout(() => setShowInvalidPageMessage(false), 5000);
+      }
+    }
+  }, [totalItems, loading]);
+
   const sort = p => () => {
     setPaginationState({
       ...paginationState,
@@ -194,6 +214,13 @@ export const Batch = () => {
           )}
         </div>
       </h2>
+
+      {/* Invalid page message */}
+      {showInvalidPageMessage && (
+        <Alert color="info" className="mb-3">
+          <FontAwesomeIcon icon="info-circle" /> The requested page number was too high. Showing the last available page instead.
+        </Alert>
+      )}
 
       {/* Filter Section */}
       <Card className="mb-3">
@@ -377,19 +404,40 @@ export const Batch = () => {
           </Table>
         ) : (
           !loading && (
-            <div className="alert alert-warning">
-              {hasActiveFilters ? (
-                <>
-                  <div className="mb-2">
-                    <FontAwesomeIcon icon="filter" /> No batches match your current filters.
-                  </div>
-                  <Button color="primary" size="sm" onClick={handleClearFilters}>
-                    <FontAwesomeIcon icon="times" /> Clear All Filters
-                  </Button>
-                </>
-              ) : (
-                'No Batches found'
-              )}
+            <div className="text-center my-5">
+              <div className="alert alert-info d-inline-block">
+                {hasActiveFilters ? (
+                  <>
+                    <h4>No Results Found</h4>
+                    <p className="mb-3">
+                      <FontAwesomeIcon icon="filter" /> No batches match your current filters.
+                    </p>
+                    <p className="mb-3">Try:</p>
+                    <ul className="text-start" style={{ display: 'inline-block' }}>
+                      <li>Clearing some filters</li>
+                      <li>Selecting a different phase or strain</li>
+                      <li>Expanding the date range</li>
+                    </ul>
+                    <div className="mt-3">
+                      <Button color="secondary" onClick={handleClearFilters}>
+                        <FontAwesomeIcon icon="times" />
+                        &nbsp; Clear All Filters
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h4>No Batches Found</h4>
+                    <p className="mb-3">There are no batches in the system yet. Get started by creating your first batch.</p>
+                    {canModifyBatch && (
+                      <Link to="/batch/new" className="btn btn-primary btn-lg">
+                        <FontAwesomeIcon icon="plus" />
+                        &nbsp; Create Your First Batch
+                      </Link>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           )
         )}

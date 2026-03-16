@@ -212,12 +212,39 @@ export const Strain = () => {
           !loading && (
             <div className="text-center my-5">
               <div className="alert alert-info d-inline-block">
-                <h4>No Strains Found</h4>
-                <p className="mb-3">There are no strains in the system yet. Get started by creating your first strain.</p>
-                <Link to="/strain/new" className="btn btn-primary btn-lg" data-cy="emptyStateCreateButton">
-                  <FontAwesomeIcon icon="plus" />
-                  &nbsp; Create Your First Strain
-                </Link>
+                {searchTerm ? (
+                  <>
+                    <h4>No Results Found</h4>
+                    <p className="mb-3">
+                      No strains match your search for &quot;<strong>{searchTerm}</strong>&quot;
+                    </p>
+                    <p className="mb-3">Try:</p>
+                    <ul className="text-start" style={{ display: 'inline-block' }}>
+                      <li>Using different keywords</li>
+                      <li>Checking your spelling</li>
+                      <li>Using more general search terms</li>
+                    </ul>
+                    <div className="mt-3">
+                      <Button color="secondary" onClick={() => setSearchTerm('')} className="me-2">
+                        <FontAwesomeIcon icon="times" />
+                        &nbsp; Clear Search
+                      </Button>
+                      <Link to="/strain/new" className="btn btn-primary">
+                        <FontAwesomeIcon icon="plus" />
+                        &nbsp; Create New Strain
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h4>No Strains Found</h4>
+                    <p className="mb-3">There are no strains in the system yet. Get started by creating your first strain.</p>
+                    <Link to="/strain/new" className="btn btn-primary btn-lg" data-cy="emptyStateCreateButton">
+                      <FontAwesomeIcon icon="plus" />
+                      &nbsp; Create Your First Strain
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           )

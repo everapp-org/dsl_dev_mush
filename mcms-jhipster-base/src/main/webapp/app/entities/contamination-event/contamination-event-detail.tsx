@@ -113,9 +113,7 @@ export const ContaminationEventDetail = () => {
                 />
               </div>
             )}
-            <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>
-              {contaminationEventEntity.photosReference || 'No photo uploaded'}
-            </div>
+            <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>{contaminationEventEntity.photosReference || 'No photo uploaded'}</div>
           </dd>
           <dt>
             <span id="note">Note</span>
