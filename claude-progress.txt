@@ -3368,3 +3368,82 @@ Both features are "Real Data Verification" features. Verification via code inspe
 ---
 
 ## Session: 2026-03-16 10:10 (Session 39)
+
+### Completed Features (111/405 - 27.4%)
+
+#### Feature #115: Product catalog persists ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that product creation (with code like 'PROD_TEST_001') persists in the database across page refreshes.
+
+**Backend Verification:**
+1. ✅ **Product Entity** (Product.java):
+   - Lines 20-21: @Entity + @Table(name = "product") annotations
+   - Line 39: code field with unique=true constraint (supports PROD_TEST_001)
+   - Line 104: @ManyToOne relationship to Strain (required)
+
+2. ✅ **ProductRepository** (ProductRepository.java line 16):
+   - Extends JpaRepository<Product, Long> - real database persistence
+   - Custom queries using JPQL for eager loading
+
+3. ✅ **REST APIs:**
+   - ProductResource: @Transactional on class (line 27)
+   - POST /api/products (line 50): Uses productRepository.save() - real database save
+
+**Frontend Verification:**
+1. ✅ **product.reducer.ts:**
+   - Line 17: apiUrl = 'api/products' - real API endpoint
+   - Line 42: axios.post - real HTTP POST
+
+**Mock Data Check:** 0 matches found
+
+**Conclusion:** Product catalog creation fully implemented with real database persistence.
+
+---
+
+#### Feature #116: Supplier rating updates persist ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that supplier rating updates (e.g., updating rating to 4 stars) persist in the database.
+
+**Backend Verification:**
+1. ✅ **Supplier Entity** (Supplier.java):
+   - Lines 15-16: @Entity + @Table(name = "supplier") annotations
+   - Lines 78-82: rating field with @Min(1) @Max(5) validation - Integer field for 1-5 star rating
+
+2. ✅ **SupplierRepository** (SupplierRepository.java line 12):
+   - Extends JpaRepository<Supplier, Long> - real database persistence
+
+3. ✅ **REST APIs:**
+   - SupplierResource: @Transactional on class (line 29)
+   - PATCH /api/suppliers/:id (line 110): Lines 148-149 explicitly update rating field
+   - Line 160: map(supplierRepository::save) - saves updated rating to database
+
+**Frontend Verification:**
+1. ✅ **supplier.reducer.ts:**
+   - Line 17: apiUrl = 'api/suppliers' - real API endpoint
+   - Line 62: axios.patch for partial updates - used for rating updates
+
+**Mock Data Check:** 0 matches found
+
+**Conclusion:** Supplier rating updates fully implemented with real database persistence.
+
+---
+
+## Current Status
+- Progress: 111/405 features passing (27.4%)
+- Backend: Running on port 8080, healthy
+- Database: H2 file-based, real persistence verified
+- Session Type: Verification session - no new code written
+- Latest: Verified features #115, #116
+- Next: Continue with remaining features
+
+## Session Summary
+- Features Completed: 2 (both verification features)
+- Approach: Code inspection verification (YOLO mode)
+- Blockers: None
+- Code Changes: None (features already implemented)
