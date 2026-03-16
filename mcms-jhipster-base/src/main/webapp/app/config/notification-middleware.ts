@@ -53,6 +53,12 @@ export default () => next => action => {
         addErrorAlert({
           message: 'Not found',
         });
+      } else if (response.status === 409) {
+        // Optimistic locking / concurrency failure
+        const entityName = error.config?.url?.split('/').pop()?.replace(/s$/, '') || 'record';
+        addErrorAlert({
+          message: `${entityName.charAt(0).toUpperCase() + entityName.slice(1)} was modified by another user`,
+        });
       } else {
         const { data } = response;
         const problem = isProblemWithMessage(data) ? data : null;

@@ -106,7 +106,19 @@ export const SupplierUpdate = () => {
               <UncontrolledTooltip target="typeLabel">What they supply</UncontrolledTooltip>
               <ValidatedField label="Contact Person" id="supplier-contactPerson" name="contactPerson" data-cy="contactPerson" type="text" />
               <UncontrolledTooltip target="contactPersonLabel">Primary contact name</UncontrolledTooltip>
-              <ValidatedField label="Email" id="supplier-email" name="email" data-cy="email" type="text" />
+              <ValidatedField
+                label="Email"
+                id="supplier-email"
+                name="email"
+                data-cy="email"
+                type="text"
+                validate={{
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: 'Invalid email format',
+                  },
+                }}
+              />
               <UncontrolledTooltip target="emailLabel">Email</UncontrolledTooltip>
               <ValidatedField label="Phone" id="supplier-phone" name="phone" data-cy="phone" type="text" />
               <UncontrolledTooltip target="phoneLabel">Phone number</UncontrolledTooltip>

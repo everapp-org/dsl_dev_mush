@@ -205,7 +205,17 @@ export const BatchUpdate = () => {
               <UncontrolledTooltip target="completionNoteLabel">Final notes upon batch closure</UncontrolledTooltip>
               <ValidatedField label="Note" id="batch-note" name="note" data-cy="note" type="textarea" />
               <UncontrolledTooltip target="noteLabel">General batch notes</UncontrolledTooltip>
-              <ValidatedField id="batch-strain" name="strain" data-cy="strain" label="Strain" type="select" required>
+              <ValidatedField
+                id="batch-strain"
+                name="strain"
+                data-cy="strain"
+                label="Strain"
+                type="select"
+                required
+                validate={{
+                  required: { value: true, message: 'Strain is required' },
+                }}
+              >
                 <option value="" key="0" />
                 {strains
                   ? strains.map(otherEntity => (
@@ -215,7 +225,6 @@ export const BatchUpdate = () => {
                     ))
                   : null}
               </ValidatedField>
-              <FormText>This field is required.</FormText>
               <ValidatedField id="batch-recipe" name="recipe" data-cy="recipe" label="Recipe" type="select" required>
                 <option value="" key="0" />
                 {substrateRecipes

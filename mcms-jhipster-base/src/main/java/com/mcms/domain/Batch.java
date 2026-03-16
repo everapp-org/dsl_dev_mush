@@ -31,6 +31,10 @@ public class Batch implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     /**
      * Unique identifier, e.g. \"PO-2025-001\"
      */
@@ -161,6 +165,14 @@ public class Batch implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getBatchCode() {

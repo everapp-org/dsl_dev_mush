@@ -91,7 +91,19 @@ export const CustomerUpdate = () => {
               />
               <UncontrolledTooltip target="nameLabel">Business or individual name</UncontrolledTooltip>
               <ValidatedField label="Contact Person" id="customer-contactPerson" name="contactPerson" data-cy="contactPerson" type="text" />
-              <ValidatedField label="Email" id="customer-email" name="email" data-cy="email" type="text" />
+              <ValidatedField
+                label="Email"
+                id="customer-email"
+                name="email"
+                data-cy="email"
+                type="text"
+                validate={{
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: 'Invalid email format',
+                  },
+                }}
+              />
               <ValidatedField label="Phone" id="customer-phone" name="phone" data-cy="phone" type="text" />
               <ValidatedField label="Address" id="customer-address" name="address" data-cy="address" type="textarea" />
               <ValidatedField
