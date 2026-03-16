@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import tech.jhipster.config.JHipsterConstants;
 import tech.jhipster.web.rest.errors.ProblemDetailWithCause;
@@ -194,6 +195,8 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             return ErrorConstants.ERR_CONCURRENCY_FAILURE;
         } else if (err instanceof DataIntegrityViolationException) {
             return ErrorConstants.ERR_VALIDATION;
+        } else if (err instanceof MaxUploadSizeExceededException) {
+            return "error.fileupload.sizelimit";
         }
         return null;
     }
@@ -201,12 +204,16 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     private String getCustomizedTitle(Throwable err) {
         if (err instanceof MethodArgumentNotValidException) return "Method argument not valid";
         if (err instanceof DataIntegrityViolationException) return "Data integrity violation";
+        if (err instanceof MaxUploadSizeExceededException) return "File too large";
         return null;
     }
 
     private String getCustomizedErrorDetails(Throwable err) {
         if (err instanceof DataIntegrityViolationException) {
             return extractUniqueConstraintMessage((DataIntegrityViolationException) err);
+        }
+        if (err instanceof MaxUploadSizeExceededException) {
+            return "File too large, max 10MB";
         }
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
@@ -314,6 +321,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
         if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
         if (err instanceof DataIntegrityViolationException) return HttpStatus.BAD_REQUEST;
+        if (err instanceof MaxUploadSizeExceededException) return HttpStatus.PAYLOAD_TOO_LARGE;
         return null;
     }
 

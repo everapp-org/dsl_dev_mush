@@ -49,6 +49,11 @@ export default () => next => action => {
         }
       } else if (error.config?.url?.endsWith('api/account') || error.config?.url?.endsWith('api/authenticate')) {
         // Ignore, authentication status check and authentication are treated differently.
+      } else if (response.status === 403) {
+        // Forbidden - user doesn't have permission
+        addErrorAlert({
+          message: "You don't have permission",
+        });
       } else if (response.status === 0) {
         // connection refused, server not reachable
         addErrorAlert({
