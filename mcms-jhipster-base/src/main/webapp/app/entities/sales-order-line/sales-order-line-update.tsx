@@ -212,11 +212,13 @@ export const SalesOrderLineUpdate = () => {
               <ValidatedField id="sales-order-line-product" name="product" data-cy="product" label="Product" type="select" required>
                 <option value="" key="0" />
                 {products
-                  ? products.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.name}
-                      </option>
-                    ))
+                  ? products
+                      .filter(p => p.active)
+                      .map(otherEntity => (
+                        <option value={otherEntity.id} key={otherEntity.id}>
+                          {otherEntity.name}
+                        </option>
+                      ))
                   : null}
               </ValidatedField>
               <FormText>This field is required.</FormText>
