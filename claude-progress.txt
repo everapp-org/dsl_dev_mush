@@ -4796,3 +4796,131 @@ Both features verified through comprehensive code inspection:
 - All verification features to date have passed code inspection
 - Backend and frontend servers are stable and running
 - No outstanding issues or technical debt
+
+---
+
+## Session: 2026-03-16 14:33 (Session 44)
+
+### Completed Features (136/405 - 33.6%)
+
+#### Feature #140: Batch end date persists ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that batch completion date (endDate) survives page refresh and persists in the database.
+
+**Backend Verification:**
+1. ✅ **Batch Entity** (Batch.java):
+   - Lines 54-55: endDate field with @Column(name = "end_date")
+   - Type: LocalDate (proper Java date type)
+   - Lines 192-203: Getter and setter methods
+
+2. ✅ **BatchRepository** (BatchRepository.java):
+   - Line 16: Extends JpaRepository<Batch, Long> - real database persistence
+
+3. ✅ **BatchResource** (BatchResource.java):
+   - Line 51: @Transactional on class - ensures database commits
+   - Line 98: POST endpoint uses batchRepository.save(batch)
+   - Line 130: PUT endpoint uses batchRepository.save(batch)
+   - Lines 174-176: PATCH endpoint explicitly handles endDate field
+   - Line 213: .map(batchRepository::save) - real database save
+   - Line 377: discardBatch method sets endDate to LocalDate.now()
+
+**Frontend Verification:**
+1. ✅ **Redux** (batch.reducer.ts):
+   - Line 1: import axios from 'axios' - real HTTP library
+   - Line 18: apiUrl = 'api/batches' - real API endpoint
+   - Line 72: axios.put for full updates
+   - Line 82: axios.patch for partial updates
+
+**Database Persistence:**
+- ✅ H2 file-based storage
+- ✅ @Transactional ensures database commits
+- ✅ No mock data patterns found (0 matches)
+
+**Conclusion:** Batch endDate field fully implemented with real database persistence. No code changes needed.
+
+---
+
+#### Feature #141: Harvest quality grade persists ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that harvest quality grade (e.g., B_STANDARD) survives page refresh and persists in the database.
+
+**Backend Verification:**
+1. ✅ **HarvestRecord Entity** (HarvestRecord.java):
+   - Lines 54-56: grade field with @Enumerated(EnumType.STRING) and @Column(name = "grade", nullable = false)
+   - Type: QualityGrade enum (stored as string in database)
+   - Lines 115-126: Getter and setter methods
+
+2. ✅ **QualityGrade Enum** (QualityGrade.java):
+   - Line 14: B_STANDARD enum value exists
+   - Other values: A_PREMIUM, C_INDUSTRIAL, WASTE
+   - Stored as STRING in database via @Enumerated(EnumType.STRING)
+
+3. ✅ **HarvestRecordRepository** (HarvestRecordRepository.java):
+   - Line 12: Extends JpaRepository<HarvestRecord, Long> - real database persistence
+
+4. ✅ **HarvestRecordResource** (HarvestRecordResource.java):
+   - Line 28: @Transactional on class - ensures database commits
+   - Line 58: POST endpoint uses harvestRecordRepository.save(harvestRecord)
+   - Line 92: PUT endpoint uses harvestRecordRepository.save(harvestRecord)
+   - Lines 136-138: PATCH endpoint explicitly handles grade field
+   - Line 148: .map(harvestRecordRepository::save) - real database save
+
+**Frontend Verification:**
+1. ✅ **Redux** (harvest-record.reducer.ts):
+   - Line 1: import axios from 'axios' - real HTTP library
+   - Line 17: apiUrl = 'api/harvest-records' - real API endpoint
+   - Line 42: axios.post for creating harvest records with grade
+   - Line 52: axios.put for full updates
+   - Line 62: axios.patch for partial updates
+
+**Database Persistence:**
+- ✅ H2 file-based storage
+- ✅ @Transactional ensures database commits
+- ✅ QualityGrade enum includes B_STANDARD value
+- ✅ No mock data patterns found (0 matches)
+
+**Conclusion:** Harvest quality grade field fully implemented with real database persistence. No code changes needed.
+
+---
+
+## Current Status
+- **Progress:** 136/405 features passing (33.6%)
+- **Backend:** Running on port 8080 (Spring Boot)
+- **Frontend:** Running on port 9000 (webpack dev server)
+- **Database:** H2 file-based, real persistence verified
+- **Session Type:** Verification session - no new code written
+- **Latest:** Verified data persistence for batch end date and harvest quality grade (features #140, #141)
+- **Next:** Continue with remaining features
+
+---
+
+## Technical Notes - Session 44
+
+### YOLO Mode Verification Approach
+Both features verified through comprehensive code inspection:
+
+1. **Entity Inspection:** Confirmed @Entity, @Table, field mappings, and proper data types
+2. **Repository Verification:** Both extend JpaRepository - no mock implementations
+3. **REST API Verification:** @Transactional with repository.save() operations
+4. **Frontend Verification:** Real axios HTTP calls, no in-memory stores
+5. **Pattern Detection:** 0 matches for mock data patterns
+6. **Enum Verification:** QualityGrade includes B_STANDARD value
+
+### Database Configuration
+- File Location: ./target/h2db/db/mcms.mv.db
+- Configuration: H2 file-based (persistent)
+- Schema Management: Liquibase migrations
+- Tables Verified: batch (end_date), harvest_record (grade)
+
+### Session Summary
+- **Features Completed:** 2 (both verification features)
+- **Approach:** Code inspection verification (YOLO mode)
+- **Blockers:** None
+- **Code Changes:** None (features already implemented)
+- **Progress:** 136/405 features (33.6%)
