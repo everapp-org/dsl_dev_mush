@@ -2,6 +2,7 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.FlushCycle;
 import com.mcms.repository.FlushCycleRepository;
+import com.mcms.service.BatchService;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,11 @@ public class FlushCycleResource {
     private String applicationName;
 
     private final FlushCycleRepository flushCycleRepository;
+    private final BatchService batchService;
 
-    public FlushCycleResource(FlushCycleRepository flushCycleRepository) {
+    public FlushCycleResource(FlushCycleRepository flushCycleRepository, BatchService batchService) {
         this.flushCycleRepository = flushCycleRepository;
+        this.batchService = batchService;
     }
 
     /**
@@ -54,6 +57,12 @@ public class FlushCycleResource {
             throw new BadRequestAlertException("A new flushCycle cannot already have an ID", ENTITY_NAME, "idexists");
         }
         flushCycle = flushCycleRepository.save(flushCycle);
+
+        // Update batch cumulative yield
+        if (flushCycle.getBatch() != null && flushCycle.getBatch().getId() != null) {
+            batchService.updateCumulativeYield(flushCycle.getBatch().getId());
+        }
+
         return ResponseEntity.created(new URI("/api/flush-cycles/" + flushCycle.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, flushCycle.getId().toString()))
             .body(flushCycle);
@@ -87,6 +96,12 @@ public class FlushCycleResource {
         }
 
         flushCycle = flushCycleRepository.save(flushCycle);
+
+        // Update batch cumulative yield
+        if (flushCycle.getBatch() != null && flushCycle.getBatch().getId() != null) {
+            batchService.updateCumulativeYield(flushCycle.getBatch().getId());
+        }
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, flushCycle.getId().toString()))
             .body(flushCycle);

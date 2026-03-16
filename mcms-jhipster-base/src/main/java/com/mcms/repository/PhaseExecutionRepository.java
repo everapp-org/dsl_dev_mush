@@ -46,4 +46,10 @@ public interface PhaseExecutionRepository extends JpaRepository<PhaseExecution, 
         "select phaseExecution from PhaseExecution phaseExecution left join fetch phaseExecution.room where phaseExecution.batch.id = :batchId order by phaseExecution.sequenceOrder asc"
     )
     List<PhaseExecution> findByBatchIdOrderBySequenceOrder(@Param("batchId") Long batchId);
+
+    // Find active (not ended) phase executions for a batch
+    List<PhaseExecution> findByBatchAndEndDateIsNull(com.mcms.domain.Batch batch);
+
+    // Count total phase executions for a batch
+    long countByBatch(com.mcms.domain.Batch batch);
 }

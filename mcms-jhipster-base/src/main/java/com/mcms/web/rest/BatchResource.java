@@ -6,11 +6,13 @@ import com.mcms.domain.BatchMaterialUsage;
 import com.mcms.domain.InventoryLot;
 import com.mcms.domain.SalesOrderLine;
 import com.mcms.domain.SupplyOrderLine;
+import com.mcms.domain.enumeration.PhaseName;
 import com.mcms.repository.BatchAuditLogRepository;
 import com.mcms.repository.BatchMaterialUsageRepository;
 import com.mcms.repository.BatchRepository;
 import com.mcms.repository.SalesOrderLineRepository;
 import com.mcms.repository.UserRepository;
+import com.mcms.service.BatchService;
 import com.mcms.web.rest.dto.DiscardBatchRequest;
 import com.mcms.web.rest.dto.ForceTransitionRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
@@ -64,6 +66,7 @@ public class BatchResource {
     private final UserRepository userRepository;
     private final BatchMaterialUsageRepository batchMaterialUsageRepository;
     private final SalesOrderLineRepository salesOrderLineRepository;
+    private final BatchService batchService;
 
     public BatchResource(
         BatchRepository batchRepository,
@@ -71,7 +74,8 @@ public class BatchResource {
         PasswordEncoder passwordEncoder,
         UserRepository userRepository,
         BatchMaterialUsageRepository batchMaterialUsageRepository,
-        SalesOrderLineRepository salesOrderLineRepository
+        SalesOrderLineRepository salesOrderLineRepository,
+        BatchService batchService
     ) {
         this.batchRepository = batchRepository;
         this.auditLogRepository = auditLogRepository;
@@ -79,6 +83,7 @@ public class BatchResource {
         this.userRepository = userRepository;
         this.batchMaterialUsageRepository = batchMaterialUsageRepository;
         this.salesOrderLineRepository = salesOrderLineRepository;
+        this.batchService = batchService;
     }
 
     /**
@@ -503,6 +508,71 @@ public class BatchResource {
             return "\"" + value.replace("\"", "\"\"") + "\"";
         }
         return value;
+    }
+
+    /**
+     * {@code POST  /batches/:id/transition} : Transition a batch to a new phase with phase execution logging.
+     *
+     * @param id the id of the batch to transition.
+     * @param request the force transition request with target phase.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated batch.
+     */
+    @PostMapping("/{id}/transition")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+    public ResponseEntity<Batch> transitionPhase(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody ForceTransitionRequest request
+    ) {
+        LOG.debug("REST request to transition Batch {} to phase {}", id, request.getTargetPhase());
+
+        try {
+            Batch batch = batchService.transitionPhase(id, request.getTargetPhase());
+            return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
+                .body(batch);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "transitionfailed");
+        }
+    }
+
+    /**
+     * {@code POST  /batches/:id/complete} : Complete a batch, calculating yields and marking inactive.
+     *
+     * @param id the id of the batch to complete.
+     * @param request the discard request (reused for completion note).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the completed batch.
+     */
+    @PostMapping("/{id}/complete")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+    public ResponseEntity<Batch> completeBatch(
+        @PathVariable("id") Long id,
+        @RequestBody(required = false) DiscardBatchRequest request
+    ) {
+        LOG.debug("REST request to complete Batch : {}", id);
+
+        try {
+            String completionNote = request != null ? request.getReason() : null;
+            Batch batch = batchService.completeBatch(id, completionNote);
+            return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
+                .body(batch);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "completionfailed");
+        }
+    }
+
+    /**
+     * {@code GET  /batches/:id/cumulative-yield} : Get cumulative yield from all flush cycles.
+     *
+     * @param id the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the cumulative yield.
+     */
+    @GetMapping("/{id}/cumulative-yield")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public ResponseEntity<java.math.BigDecimal> getCumulativeYield(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get cumulative yield for Batch : {}", id);
+        java.math.BigDecimal yield = batchService.calculateCumulativeYield(id);
+        return ResponseEntity.ok().body(yield);
     }
 
     /**

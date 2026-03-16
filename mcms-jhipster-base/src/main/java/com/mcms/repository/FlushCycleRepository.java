@@ -40,4 +40,9 @@ public interface FlushCycleRepository extends JpaRepository<FlushCycle, Long> {
 
     @Query("select flushCycle from FlushCycle flushCycle where flushCycle.batch.id = :batchId order by flushCycle.flushNumber asc")
     List<FlushCycle> findByBatchIdOrderByFlushNumber(@Param("batchId") Long batchId);
+
+    // Alias for finding flush cycles by batch ID
+    default List<FlushCycle> findByBatchId(Long batchId) {
+        return findByBatchIdOrderByFlushNumber(batchId);
+    }
 }
