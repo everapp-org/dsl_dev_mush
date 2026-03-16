@@ -76,10 +76,24 @@ export const PhaseExecutionDetail = () => {
             <UncontrolledTooltip target="note">Phase observations &amp; notes</UncontrolledTooltip>
           </dt>
           <dd>{phaseExecutionEntity.note}</dd>
-          <dt>Batch</dt>
-          <dd>{phaseExecutionEntity.batch ? phaseExecutionEntity.batch.batchCode : ''}</dd>
-          <dt>Room</dt>
-          <dd>{phaseExecutionEntity.room ? phaseExecutionEntity.room.name : ''}</dd>
+          <dt>
+            <span id="batch">Batch</span>
+            <UncontrolledTooltip target="batch">Batch this phase execution belongs to</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {phaseExecutionEntity.batch ? (
+              <Link to={`/batch/${phaseExecutionEntity.batch.id}`}>{phaseExecutionEntity.batch.batchCode}</Link>
+            ) : (
+              ''
+            )}
+          </dd>
+          <dt>
+            <span id="room">Room</span>
+            <UncontrolledTooltip target="room">Room where this phase was executed</UncontrolledTooltip>
+          </dt>
+          <dd>
+            {phaseExecutionEntity.room ? <Link to={`/room/${phaseExecutionEntity.room.id}`}>{phaseExecutionEntity.room.name}</Link> : ''}
+          </dd>
         </dl>
         <Button tag={Link} to="/phase-execution" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

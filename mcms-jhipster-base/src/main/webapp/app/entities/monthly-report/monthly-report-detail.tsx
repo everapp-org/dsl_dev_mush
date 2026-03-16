@@ -16,9 +16,12 @@ export const MonthlyReportDetail = () => {
 
   useEffect(() => {
     dispatch(getEntity(id));
+    dispatch(getBatchesForReport(id));
   }, []);
 
   const monthlyReportEntity = useAppSelector(state => state.monthlyReport.entity);
+  const batchesForReport = useAppSelector(state => state.monthlyReport.batchesForReport);
+  const loadingBatches = useAppSelector(state => state.monthlyReport.loadingBatches);
   return (
     <Row>
       <Col md="8">
@@ -85,6 +88,37 @@ export const MonthlyReportDetail = () => {
           <dt>Batch</dt>
           <dd>{monthlyReportEntity.batch ? monthlyReportEntity.batch.batchCode : ''}</dd>
         </dl>
+        <h4 className="mt-4">Batches Included in Report Period</h4>
+        {loadingBatches ? (
+          <div className="text-center">
+            <FontAwesomeIcon icon="spinner" spin /> Loading batches...
+          </div>
+        ) : batchesForReport && batchesForReport.length > 0 ? (
+          <Table responsive striped>
+            <thead>
+              <tr>
+                <th>Batch Code</th>
+                <th>Start Date</th>
+                <th>Current Phase</th>
+                <th>Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              {batchesForReport.map(batch => (
+                <tr key={batch.id}>
+                  <td>
+                    <Link to={`/batch/${batch.id}`}>{batch.batchCode}</Link>
+                  </td>
+                  <td>{batch.startDate ? <TextFormat type="date" value={batch.startDate} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>{batch.currentPhase}</td>
+                  <td>{batch.isActive ? 'Yes' : 'No'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <div className="alert alert-warning">No batches started in this reporting period</div>
+        )}
         <Button tag={Link} to="/monthly-report" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
