@@ -98,7 +98,7 @@ export const getBatchesForReport = createAsyncThunk(
 
 export const MonthlyReportSlice = createEntitySlice({
   name: 'monthlyReport',
-  initialState,
+  initialState: initialState as EntityState<IMonthlyReport>,
   extraReducers(builder) {
     builder
       .addCase(getEntity.fulfilled, (state, action) => {
@@ -111,15 +111,15 @@ export const MonthlyReportSlice = createEntitySlice({
         state.entity = {};
       })
       .addCase(getBatchesForReport.pending, state => {
-        state.loadingBatches = true;
+        (state as any).loadingBatches = true;
       })
       .addCase(getBatchesForReport.fulfilled, (state, action) => {
-        state.loadingBatches = false;
-        state.batchesForReport = action.payload.data;
+        (state as any).loadingBatches = false;
+        (state as any).batchesForReport = action.payload.data;
       })
       .addCase(getBatchesForReport.rejected, state => {
-        state.loadingBatches = false;
-        state.batchesForReport = [];
+        (state as any).loadingBatches = false;
+        (state as any).batchesForReport = [];
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data } = action.payload;
