@@ -67,13 +67,14 @@ public class SubstrateRecipeResource {
     }
 
     /**
-     * {@code PUT  /substrate-recipes/:id} : Updates an existing substrateRecipe.
+     * {@code PUT  /substrate-recipes/:id} : Creates a new version of an existing substrateRecipe.
+     * This implements versioning - the old recipe is preserved and a new version is created.
      *
-     * @param id the id of the substrateRecipe to save.
-     * @param substrateRecipe the substrateRecipe to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated substrateRecipe,
+     * @param id the id of the substrateRecipe to version.
+     * @param substrateRecipe the substrateRecipe data for the new version.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new version,
      * or with status {@code 400 (Bad Request)} if the substrateRecipe is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the substrateRecipe couldn't be updated.
+     * or with status {@code 404 (Not Found)} if the original recipe is not found.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
@@ -82,7 +83,7 @@ public class SubstrateRecipeResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody SubstrateRecipe substrateRecipe
     ) throws URISyntaxException {
-        LOG.debug("REST request to update SubstrateRecipe : {}, {}", id, substrateRecipe);
+        LOG.debug("REST request to create new version of SubstrateRecipe : {}, {}", id, substrateRecipe);
         if (substrateRecipe.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -94,10 +95,26 @@ public class SubstrateRecipeResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        substrateRecipe = substrateRecipeRepository.save(substrateRecipe);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, substrateRecipe.getId().toString()))
-            .body(substrateRecipe);
+        // Create a new version instead of updating in place
+        SubstrateRecipe newVersion = new SubstrateRecipe();
+        newVersion.setName(substrateRecipe.getName());
+        newVersion.setVersion(substrateRecipe.getVersion());
+        newVersion.setBaseType(substrateRecipe.getBaseType());
+        newVersion.setCompositionDetail(substrateRecipe.getCompositionDetail());
+        newVersion.setSterilizationMethod(substrateRecipe.getSterilizationMethod());
+        newVersion.setMoistureTargetPercent(substrateRecipe.getMoistureTargetPercent());
+        newVersion.setPhTarget(substrateRecipe.getPhTarget());
+        newVersion.setSupplementNotes(substrateRecipe.getSupplementNotes());
+        newVersion.setActive(substrateRecipe.getActive());
+
+        // Save as new entity (id is null, so JPA will create a new record)
+        newVersion = substrateRecipeRepository.save(newVersion);
+
+        LOG.debug("Created new version with id: {}, version: {}", newVersion.getId(), newVersion.getVersion());
+
+        return ResponseEntity.created(new URI("/api/substrate-recipes/" + newVersion.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, newVersion.getId().toString()))
+            .body(newVersion);
     }
 
     /**

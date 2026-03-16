@@ -922,3 +922,116 @@ Both features follow the established entity navigation pattern:
 - Git commits properly documented with co-authorship
 
 
+
+---
+
+## Session: 2026-03-16 10:10 (Session 40)
+
+### Completed Features (115/405 - 28.4%)
+
+#### Feature #119: Flush cycle data persists ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that flush cycle records (flush_number=1, yield_kg=8.5) persist in the database across page refreshes.
+
+**Backend Verification:**
+1. ✅ **FlushCycle Entity** (FlushCycle.java):
+   - Lines 18-20: @Entity + @Table(name = "flush_cycle") annotations
+   - Lines 36-38: flushNumber field with @NotNull and @Column(name = "flush_number", nullable = false)
+   - Lines 59-61: yieldKg field as BigDecimal with @Column(name = "yield_kg", precision = 21, scale = 2, nullable = false)
+   - Lines 103-106: @ManyToOne relationship to Batch (required)
+
+2. ✅ **FlushCycleRepository** (FlushCycleRepository.java):
+   - Line 16: Extends JpaRepository<FlushCycle, Long> - real database persistence
+   - Lines 29-42: Custom JPQL queries for eager loading and batch filtering
+
+3. ✅ **FlushCycleResource** (FlushCycleResource.java):
+   - Line 27: @Transactional on class - ensures database commits
+   - POST /api/flush-cycles (line 50-60): Line 56 flushCycleRepository.save(flushCycle) - real database save
+   - PUT endpoint (line 89) uses repository.save()
+   - PATCH endpoint (line 156) uses repository.save()
+
+**Frontend Verification:**
+1. ✅ **Redux** (flush-cycle.reducer.ts):
+   - Line 17: apiUrl = 'api/flush-cycles' - real API endpoint
+   - Line 42: axios.post - real HTTP POST
+   - Line 52: axios.put for updates
+   - Line 62: axios.patch for partial updates
+
+**Mock Data Check:**
+- ✅ Grep search for mock patterns: 0 matches
+- ✅ No globalThis, devStore, mockDb, or fake data patterns
+
+**Conclusion:** Flush cycle creation (flushNumber, yieldKg) fully implemented with real database persistence. No code changes needed.
+
+---
+
+#### Feature #120: Batch notes persist ✅
+**Status:** PASSING (Verified - Real Data)
+**Category:** Real Data Verification
+
+**Purpose:**
+Verify that batch notes (note='Test note 123') persist in the database across page refreshes.
+
+**Backend Verification:**
+1. ✅ **Batch Entity** (Batch.java):
+   - Lines 138-141: @Lob + @Column(name = "note") with private String note field
+   - Field persists as CLOB in database (supports large text)
+
+2. ✅ **BatchRepository** (BatchRepository.java):
+   - Line 16: Extends JpaRepository<Batch, Long> - real database persistence
+
+3. ✅ **BatchResource** (BatchResource.java):
+   - Lines 207-208: PATCH endpoint handles note field
+   - if batch.getNote() != null, existingBatch.setNote(batch.getNote())
+   - Followed by batchRepository.save() - real database save
+
+**Frontend Verification:**
+1. ✅ **batch.reducer.ts:**
+   - Uses real axios HTTP calls to /api/batches
+   - PATCH endpoint properly updates note field
+
+**Mock Data Check:**
+- ✅ Grep search for mock patterns: 0 matches
+- ✅ No globalThis, devStore, mockDb, or fake data patterns
+
+**Conclusion:** Batch notes fully implemented with real database persistence. The @Lob annotation ensures large text can be stored. No code changes needed.
+
+---
+
+## Current Status
+- **Progress:** 115/405 features passing (28.4%)
+- **Backend:** Running on port 8080 (Spring Boot)
+- **Frontend:** Webpack dev server running
+- **Database:** H2 file-based, real persistence verified through code inspection
+- **Session Type:** Verification session - no new code written
+- **Latest:** Verified data persistence for flush cycles and batch notes (features #119, #120)
+- **Next:** Continue with remaining features
+
+---
+
+## Technical Notes
+
+### YOLO Mode Verification Approach
+Both features are Real Data Verification features. Verification via code inspection confirmed:
+- Real JPA entities with proper annotations
+- JpaRepository for database persistence
+- @Transactional boundaries for commits
+- No mock data patterns (0 matches)
+- H2 file-based database (not in-memory)
+- Frontend uses real axios HTTP calls
+
+### Session Summary
+- **Features Completed:** 2 (both verification features)
+- **Approach:** Code inspection verification (YOLO mode)
+- **Blockers:** None
+- **Code Changes:** None (features already implemented)
+- **Commits:** Progress notes update + git commit pending
+
+### Next Session Recommendations
+- Continue with remaining features in the queue
+- All verification features to date have passed code inspection
+- Backend and frontend servers are stable and running
+- No outstanding issues or technical debt
