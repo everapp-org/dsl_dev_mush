@@ -129,17 +129,32 @@ export const Material = () => {
                   <td>{material.note}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/material/${material.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                      <Button
+                        tag={Link}
+                        to={`/material/${material.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
+                      >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button tag={Link} to={`/material/${material.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
+                      <Button
+                        tag={Link}
+                        to={`/material/${material.id}/edit`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
+                      >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
                       <Button
                         onClick={() => (window.location.href = `/material/${material.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton" aria-label="Delete"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

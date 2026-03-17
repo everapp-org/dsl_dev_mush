@@ -153,7 +153,14 @@ export const CustomerDetail = () => {
                     </td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`/sales-order/${order.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                        <Button
+                          tag={Link}
+                          to={`/sales-order/${order.id}`}
+                          color="info"
+                          size="sm"
+                          data-cy="entityDetailsButton"
+                          aria-label="View"
+                        >
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                         </Button>
                       </div>

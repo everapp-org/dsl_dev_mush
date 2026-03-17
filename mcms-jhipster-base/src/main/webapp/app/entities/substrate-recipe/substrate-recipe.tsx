@@ -150,7 +150,8 @@ export const SubstrateRecipe = () => {
                         to={`/substrate-recipe/${substrateRecipe.id}`}
                         color="info"
                         size="sm"
-                        data-cy="entityDetailsButton" aria-label="View"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
@@ -161,7 +162,8 @@ export const SubstrateRecipe = () => {
                             to={`/substrate-recipe/${substrateRecipe.id}/edit`}
                             color="primary"
                             size="sm"
-                            data-cy="entityEditButton" aria-label="Edit"
+                            data-cy="entityEditButton"
+                            aria-label="Edit"
                           >
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                           </Button>
@@ -169,7 +171,8 @@ export const SubstrateRecipe = () => {
                             onClick={() => (window.location.href = `/substrate-recipe/${substrateRecipe.id}/delete`)}
                             color="danger"
                             size="sm"
-                            data-cy="entityDeleteButton" aria-label="Delete"
+                            data-cy="entityDeleteButton"
+                            aria-label="Delete"
                           >
                             <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                           </Button>

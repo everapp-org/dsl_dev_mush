@@ -176,17 +176,32 @@ export const SalesOrder = () => {
                   <td>{salesOrder.customer ? <Link to={`/customer/${salesOrder.customer.id}`}>{salesOrder.customer.name}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/sales-order/${salesOrder.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                      <Button
+                        tag={Link}
+                        to={`/sales-order/${salesOrder.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
+                      >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button tag={Link} to={`/sales-order/${salesOrder.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
+                      <Button
+                        tag={Link}
+                        to={`/sales-order/${salesOrder.id}/edit`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
+                      >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
                       <Button
                         onClick={() => (window.location.href = `/sales-order/${salesOrder.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton" aria-label="Delete"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

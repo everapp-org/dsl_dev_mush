@@ -423,7 +423,14 @@ export const Batch = () => {
                       </Button>
                       {canModifyBatch && !batch._isOptimistic && (
                         <>
-                          <Button tag={Link} to={`/batch/${batch.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
+                          <Button
+                            tag={Link}
+                            to={`/batch/${batch.id}/edit`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                            aria-label="Edit"
+                          >
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                           </Button>
                           <Button

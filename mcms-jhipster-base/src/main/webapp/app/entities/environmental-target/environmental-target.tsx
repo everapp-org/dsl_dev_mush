@@ -156,7 +156,8 @@ export const EnvironmentalTarget = () => {
                         to={`/environmental-target/${environmentalTarget.id}`}
                         color="info"
                         size="sm"
-                        data-cy="entityDetailsButton" aria-label="View"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
@@ -167,7 +168,8 @@ export const EnvironmentalTarget = () => {
                             to={`/environmental-target/${environmentalTarget.id}/edit`}
                             color="primary"
                             size="sm"
-                            data-cy="entityEditButton" aria-label="Edit"
+                            data-cy="entityEditButton"
+                            aria-label="Edit"
                           >
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                           </Button>
@@ -175,7 +177,8 @@ export const EnvironmentalTarget = () => {
                             onClick={() => (window.location.href = `/environmental-target/${environmentalTarget.id}/delete`)}
                             color="danger"
                             size="sm"
-                            data-cy="entityDeleteButton" aria-label="Delete"
+                            data-cy="entityDeleteButton"
+                            aria-label="Delete"
                           >
                             <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                           </Button>

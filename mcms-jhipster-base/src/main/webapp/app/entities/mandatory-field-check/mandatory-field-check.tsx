@@ -134,7 +134,8 @@ export const MandatoryFieldCheck = () => {
                         to={`/mandatory-field-check/${mandatoryFieldCheck.id}`}
                         color="info"
                         size="sm"
-                        data-cy="entityDetailsButton" aria-label="View"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
@@ -143,7 +144,8 @@ export const MandatoryFieldCheck = () => {
                         to={`/mandatory-field-check/${mandatoryFieldCheck.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton" aria-label="Edit"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -151,7 +153,8 @@ export const MandatoryFieldCheck = () => {
                         onClick={() => (window.location.href = `/mandatory-field-check/${mandatoryFieldCheck.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton" aria-label="Delete"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

@@ -151,7 +151,14 @@ export const SalesOrderLine = () => {
                   </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/sales-order-line/${salesOrderLine.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                      <Button
+                        tag={Link}
+                        to={`/sales-order-line/${salesOrderLine.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
+                      >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
                       <Button
@@ -159,7 +166,8 @@ export const SalesOrderLine = () => {
                         to={`/sales-order-line/${salesOrderLine.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton" aria-label="Edit"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -167,7 +175,8 @@ export const SalesOrderLine = () => {
                         onClick={() => (window.location.href = `/sales-order-line/${salesOrderLine.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton" aria-label="Delete"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

@@ -162,7 +162,8 @@ export const BatchMaterialUsage = () => {
                         to={`/batch-material-usage/${batchMaterialUsage.id}`}
                         color="info"
                         size="sm"
-                        data-cy="entityDetailsButton" aria-label="View"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
@@ -171,7 +172,8 @@ export const BatchMaterialUsage = () => {
                         to={`/batch-material-usage/${batchMaterialUsage.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton" aria-label="Edit"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -179,7 +181,8 @@ export const BatchMaterialUsage = () => {
                         onClick={() => (window.location.href = `/batch-material-usage/${batchMaterialUsage.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton" aria-label="Delete"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

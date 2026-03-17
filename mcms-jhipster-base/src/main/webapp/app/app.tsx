@@ -57,7 +57,13 @@ export const App = () => {
             overflow: 'hidden',
           }}
         />
-        <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" role="region" aria-label="Notifications" />
+        <ToastContainer
+          position="top-left"
+          className="toastify-container"
+          toastClassName="toastify-toast"
+          role="region"
+          aria-label="Notifications"
+        />
         <ErrorBoundary>
           <Header
             isAuthenticated={isAuthenticated}

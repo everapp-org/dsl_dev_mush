@@ -155,14 +155,22 @@ export const Room = () => {
                       </Button>
                       {isAdmin && (
                         <>
-                          <Button tag={Link} to={`/room/${room.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
+                          <Button
+                            tag={Link}
+                            to={`/room/${room.id}/edit`}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                            aria-label="Edit"
+                          >
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                           </Button>
                           <Button
                             onClick={() => (window.location.href = `/room/${room.id}/delete`)}
                             color="danger"
                             size="sm"
-                            data-cy="entityDeleteButton" aria-label="Delete"
+                            data-cy="entityDeleteButton"
+                            aria-label="Delete"
                           >
                             <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                           </Button>
