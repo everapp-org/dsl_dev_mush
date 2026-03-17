@@ -160,14 +160,23 @@ public class CostRecordResource {
      * {@code GET  /cost-records} : get all the costRecords.
      *
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param batchId optional filter to get cost records for a specific batch.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of costRecords in body.
      */
     @GetMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public List<CostRecord> getAllCostRecords(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @RequestParam(name = "batchId", required = false) Long batchId
     ) {
-        LOG.debug("REST request to get all CostRecords");
+        LOG.debug("REST request to get all CostRecords, batchId: {}", batchId);
+
+        // If batchId is provided, filter by batch
+        if (batchId != null) {
+            return costRecordRepository.findByBatchIdOrderByRecordDateDesc(batchId);
+        }
+
+        // Otherwise, return all cost records
         if (eagerload) {
             return costRecordRepository.findAllWithEagerRelationships();
         } else {

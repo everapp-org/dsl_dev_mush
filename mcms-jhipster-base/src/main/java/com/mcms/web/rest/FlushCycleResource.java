@@ -180,13 +180,22 @@ public class FlushCycleResource {
      * {@code GET  /flush-cycles} : get all the flushCycles.
      *
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param batchId optional filter to get flush cycles for a specific batch.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of flushCycles in body.
      */
     @GetMapping("")
     public List<FlushCycle> getAllFlushCycles(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @RequestParam(name = "batchId", required = false) Long batchId
     ) {
-        LOG.debug("REST request to get all FlushCycles");
+        LOG.debug("REST request to get all FlushCycles, batchId: {}", batchId);
+
+        // If batchId is provided, filter by batch
+        if (batchId != null) {
+            return flushCycleRepository.findByBatchIdOrderByFlushNumber(batchId);
+        }
+
+        // Otherwise, return all flush cycles
         if (eagerload) {
             return flushCycleRepository.findAllWithEagerRelationships();
         } else {

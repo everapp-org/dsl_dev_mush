@@ -46,12 +46,12 @@ export const BatchDetail = () => {
           break;
         }
         case 'harvests': {
-          const flushRes = await axios.get(`/api/flush-cycles/by-batch/${id}`);
+          const flushRes = await axios.get(`/api/flush-cycles?batchId=${id}`);
           setFlushCycles(flushRes.data);
           break;
         }
         case 'costs': {
-          const costRes = await axios.get(`/api/cost-records/by-batch/${id}`);
+          const costRes = await axios.get(`/api/cost-records?batchId=${id}`);
           setCostRecords(costRes.data);
           break;
         }
