@@ -17,6 +17,7 @@ export interface ISalesOrder {
   paymentStatus?: keyof typeof PaymentStatus;
   paymentDueDate?: dayjs.Dayjs | null;
   paymentReceivedDate?: dayjs.Dayjs | null;
+  paymentAmount?: number | null;
   shippingAddress?: string | null;
   note?: string | null;
   customer?: ICustomer;

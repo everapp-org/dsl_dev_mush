@@ -57,6 +57,9 @@ export const SalesOrderUpdate = () => {
     if (values.totalRevenue !== undefined && typeof values.totalRevenue !== 'number') {
       values.totalRevenue = Number(values.totalRevenue);
     }
+    if (values.paymentAmount !== undefined && typeof values.paymentAmount !== 'number') {
+      values.paymentAmount = Number(values.paymentAmount);
+    }
 
     const entity = {
       ...salesOrderEntity,
@@ -196,6 +199,27 @@ export const SalesOrderUpdate = () => {
                 type="date"
               />
               <UncontrolledTooltip target="paymentReceivedDateLabel">When payment was received</UncontrolledTooltip>
+              <ValidatedField
+                label="Payment Amount"
+                id="sales-order-paymentAmount"
+                name="paymentAmount"
+                data-cy="paymentAmount"
+                type="text"
+                validate={{
+                  min: { value: 0, message: 'Payment amount must be positive' },
+                  validate: {
+                    notExceedTotal: (value, formValues) => {
+                      if (!value) return true; // Allow empty
+                      const totalRevenue = formValues.totalRevenue || salesOrderEntity?.totalRevenue;
+                      if (totalRevenue && Number(value) > Number(totalRevenue)) {
+                        return 'Payment amount cannot exceed order total';
+                      }
+                      return true;
+                    },
+                  },
+                }}
+              />
+              <UncontrolledTooltip target="paymentAmountLabel">Amount paid (must not exceed total revenue)</UncontrolledTooltip>
               <ValidatedField
                 label="Shipping Address"
                 id="sales-order-shippingAddress"

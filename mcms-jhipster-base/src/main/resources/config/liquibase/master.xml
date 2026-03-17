@@ -50,6 +50,7 @@
     <include file="config/liquibase/changelog/20260223133400_added_entity_ReportAuditLog.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260223140000_add_password_changed_at_to_user.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260317000000_add_version_to_batch.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260317160000_add_payment_amount_to_sales_order.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260222143012_added_entity_constraints_Batch.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222143013_added_entity_constraints_PhaseExecution.xml" relativeToChangelogFile="false"/>

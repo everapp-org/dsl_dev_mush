@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import jakarta.validation.constraints.AssertTrue;
 
 /**
  * Sales order header - order from a customer.
@@ -125,6 +126,13 @@ public class SalesOrder implements Serializable {
     private LocalDate paymentReceivedDate;
 
     /**
+     * Amount paid (must not exceed total revenue)
+     */
+    @Schema(description = "Amount paid (must not exceed total revenue)")
+    @Column(name = "payment_amount", precision = 21, scale = 2)
+    private BigDecimal paymentAmount;
+
+    /**
      * Delivery address
      */
     @Schema(description = "Delivery address")
@@ -141,6 +149,17 @@ public class SalesOrder implements Serializable {
     private Customer customer;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    /**
+     * Validation: Payment amount cannot exceed total revenue
+     */
+    @AssertTrue(message = "Payment amount cannot exceed order total")
+    private boolean isPaymentAmountValid() {
+        if (paymentAmount == null || totalRevenue == null) {
+            return true; // No validation if either is null
+        }
+        return paymentAmount.compareTo(totalRevenue) <= 0;
+    }
 
     public Long getId() {
         return this.id;
@@ -311,6 +330,19 @@ public class SalesOrder implements Serializable {
         this.paymentReceivedDate = paymentReceivedDate;
     }
 
+    public BigDecimal getPaymentAmount() {
+        return this.paymentAmount;
+    }
+
+    public SalesOrder paymentAmount(BigDecimal paymentAmount) {
+        this.setPaymentAmount(paymentAmount);
+        return this;
+    }
+
+    public void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
     public String getShippingAddress() {
         return this.shippingAddress;
     }
@@ -386,6 +418,7 @@ public class SalesOrder implements Serializable {
             ", paymentStatus='" + getPaymentStatus() + "'" +
             ", paymentDueDate='" + getPaymentDueDate() + "'" +
             ", paymentReceivedDate='" + getPaymentReceivedDate() + "'" +
+            ", paymentAmount=" + getPaymentAmount() +
             ", shippingAddress='" + getShippingAddress() + "'" +
             ", note='" + getNote() + "'" +
             "}";
