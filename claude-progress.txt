@@ -7639,3 +7639,102 @@ The export feature demonstrates clean separation:
 - Ready for next feature batch
 
 ---
+
+---
+
+## Session: 2026-03-17 (Session 69)
+
+### Completed Features (207/405 - 51.1%)
+
+#### Feature #210: Date fields formatted correctly ✅
+**Status:** PASSING (Verified existing implementation)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Verify that date fields are properly serialized/deserialized between frontend and backend using ISO 8601 format, and displayed in user-friendly local format in the UI.
+
+**Implementation (Already in place):**
+
+1. **Backend - Java Entity (Batch.java):**
+   - Uses LocalDate type for startDate and endDate fields
+   - Lines 51-59: @NotNull annotation, @Column mapping
+
+2. **Backend - Jackson Configuration (JacksonConfiguration.java):**
+   - Line 23: JavaTimeModule configured as Spring Bean
+   - Automatically serializes LocalDate to ISO 8601 format (YYYY-MM-DD)
+   - Automatically deserializes ISO 8601 strings to LocalDate
+
+3. **Frontend - TypeScript Model (batch.model.ts):**
+   - Lines 9-10: Uses dayjs.Dayjs type for date fields
+   - Dayjs library handles ISO 8601 parsing automatically
+
+4. **Frontend - Form Input (batch-update.tsx):**
+   - Lines 125-136: HTML5 type="date" input
+   - Natively handles ISO 8601 format
+   - Browser provides locale-aware date picker
+
+5. **Frontend - Display Format:**
+   - batch-detail.tsx lines 244, 250: Uses TextFormat component
+   - batch.tsx lines 390-391: Consistent formatting in list view
+   - Format: APP_LOCAL_DATE_FORMAT = DD/MM/YYYY
+   - Displays dates as "17/03/2026" (user-friendly)
+
+**Data Flow:**
+Create/Update: HTML5 input → ISO 8601 string → Jackson → LocalDate → Database
+Read: Database → LocalDate → Jackson → ISO 8601 → Dayjs → TextFormat → DD/MM/YYYY
+
+**Verification Steps:**
+1. ✅ Backend uses LocalDate type (not Date or String)
+2. ✅ Jackson JavaTimeModule configured
+3. ✅ ISO 8601 serialization automatic
+4. ✅ Frontend uses dayjs.Dayjs type
+5. ✅ HTML5 date input handles ISO 8601
+6. ✅ TextFormat displays in local format (DD/MM/YYYY)
+7. ✅ Consistent across list and detail views
+
+**YOLO Verification:**
+- ✅ Frontend lints: npm run lint succeeded (0 errors, 1 pre-existing warning)
+- ✅ Backend compiles: mvn compile succeeded
+- ✅ Code inspection: All date handling uses proper types and formatters
+
+---
+
+#### Feature #211: Enum values match backend ✅
+**Status:** PASSING (Verified existing implementation)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Verify that frontend TypeScript enums match backend Java enums for PhaseName and ContaminationType.
+
+**Implementation (Already in place):**
+
+1. **Backend - PhaseName Enum:**
+   - 10 values: INOCULATION, EARLY_COLONIZATION, FULL_COLONIZATION, CONSOLIDATION, FRUITING_TRIGGER, PRIMORDIA, FRUITING_BODY_GROWTH, HARVEST, REHYDRATION_PAUSE, COMPLETED
+
+2. **Frontend - PhaseName Enum:**
+   - 10 values: All match backend exactly
+   - Format: INOCULATION = 'INOCULATION' (explicit string enum)
+
+3. **Backend - ContaminationType Enum:**
+   - 9 values: TRICHODERMA, COBWEB, BLACK_MOLD, BACTERIAL_BLOTCH, WET_BUBBLE, DRY_BUBBLE, INSECT, UNKNOWN, OTHER
+
+4. **Frontend - ContaminationType Enum:**
+   - 9 values: All match backend exactly
+
+**Verification Steps:**
+1. ✅ PhaseName: 10 values match perfectly (backend ↔ frontend)
+2. ✅ ContaminationType: 9 values match perfectly (backend ↔ frontend)
+3. ✅ Phase dropdown uses Object.keys(PhaseName)
+4. ✅ Contamination type dropdown uses Object.keys(ContaminationType)
+5. ✅ Jackson serializes enums by name
+6. ✅ TypeScript uses explicit string enums for type safety
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both UI-Backend Integration)
+- **Approach:** Code verification - both features already properly implemented
+- **Documentation:** Created comprehensive verification document
+- **Progress:** 207/405 features (51.1%)
+- **Commit:** 3699f27 - docs: verify date formatting and enum matching
+
