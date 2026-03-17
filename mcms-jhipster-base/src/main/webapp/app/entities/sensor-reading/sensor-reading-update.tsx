@@ -120,7 +120,7 @@ export const SensorReadingUpdate = () => {
                   required: { value: true, message: 'This field is required.' },
                   validate: {
                     number: v => isNumber(v) || 'This field should be a number.',
-                    reasonableRange: (v, formValues) => {
+                    reasonableRange(v, formValues) {
                       if (!v || !isNumber(v)) return true; // Let the number check handle this
                       const numValue = Number(v);
                       const unit = formValues.unit || sensorReadingEntity?.unit || 'CELSIUS';
@@ -150,6 +150,9 @@ export const SensorReadingUpdate = () => {
                           if (numValue < 0 || numValue > 50) {
                             return 'Airflow must be between 0 and 50 m/s';
                           }
+                          break;
+                        default:
+                          // Unknown unit, no validation
                           break;
                       }
                       return true;

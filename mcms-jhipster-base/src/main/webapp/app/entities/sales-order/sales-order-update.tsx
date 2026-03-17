@@ -208,7 +208,7 @@ export const SalesOrderUpdate = () => {
                 validate={{
                   min: { value: 0, message: 'Payment amount must be positive' },
                   validate: {
-                    notExceedTotal: (value, formValues) => {
+                    notExceedTotal(value, formValues) {
                       if (!value) return true; // Allow empty
                       const totalRevenue = formValues.totalRevenue || salesOrderEntity?.totalRevenue;
                       if (totalRevenue && Number(value) > Number(totalRevenue)) {
