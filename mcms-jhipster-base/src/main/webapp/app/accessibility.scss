@@ -245,3 +245,63 @@ WCAG AA Requirements:
     color: #000000 !important;
   }
 }
+
+/* ==========================================================================
+Feature #271: Error messages announced to screen readers
+Ensures form validation errors are accessible via ARIA live regions
+========================================================================== */
+
+/* Screen reader announcement region (visually hidden but accessible) */
+#sr-announcements {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Ensure form validation errors are properly styled and accessible */
+.invalid-feedback {
+  display: block !important;
+  color: #c00000 !important;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Ensure form fields with errors have proper visual indicators */
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid {
+  border-color: #dc3545 !important;
+  padding-right: calc(1.5em + 0.75rem) !important;
+}
+
+/* Alert components should be accessible to screen readers */
+.alert {
+  /* Bootstrap already adds role="alert" but ensure it's there */
+  &[role='alert'] {
+    /* Screen readers will announce these automatically */
+  }
+}
+
+/* Form error summary (if present) should be announced */
+.form-errors-summary {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+
+  h4 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+  }
+}

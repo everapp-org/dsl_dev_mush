@@ -43,7 +43,21 @@ export const App = () => {
         Skip to main content
       </a>
       <div className={`app-container ${isAuthenticated ? 'with-sidebar' : ''}`} style={{ paddingTop }}>
-        <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" />
+        {/* Feature #271: ARIA live region for screen reader announcements */}
+        <div
+          id="sr-announcements"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          style={{
+            position: 'absolute',
+            left: '-10000px',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        />
+        <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" role="region" aria-label="Notifications" />
         <ErrorBoundary>
           <Header
             isAuthenticated={isAuthenticated}
