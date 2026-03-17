@@ -228,14 +228,14 @@ public class TaskResource {
     }
 
     /**
-     * {@code POST  /tasks/:id/complete} : Mark a task as complete.
+     * {@code PATCH  /tasks/:id/complete} : Mark a task as complete.
      * ROLE_OPERATOR can complete tasks assigned to them.
      * ROLE_ADMIN and ROLE_MANAGER can complete any task.
      *
      * @param id the id of the task to complete.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated task.
      */
-    @PostMapping("/{id}/complete")
+    @PatchMapping("/{id}/complete")
     @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.MANAGER + "', '" + AuthoritiesConstants.OPERATOR + "')")
     public ResponseEntity<Task> completeTask(@PathVariable("id") Long id) {
         LOG.debug("REST request to complete Task : {}", id);

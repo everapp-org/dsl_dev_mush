@@ -75,7 +75,7 @@ export const Task = () => {
     if (window.confirm('Mark this task as complete?')) {
       try {
         setCompletingTaskId(taskId);
-        await axios.post(`/api/tasks/${taskId}/complete`);
+        await axios.patch(`/api/tasks/${taskId}/complete`);
         // Refresh the list to show updated status
         sortEntities();
       } catch (error) {
