@@ -40,7 +40,11 @@ export const overridePaginationStateWithQueryParams = (paginationBaseState: IPag
   const params = new URLSearchParams(locationSearch);
   const page = params.get('page');
   if (page) {
-    sortedPaginationState.activePage = +page;
+    const pageNumber = parseInt(page, 10);
+    // Only use the page number if it's a valid positive integer, otherwise keep default
+    if (!isNaN(pageNumber) && pageNumber > 0) {
+      sortedPaginationState.activePage = pageNumber;
+    }
   }
   return sortedPaginationState;
 };

@@ -51,10 +51,7 @@ export const EmptySearchResults: React.FC<EmptySearchResultsProps> = ({
             <h4>No Results Found</h4>
             {searchDescription && (
               <p className="mb-3">
-                No {entityName.toLowerCase()} match{' '}
-                <strong>
-                  &quot;{searchDescription}&quot;
-                </strong>
+                No {entityName.toLowerCase()} match <strong>&quot;{searchDescription}&quot;</strong>
               </p>
             )}
             <p className="mb-3">Try:</p>

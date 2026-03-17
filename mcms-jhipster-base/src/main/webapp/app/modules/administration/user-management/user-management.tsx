@@ -45,9 +45,10 @@ export const UserManagement = () => {
     const sortParam = params.get(SORT);
     if (page && sortParam) {
       const sortSplit = sortParam.split(',');
+      const pageNumber = parseInt(page, 10);
       setPagination({
         ...pagination,
-        activePage: +page,
+        activePage: !isNaN(pageNumber) && pageNumber > 0 ? pageNumber : 1,
         sort: sortSplit[0],
         order: sortSplit[1],
       });
