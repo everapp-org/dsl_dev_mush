@@ -228,9 +228,9 @@ export const BatchUpdate = () => {
                 type="date"
                 validate={{
                   validate: {
-                    afterStartDate(value, allValues) {
-                      if (!value || !allValues.startDate) return true; // Skip if either is empty
-                      const startDate = new Date(allValues.startDate);
+                    afterStartDate(value, formData) {
+                      if (!value || !formData.startDate) return true; // Skip if either is empty
+                      const startDate = new Date(formData.startDate);
                       const endDate = new Date(value);
                       return endDate > startDate || 'End date must be after start date';
                     },

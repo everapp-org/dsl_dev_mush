@@ -88,7 +88,7 @@ const LoginModal = (props: ILoginModalProps) => {
           </Alert>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={handleClose} tabIndex={1}>
+          <Button color="secondary" onClick={handleClose}>
             Cancel
           </Button>{' '}
           <Button color="primary" type="submit" data-cy="submit">

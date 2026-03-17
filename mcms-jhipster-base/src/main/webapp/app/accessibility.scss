@@ -1,0 +1,163 @@
+/* ==========================================================================
+Accessibility Styles - Features #266 and #267
+========================================================================== */
+
+/* Feature #267: Focus rings visible - ensure keyboard focus is clearly indicated */
+
+/* High contrast focus ring for all focusable elements */
+*:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Enhanced focus for form inputs */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Enhanced focus for buttons */
+button:focus,
+.btn:focus,
+a.btn:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Enhanced focus for links */
+a:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Override Bootstrap's focus-visible */
+.btn:focus-visible,
+button:focus-visible {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Override icon button focus removal - Feature #267 critical fix */
+.icon-button > .btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Enhanced focus for checkboxes and radio buttons */
+input[type='checkbox']:focus,
+input[type='radio']:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Feature #266: Tab navigation - Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #0056b3;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  font-weight: bold;
+  border-radius: 0 0 4px 0;
+
+  &:focus {
+    top: 0;
+    outline: 2px solid #ffffff !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Ensure interactive elements have visible focus in high contrast mode */
+@media (prefers-contrast: high) {
+  *:focus {
+    outline: 3px solid currentColor !important;
+    outline-offset: 3px !important;
+  }
+}
+
+/* Feature #266: Keyboard navigation indicators */
+/* Show clear focus within dropdowns and menus */
+.dropdown-item:focus,
+.nav-link:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: -2px !important;
+  background-color: rgba(0, 86, 179, 0.1);
+}
+
+/* Sidebar navigation focus */
+.sidebar .nav-link:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: -2px !important;
+  background-color: rgba(0, 86, 179, 0.15);
+}
+
+/* Table row focus for keyboard navigation */
+tr:focus-within {
+  background-color: rgba(0, 86, 179, 0.05);
+}
+
+/* Modal focus trap - ensure focus is visible within modals */
+.modal-content *:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Card and panel focus */
+.card:focus-within {
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Action button group focus */
+.btn-group > .btn:focus {
+  z-index: 2;
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Breadcrumb focus */
+.breadcrumb-item a:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+  text-decoration: underline;
+}
+
+/* Pagination focus */
+.page-link:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: -2px !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important;
+}
+
+/* Tab navigation focus */
+.nav-tabs .nav-link:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: -2px !important;
+}
+
+/* Feature #266: Ensure all interactive SVG icons are keyboard accessible */
+svg[role='button']:focus,
+svg.clickable:focus {
+  outline: 2px solid #0056b3 !important;
+  outline-offset: 2px !important;
+}
+
+/* Mobile touch target size (WCAG 2.1 Level AAA) */
+@media (max-width: 767px) {
+  button,
+  .btn,
+  a,
+  input[type='checkbox'],
+  input[type='radio'],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

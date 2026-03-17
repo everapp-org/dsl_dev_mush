@@ -70,7 +70,7 @@ export const EnvironmentalAlertAcknowledgeDialog = () => {
           />
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={handleClose} tabIndex={1}>
+          <Button color="secondary" onClick={handleClose}>
             <FontAwesomeIcon icon="ban" />
             &nbsp; Cancel
           </Button>

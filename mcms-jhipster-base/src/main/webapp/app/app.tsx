@@ -39,6 +39,9 @@ export const App = () => {
   return (
     <BrowserRouter basename={baseHref}>
       <ScrollRestoration />
+      <a href="#app-view-container" className="skip-to-main">
+        Skip to main content
+      </a>
       <div className={`app-container ${isAuthenticated ? 'with-sidebar' : ''}`} style={{ paddingTop }}>
         <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" />
         <ErrorBoundary>
