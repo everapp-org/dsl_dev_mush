@@ -8,6 +8,7 @@ import { IBatch, defaultValue } from 'app/shared/model/batch.model';
 // Extend EntityState to include optimistic entity tracking
 interface BatchState extends EntityState<IBatch> {
   optimisticEntity: IBatch | null;
+  deletedEntity: IBatch | null; // Track deleted entity for rollback on error
 }
 
 const initialState: BatchState = {
@@ -19,6 +20,7 @@ const initialState: BatchState = {
   totalItems: 0,
   updateSuccess: false,
   optimisticEntity: null, // Track optimistically added entity
+  deletedEntity: null, // Track deleted entity for potential rollback
 };
 
 const apiUrl = 'api/batches';
@@ -127,10 +129,42 @@ export const BatchSlice = createEntitySlice({
         state.loading = false;
         state.entity = action.payload.data;
       })
+      // Optimistic UI: Remove entity immediately on delete pending
+      .addCase(deleteEntity.pending, (state, action) => {
+        state.errorMessage = null;
+        state.updateSuccess = false;
+        state.updating = true;
+
+        // Find and store the entity being deleted for potential rollback
+        const entityId = action.meta.arg;
+        const entityToDelete = state.entities.find(e => e.id === entityId);
+        if (entityToDelete) {
+          state.deletedEntity = entityToDelete;
+          // Remove entity immediately (optimistic delete)
+          state.entities = state.entities.filter(e => e.id !== entityId);
+          state.totalItems = state.totalItems - 1;
+        }
+      })
       .addCase(deleteEntity.fulfilled, state => {
         state.updating = false;
         state.updateSuccess = true;
         state.entity = {};
+        // Clear deleted entity - delete was successful
+        state.deletedEntity = null;
+      })
+      // Optimistic UI: Restore entity on delete failure
+      .addCase(deleteEntity.rejected, (state, action) => {
+        state.updating = false;
+        state.loading = false;
+        state.updateSuccess = false;
+        state.errorMessage = action.error.message;
+
+        // Rollback: restore the deleted entity
+        if (state.deletedEntity) {
+          state.entities = [state.deletedEntity, ...state.entities];
+          state.totalItems = state.totalItems + 1;
+          state.deletedEntity = null;
+        }
       })
       // Optimistic UI: Add entity immediately on create pending
       .addCase(createEntity.pending, (state, action) => {
@@ -191,6 +225,7 @@ export const BatchSlice = createEntitySlice({
             return order === ASC ? (a[predicate] < b[predicate] ? -1 : 1) : b[predicate] < a[predicate] ? -1 : 1;
           }),
           optimisticEntity: null, // Clear optimistic entity when fresh data loads
+          deletedEntity: null, // Clear deleted entity when fresh data loads
         };
       })
       .addMatcher(isFulfilled(updateEntity, partialUpdateEntity, discardBatch), (state, action) => {
