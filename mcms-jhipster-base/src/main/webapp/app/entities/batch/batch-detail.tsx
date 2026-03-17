@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane, Table, Alert } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +14,8 @@ import { getEntity } from './batch.reducer';
 
 export const BatchDetail = () => {
   const dispatch = useAppDispatch();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [phaseExecutions, setPhaseExecutions] = useState([]);
   const [flushCycles, setFlushCycles] = useState([]);
   const [costRecords, setCostRecords] = useState([]);
