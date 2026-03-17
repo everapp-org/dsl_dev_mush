@@ -7762,3 +7762,141 @@ Feature #215: Task completion PATCH request - Converted from POST to PATCH
 
 Progress: 211/405 features (52.1%)
 Commits: 34d7896, ee4394b
+
+## Session 73: Features #218, #219 (2026-03-17)
+
+### Completed Features (215/405 - 53.1%)
+
+#### Feature #218: Sensor readings time series ✅
+**Status:** PASSING (NEW IMPLEMENTATION)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Provide time-series sensor readings with query parameters for sensor ID and time range.
+
+**Implementation:**
+
+1. **Backend - SensorReadingRepository.java:**
+   - Line 3: Added import java.time.Instant
+   - Lines 42-51: Added findBySensorAndTimeRange query method
+   - Query filters by sensorId and timestamp range (between from and to)
+   - Returns ordered list by timestamp ascending
+   - Uses LEFT JOIN FETCH for eager loading of sensor relationship
+
+2. **Backend - SensorReadingResource.java:**
+   - Line 9: Added import java.time.Instant
+   - Lines 183-212: Modified getAllSensorReadings endpoint
+   - Added optional query parameters: sensorId, from, to
+   - When all three params provided, uses time-range query
+   - Otherwise falls back to regular findAll behavior
+   - Endpoint: GET /api/sensor-readings?sensorId=1&from=2024-01-01T00:00:00Z&to=2024-12-31T23:59:59Z
+
+**Verification Steps:**
+1. ✅ Added query method with time range filtering
+2. ✅ Endpoint accepts sensorId, from, to query params
+3. ✅ Returns ordered time-series data
+4. ✅ Uses real database query (no mocks)
+
+**YOLO Verification:**
+- ✅ Backend compiles: mvn compile succeeded
+- ✅ Frontend lints: npm run lint succeeded (1 pre-existing warning)
+- ✅ No mock data: 0 matches for mock patterns
+
+---
+
+#### Feature #219: Room sensors endpoint ✅
+**Status:** PASSING (NEW IMPLEMENTATION)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Provide a dedicated endpoint to fetch all sensors installed in a specific room.
+
+**Implementation:**
+
+1. **Backend - SensorRepository.java:**
+   - Lines 38-39: Added findByRoomId query method
+   - Query: select sensor from Sensor sensor left join fetch sensor.room where sensor.room.id = :roomId
+   - Returns list of sensors for the specified room
+
+2. **Backend - RoomResource.java:**
+   - Line 5: Added import com.mcms.domain.Sensor
+   - Line 8: Added import com.mcms.repository.SensorRepository
+   - Line 43: Added sensorRepository field
+   - Line 46: Updated constructor to inject SensorRepository
+   - Lines 241-252: Added GET /api/rooms/{id}/sensors endpoint
+   - Endpoint accessible to all authenticated users
+   - Returns list of sensors in the room
+
+3. **Frontend - room.reducer.ts:**
+   - Line 7: Added import ISensor from sensor.model
+   - Line 11: Added sensorsInRoom to RoomState interface
+   - Line 21: Added sensorsInRoom to initialState
+   - Lines 96-103: Added getSensorsInRoom async thunk action
+   - Lines 117-121: Added fulfilled case handler for getSensorsInRoom
+   - Line 144: Added getSensorsInRoom to isPending matcher
+
+4. **Frontend - room-detail.tsx:**
+   - Line 11: Added getSensorsInRoom to imports
+   - Line 21: Dispatches getSensorsInRoom(id) in useEffect
+   - Line 25: Selects sensorsInRoom from state
+   - Lines 136-161: Added Installed Sensors section with table
+   - Table columns: Sensor Code, Type, Status, Manufacturer, Model, Actions
+   - Links to sensor detail page
+   - Shows "No sensors installed" message when empty
+
+**Verification Steps:**
+1. ✅ Added repository query method findByRoomId
+2. ✅ Added GET /api/rooms/{id}/sensors endpoint
+3. ✅ Added Redux action and state for sensors in room
+4. ✅ Updated room detail page to display sensors
+5. ✅ Sensors table shows all relevant fields
+
+**YOLO Verification:**
+- ✅ Backend compiles: mvn compile succeeded
+- ✅ Frontend lints: npm run lint succeeded (1 pre-existing warning)
+- ✅ No mock data: 0 matches for mock patterns
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both UI-Backend Integration)
+- **Feature #218:** Sensor readings time series with query params (NEW)
+- **Feature #219:** Room sensors endpoint and UI (NEW)
+- **Code Changes:**
+  - Backend: 4 files modified (SensorReadingRepository, SensorReadingResource, SensorRepository, RoomResource)
+  - Frontend: 2 files modified (room.reducer.ts, room-detail.tsx)
+- **Progress:** 215/405 features (53.1%) - crossed 53% milestone!
+- **Session Type:** YOLO mode verification
+- **Commit:** 50cfa69 - feat: implement sensor readings time series and room sensors endpoint
+
+---
+
+## Technical Notes - Session 73
+
+### Time-Series Query Pattern
+The sensor readings endpoint demonstrates proper time-series data handling:
+- **Time Range Filtering:** Uses SQL BETWEEN clause for efficient timestamp queries
+- **Ordering:** Results sorted by timestamp ASC for chronological display
+- **Eager Loading:** Sensor relationship loaded to avoid N+1 queries
+- **ISO 8601 Format:** Instant type on backend, ISO 8601 strings in JSON
+- **Optional Params:** Falls back to findAll when params not provided
+
+### Room-Sensor Association
+The room sensors feature shows clean entity relationship handling:
+- **Repository Layer:** Simple query filtering by room.id
+- **Resource Layer:** Dedicated endpoint for semantic clarity
+- **Frontend Redux:** Separate state field for sensors vs batches
+- **UI Display:** Consistent table pattern matching batches display
+- **Navigation:** Links to sensor detail page for drill-down
+
+### Code Quality
+- **Compilation:** Both backend and frontend compile cleanly
+- **Lint Status:** 1 pre-existing warning (notification-middleware complexity)
+- **No Mocks:** All data comes from real JPA repositories
+- **Type Safety:** Java generics, TypeScript interfaces throughout
+
+### Next Session Recommendations
+- Continue with remaining UI-Backend Integration features
+- Both servers stable and running
+- Codebase clean with no uncommitted changes
+- Ready for next feature batch
