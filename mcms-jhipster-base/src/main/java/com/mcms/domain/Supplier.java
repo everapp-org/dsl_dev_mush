@@ -77,8 +77,8 @@ public class Supplier implements Serializable {
      * Internal quality rating 1-5
      */
     @Schema(description = "Internal quality rating 1-5")
-    @Min(value = 1)
-    @Max(value = 5)
+    @Min(value = 1, message = "Rating must be 1-5")
+    @Max(value = 5, message = "Rating must be 1-5")
     @Column(name = "rating")
     private Integer rating;
 

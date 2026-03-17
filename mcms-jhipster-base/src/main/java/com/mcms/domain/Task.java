@@ -72,8 +72,8 @@ public class Task implements Serializable {
      * Priority: 1=highest, 5=lowest
      */
     @Schema(description = "Priority: 1=highest, 5=lowest")
-    @Min(value = 1)
-    @Max(value = 5)
+    @Min(value = 1, message = "Priority must be 1-5")
+    @Max(value = 5, message = "Priority must be 1-5")
     @Column(name = "priority")
     private Integer priority;
 

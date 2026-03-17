@@ -143,8 +143,8 @@ export const SupplierUpdate = () => {
                 data-cy="rating"
                 type="text"
                 validate={{
-                  min: { value: 1, message: 'This field should be at least 1.' },
-                  max: { value: 5, message: 'This field cannot be more than 5.' },
+                  min: { value: 1, message: 'Rating must be 1-5' },
+                  max: { value: 5, message: 'Rating must be 1-5' },
                   validate: v => isNumber(v) || 'This field should be a number.',
                 }}
               />
