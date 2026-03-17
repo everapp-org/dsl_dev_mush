@@ -4,7 +4,10 @@ import com.mcms.domain.CostRecord;
 import com.mcms.domain.SalesOrder;
 import com.mcms.repository.BatchRepository;
 import com.mcms.repository.CostRecordRepository;
+import com.mcms.repository.RoomRepository;
 import com.mcms.repository.SalesOrderRepository;
+import com.mcms.repository.StrainRepository;
+import com.mcms.repository.TaskRepository;
 import com.mcms.security.AuthoritiesConstants;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -33,15 +36,24 @@ public class DashboardResource {
     private final CostRecordRepository costRecordRepository;
     private final SalesOrderRepository salesOrderRepository;
     private final BatchRepository batchRepository;
+    private final StrainRepository strainRepository;
+    private final RoomRepository roomRepository;
+    private final TaskRepository taskRepository;
 
     public DashboardResource(
         CostRecordRepository costRecordRepository,
         SalesOrderRepository salesOrderRepository,
-        BatchRepository batchRepository
+        BatchRepository batchRepository,
+        StrainRepository strainRepository,
+        RoomRepository roomRepository,
+        TaskRepository taskRepository
     ) {
         this.costRecordRepository = costRecordRepository;
         this.salesOrderRepository = salesOrderRepository;
         this.batchRepository = batchRepository;
+        this.strainRepository = strainRepository;
+        this.roomRepository = roomRepository;
+        this.taskRepository = taskRepository;
     }
 
     /**
@@ -202,9 +214,54 @@ public class DashboardResource {
         // Count total batches
         long totalBatches = batchRepository.count();
 
+        // Count total strains
+        long totalStrains = strainRepository.count();
+
+        // Count total rooms
+        long totalRooms = roomRepository.count();
+
+        // Count pending tasks (not completed)
+        long totalTasks = taskRepository.findAll().stream()
+            .filter(task -> task.getCompleted() == null || !task.getCompleted())
+            .count();
+
         // Build response
         dashboard.put("activeBatches", activeBatches);
         dashboard.put("totalBatches", totalBatches);
+        dashboard.put("totalStrains", totalStrains);
+        dashboard.put("totalRooms", totalRooms);
+        dashboard.put("totalTasks", totalTasks);
+
+        return ResponseEntity.ok().body(dashboard);
+    }
+
+    /**
+     * GET /api/dashboard/production : Get production dashboard with batch phase distribution.
+     *
+     * @return the ResponseEntity with status 200 (OK) and body containing production metrics and chart data.
+     */
+    @GetMapping("/production")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> getProductionDashboard() {
+        LOG.debug("REST request to get production dashboard");
+
+        Map<String, Object> dashboard = new HashMap<>();
+
+        // Get all active batches
+        var activeBatches = batchRepository.findAll().stream()
+            .filter(batch -> batch.getIsActive() != null && batch.getIsActive())
+            .toList();
+
+        // Count batches by phase for chart data
+        Map<String, Long> batchesByPhase = new HashMap<>();
+        activeBatches.forEach(batch -> {
+            String phase = batch.getCurrentPhase() != null ? batch.getCurrentPhase().toString() : "UNKNOWN";
+            batchesByPhase.put(phase, batchesByPhase.getOrDefault(phase, 0L) + 1);
+        });
+
+        // Build response
+        dashboard.put("activeBatchCount", (long) activeBatches.size());
+        dashboard.put("batchesByPhase", batchesByPhase);
 
         return ResponseEntity.ok().body(dashboard);
     }

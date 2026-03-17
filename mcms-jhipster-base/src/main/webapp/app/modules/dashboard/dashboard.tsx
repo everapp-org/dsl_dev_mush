@@ -14,30 +14,26 @@ export const Dashboard = () => {
     totalRooms: 0,
     totalTasks: 0,
   });
+  const [productionData, setProductionData] = useState<{
+    activeBatchCount: number;
+    batchesByPhase: Record<string, number>;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
         setLoading(true);
-        // Fetch basic statistics from existing endpoints
-        const [batchesRes, strainsRes, roomsRes, tasksRes] = await Promise.all([
-          axios.get('/api/batches?size=1000'),
-          axios.get('/api/strains?size=1000'),
-          axios.get('/api/rooms?size=1000'),
-          axios.get('/api/tasks?size=1000'),
-        ]);
-
-        const activeBatches = batchesRes.data?.filter(b => b.isActive)?.length || 0;
-        const totalStrains = strainsRes.data?.length || 0;
-        const totalRooms = roomsRes.data?.length || 0;
-        const totalTasks = tasksRes.data?.filter(t => !t.completed)?.length || 0;
+        // Fetch aggregated statistics from dashboard overview endpoint
+        const response = await axios.get('/api/dashboard/overview');
+        const data = response.data;
 
         setStats({
-          activeBatches,
-          totalStrains,
-          totalRooms,
-          totalTasks,
+          activeBatches: data.activeBatches || 0,
+          totalStrains: data.totalStrains || 0,
+          totalRooms: data.totalRooms || 0,
+          totalTasks: data.totalTasks || 0,
         });
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -46,8 +42,22 @@ export const Dashboard = () => {
       }
     };
 
+    const fetchProductionData = async () => {
+      try {
+        setChartLoading(true);
+        // Fetch production chart data from dashboard production endpoint
+        const response = await axios.get('/api/dashboard/production');
+        setProductionData(response.data);
+      } catch (error) {
+        console.error('Error fetching production data:', error);
+      } finally {
+        setChartLoading(false);
+      }
+    };
+
     if (account?.login) {
       fetchDashboardStats();
+      fetchProductionData();
     }
   }, [account]);
 
@@ -125,7 +135,53 @@ export const Dashboard = () => {
       </Row>
 
       <Row className="mt-4">
-        <Col md="12">
+        <Col md="6">
+          <Card>
+            <CardBody>
+              <CardTitle tag="h5">
+                <FontAwesomeIcon icon="chart-bar" /> Production Pipeline
+              </CardTitle>
+              {chartLoading ? (
+                <div className="text-center">
+                  <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading chart...</span>
+                  </div>
+                </div>
+              ) : productionData ? (
+                <div>
+                  <p className="text-muted">Batches by Phase ({productionData.activeBatchCount} active batches)</p>
+                  <div className="chart-container">
+                    {Object.entries(productionData.batchesByPhase).map(([phase, count]) => (
+                      <div key={phase} className="mb-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="phase-label">{phase.replace(/_/g, ' ')}</span>
+                          <span className="badge bg-primary">{count}</span>
+                        </div>
+                        <div className="progress mt-1" style={{ height: '20px' }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${(count / productionData.activeBatchCount) * 100}%` }}
+                            aria-valuenow={count}
+                            aria-valuemin={0}
+                            aria-valuemax={productionData.activeBatchCount}
+                          >
+                            {count > 0 ? count : ''}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {Object.keys(productionData.batchesByPhase).length === 0 && <p className="text-muted">No active batches to display</p>}
+                </div>
+              ) : (
+                <p className="text-muted">Unable to load production data</p>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col md="6">
           <Card>
             <CardBody>
               <CardTitle tag="h5">
