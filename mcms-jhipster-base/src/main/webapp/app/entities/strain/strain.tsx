@@ -77,10 +77,10 @@ export const Strain = () => {
 
   return (
     <div>
-      <h2 id="strain-heading" data-cy="StrainHeading">
+      <h1 id="strain-heading" data-cy="StrainHeading">
         Strains
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/strain/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -88,7 +88,7 @@ export const Strain = () => {
             &nbsp; Create a new Strain
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="mb-3">
         <Label for="strainSearchInput" className="visually-hidden">
           Search strains by name, species, or variety

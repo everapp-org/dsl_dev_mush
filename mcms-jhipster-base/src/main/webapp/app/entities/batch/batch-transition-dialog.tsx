@@ -112,7 +112,7 @@ export const BatchTransitionDialog = () => {
         {error && <Alert color="danger">{error}</Alert>}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={handleClose} disabled={loading}>
+        <Button color="secondary" onClick={handleClose} disabled={loading} aria-disabled={loading}>
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
@@ -122,7 +122,7 @@ export const BatchTransitionDialog = () => {
             data-cy="entityConfirmTransitionButton"
             color="primary"
             onClick={confirmTransition}
-            disabled={loading || !targetPhase}
+            disabled={loading || !targetPhase} aria-disabled={loading || !targetPhase}
           >
             <FontAwesomeIcon icon="arrow-right" />
             &nbsp; {loading ? 'Transitioning...' : 'Transition'}

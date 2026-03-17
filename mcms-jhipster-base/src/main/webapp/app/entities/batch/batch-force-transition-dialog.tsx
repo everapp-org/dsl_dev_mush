@@ -132,7 +132,7 @@ export const BatchForceTransitionDialog = () => {
         {error && <div className="alert alert-danger">{error}</div>}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={handleClose} disabled={loading}>
+        <Button color="secondary" onClick={handleClose} disabled={loading} aria-disabled={loading}>
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
@@ -141,7 +141,7 @@ export const BatchForceTransitionDialog = () => {
           data-cy="entityConfirmForceTransitionButton"
           color="warning"
           onClick={confirmTransition}
-          disabled={loading}
+          disabled={loading} aria-disabled={loading}
         >
           <FontAwesomeIcon icon="exchange-alt" />
           &nbsp; {loading ? 'Processing...' : 'Force Transition'}

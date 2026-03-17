@@ -28,7 +28,7 @@ export const InventoryLotDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="inventoryLotDetailsHeading">Inventory Lot</h2>
+        <h1 data-cy="inventoryLotDetailsHeading">Inventory Lot</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

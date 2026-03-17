@@ -63,22 +63,22 @@ export const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h2>
+      <h1>
         <FontAwesomeIcon icon="dashboard" /> Dashboard
-      </h2>
+      </h1>
       <p className="lead">Welcome, {account?.firstName || account?.login}!</p>
 
       <Row className="mt-4">
         <Col md="3" sm="6" className="mb-4">
           <Card className="kpi-card kpi-primary">
             <CardBody>
-              <CardTitle tag="h6">Active Batches</CardTitle>
+              <CardTitle tag="h2">Active Batches</CardTitle>
               {loading ? (
                 <div className="spinner-border spinner-border-sm" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               ) : (
-                <h2 className="kpi-value">{stats.activeBatches}</h2>
+                <div className="kpi-value">{stats.activeBatches}</div>
               )}
               <p className="kpi-description">Currently in production</p>
             </CardBody>
@@ -88,13 +88,13 @@ export const Dashboard = () => {
         <Col md="3" sm="6" className="mb-4">
           <Card className="kpi-card kpi-success">
             <CardBody>
-              <CardTitle tag="h6">Strains</CardTitle>
+              <CardTitle tag="h2">Strains</CardTitle>
               {loading ? (
                 <div className="spinner-border spinner-border-sm" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               ) : (
-                <h2 className="kpi-value">{stats.totalStrains}</h2>
+                <div className="kpi-value">{stats.totalStrains}</div>
               )}
               <p className="kpi-description">Available strains</p>
             </CardBody>
@@ -104,13 +104,13 @@ export const Dashboard = () => {
         <Col md="3" sm="6" className="mb-4">
           <Card className="kpi-card kpi-info">
             <CardBody>
-              <CardTitle tag="h6">Rooms</CardTitle>
+              <CardTitle tag="h2">Rooms</CardTitle>
               {loading ? (
                 <div className="spinner-border spinner-border-sm" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               ) : (
-                <h2 className="kpi-value">{stats.totalRooms}</h2>
+                <div className="kpi-value">{stats.totalRooms}</div>
               )}
               <p className="kpi-description">Growing rooms</p>
             </CardBody>
@@ -120,13 +120,13 @@ export const Dashboard = () => {
         <Col md="3" sm="6" className="mb-4">
           <Card className="kpi-card kpi-warning">
             <CardBody>
-              <CardTitle tag="h6">Pending Tasks</CardTitle>
+              <CardTitle tag="h2">Pending Tasks</CardTitle>
               {loading ? (
                 <div className="spinner-border spinner-border-sm" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               ) : (
-                <h2 className="kpi-value">{stats.totalTasks}</h2>
+                <div className="kpi-value">{stats.totalTasks}</div>
               )}
               <p className="kpi-description">Tasks to complete</p>
             </CardBody>
@@ -138,7 +138,7 @@ export const Dashboard = () => {
         <Col md="6">
           <Card>
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon="chart-bar" /> Production Pipeline
               </CardTitle>
               {chartLoading ? (
@@ -184,7 +184,7 @@ export const Dashboard = () => {
         <Col md="6">
           <Card>
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon="chart-line" /> Quick Access
               </CardTitle>
               <p>

@@ -67,10 +67,10 @@ export const Room = () => {
 
   return (
     <div>
-      <h2 id="room-heading" data-cy="RoomHeading">
+      <h1 id="room-heading" data-cy="RoomHeading">
         Rooms
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           {isAdmin && (
@@ -80,7 +80,7 @@ export const Room = () => {
             </Link>
           )}
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {roomList && roomList.length > 0 ? (
           <Table responsive>

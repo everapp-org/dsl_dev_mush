@@ -81,9 +81,9 @@ export const TaskUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.task.home.createOrEditLabel" data-cy="TaskCreateUpdateHeading">
+          <h1 id="mcmsApp.task.home.createOrEditLabel" data-cy="TaskCreateUpdateHeading">
             Create or edit a Task
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -172,7 +172,7 @@ export const TaskUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

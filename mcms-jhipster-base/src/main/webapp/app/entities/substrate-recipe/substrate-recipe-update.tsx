@@ -76,9 +76,9 @@ export const SubstrateRecipeUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.substrateRecipe.home.createOrEditLabel" data-cy="SubstrateRecipeCreateUpdateHeading">
+          <h1 id="mcmsApp.substrateRecipe.home.createOrEditLabel" data-cy="SubstrateRecipeCreateUpdateHeading">
             Create or edit a Substrate Recipe
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -163,7 +163,7 @@ export const SubstrateRecipeUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

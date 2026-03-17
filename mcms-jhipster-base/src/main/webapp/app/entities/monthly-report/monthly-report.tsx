@@ -82,10 +82,10 @@ export const MonthlyReport = () => {
 
   return (
     <div>
-      <h2 id="monthly-report-heading" data-cy="MonthlyReportHeading">
+      <h1 id="monthly-report-heading" data-cy="MonthlyReportHeading">
         Monthly Reports
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Button className="me-2" color="success" onClick={toggleGenerateModal} id="jh-generate-report">
@@ -97,7 +97,7 @@ export const MonthlyReport = () => {
             &nbsp; Create a new Monthly Report
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {monthlyReportList && monthlyReportList.length > 0 ? (
           <Table responsive>
@@ -245,7 +245,7 @@ export const MonthlyReport = () => {
           <Button color="secondary" onClick={toggleGenerateModal}>
             Cancel
           </Button>
-          <Button color="success" onClick={handleGenerateReport} disabled={updating}>
+          <Button color="success" onClick={handleGenerateReport} disabled={updating} aria-disabled={updating}>
             {updating ? 'Generating...' : 'Generate Report'}
           </Button>
         </ModalFooter>

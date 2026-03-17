@@ -65,10 +65,10 @@ export const StockMovement = () => {
 
   return (
     <div>
-      <h2 id="stock-movement-heading" data-cy="StockMovementHeading">
+      <h1 id="stock-movement-heading" data-cy="StockMovementHeading">
         Stock Movements
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/stock-movement/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -76,7 +76,7 @@ export const StockMovement = () => {
             &nbsp; Create a new Stock Movement
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {stockMovementList && stockMovementList.length > 0 ? (
           <Table responsive>

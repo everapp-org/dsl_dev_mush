@@ -65,10 +65,10 @@ export const EnvironmentalAlert = () => {
 
   return (
     <div>
-      <h2 id="environmental-alert-heading" data-cy="EnvironmentalAlertHeading">
+      <h1 id="environmental-alert-heading" data-cy="EnvironmentalAlertHeading">
         Environmental Alerts
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link
@@ -81,7 +81,7 @@ export const EnvironmentalAlert = () => {
             &nbsp; Create a new Environmental Alert
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {environmentalAlertList && environmentalAlertList.length > 0 ? (
           <Table responsive>

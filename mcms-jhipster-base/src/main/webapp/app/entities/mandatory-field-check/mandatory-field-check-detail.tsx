@@ -22,7 +22,7 @@ export const MandatoryFieldCheckDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="mandatoryFieldCheckDetailsHeading">Mandatory Field Check</h2>
+        <h1 data-cy="mandatoryFieldCheckDetailsHeading">Mandatory Field Check</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

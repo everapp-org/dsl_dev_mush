@@ -26,7 +26,7 @@ export const EnvironmentalTargetDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="environmentalTargetDetailsHeading">Environmental Target</h2>
+        <h1 data-cy="environmentalTargetDetailsHeading">Environmental Target</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

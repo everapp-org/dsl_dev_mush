@@ -22,7 +22,7 @@ export const StockMovementDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="stockMovementDetailsHeading">Stock Movement</h2>
+        <h1 data-cy="stockMovementDetailsHeading">Stock Movement</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

@@ -34,7 +34,7 @@ export const StrainDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="strainDetailsHeading">Strain</h2>
+        <h1 data-cy="strainDetailsHeading">Strain</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

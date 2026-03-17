@@ -36,11 +36,11 @@ export const MetricsPage = () => {
 
   return (
     <div>
-      <h2 id="metrics-page-heading" data-cy="metricsPageHeading">
+      <h1 id="metrics-page-heading" data-cy="metricsPageHeading">
         Application Metrics
-      </h2>
+      </h1>
       <p>
-        <Button onClick={getMetrics} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching}>
+        <Button onClick={getMetrics} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching} aria-disabled={isFetching}>
           <FontAwesomeIcon icon="sync" />
           &nbsp; Refresh
         </Button>

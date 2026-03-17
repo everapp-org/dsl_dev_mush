@@ -65,10 +65,10 @@ export const MandatoryFieldCheck = () => {
 
   return (
     <div>
-      <h2 id="mandatory-field-check-heading" data-cy="MandatoryFieldCheckHeading">
+      <h1 id="mandatory-field-check-heading" data-cy="MandatoryFieldCheckHeading">
         Mandatory Field Checks
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link
@@ -81,7 +81,7 @@ export const MandatoryFieldCheck = () => {
             &nbsp; Create a new Mandatory Field Check
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {mandatoryFieldCheckList && mandatoryFieldCheckList.length > 0 ? (
           <Table responsive>

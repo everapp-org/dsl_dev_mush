@@ -64,10 +64,10 @@ export const Customer = () => {
 
   return (
     <div>
-      <h2 id="customer-heading" data-cy="CustomerHeading">
+      <h1 id="customer-heading" data-cy="CustomerHeading">
         Customers
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/customer/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -75,7 +75,7 @@ export const Customer = () => {
             &nbsp; Create a new Customer
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {customerList && customerList.length > 0 ? (
           <Table responsive>

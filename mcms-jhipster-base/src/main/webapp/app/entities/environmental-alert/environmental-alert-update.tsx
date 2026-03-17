@@ -103,9 +103,9 @@ export const EnvironmentalAlertUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.environmentalAlert.home.createOrEditLabel" data-cy="EnvironmentalAlertCreateUpdateHeading">
+          <h1 id="mcmsApp.environmentalAlert.home.createOrEditLabel" data-cy="EnvironmentalAlertCreateUpdateHeading">
             Create or edit a Environmental Alert
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -251,7 +251,7 @@ export const EnvironmentalAlertUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

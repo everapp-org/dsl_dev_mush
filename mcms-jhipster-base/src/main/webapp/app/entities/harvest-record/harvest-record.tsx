@@ -65,10 +65,10 @@ export const HarvestRecord = () => {
 
   return (
     <div>
-      <h2 id="harvest-record-heading" data-cy="HarvestRecordHeading">
+      <h1 id="harvest-record-heading" data-cy="HarvestRecordHeading">
         Harvest Records
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/harvest-record/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -76,7 +76,7 @@ export const HarvestRecord = () => {
             &nbsp; Create a new Harvest Record
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {harvestRecordList && harvestRecordList.length > 0 ? (
           <Table responsive>

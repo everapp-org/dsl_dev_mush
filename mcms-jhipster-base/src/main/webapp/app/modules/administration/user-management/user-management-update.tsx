@@ -141,7 +141,7 @@ export const UserManagementUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" type="submit" disabled={isInvalid || updating}>
+              <Button color="primary" type="submit" disabled={isInvalid || updating} aria-disabled={isInvalid || updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

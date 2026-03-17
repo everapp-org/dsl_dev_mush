@@ -75,10 +75,10 @@ export const FinancialDashboard = () => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">
+        <h1 className="mb-0">
           <FontAwesomeIcon icon={faChartLine} className="me-2" />
           Financial Dashboard
-        </h2>
+        </h1>
         <Button color="success" tag="a" href="/api/dashboard/financial/export">
           <FontAwesomeIcon icon={faDownload} className="me-2" />
           Export to CSV
@@ -89,11 +89,11 @@ export const FinancialDashboard = () => {
         <Col md="3" className="mb-4">
           <Card className="text-white bg-primary">
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon={faDollarSign} className="me-2" />
                 Total Revenue
               </CardTitle>
-              <h3>{formatCurrency(dashboardData.totalRevenue)}</h3>
+              <div className="display-6">{formatCurrency(dashboardData.totalRevenue)}</div>
               <small>{dashboardData.salesOrderCount} sales orders</small>
             </CardBody>
           </Card>
@@ -102,11 +102,11 @@ export const FinancialDashboard = () => {
         <Col md="3" className="mb-4">
           <Card className="text-white bg-danger">
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon={faDollarSign} className="me-2" />
                 Total Costs
               </CardTitle>
-              <h3>{formatCurrency(dashboardData.totalCosts)}</h3>
+              <div className="display-6">{formatCurrency(dashboardData.totalCosts)}</div>
               <small>{dashboardData.costRecordCount} cost records</small>
             </CardBody>
           </Card>
@@ -115,11 +115,11 @@ export const FinancialDashboard = () => {
         <Col md="3" className="mb-4">
           <Card className={`text-white ${dashboardData.profit >= 0 ? 'bg-success' : 'bg-warning'}`}>
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon={faMoneyBillTrendUp} className="me-2" />
                 Profit
               </CardTitle>
-              <h3>{formatCurrency(dashboardData.profit)}</h3>
+              <div className="display-6">{formatCurrency(dashboardData.profit)}</div>
               <small>Net profit/loss</small>
             </CardBody>
           </Card>
@@ -128,11 +128,11 @@ export const FinancialDashboard = () => {
         <Col md="3" className="mb-4">
           <Card className={`text-white ${dashboardData.profitMarginPercent >= 0 ? 'bg-info' : 'bg-secondary'}`}>
             <CardBody>
-              <CardTitle tag="h5">
+              <CardTitle tag="h2">
                 <FontAwesomeIcon icon={faPercent} className="me-2" />
                 Profit Margin
               </CardTitle>
-              <h3>{formatPercent(dashboardData.profitMarginPercent)}</h3>
+              <div className="display-6">{formatPercent(dashboardData.profitMarginPercent)}</div>
               <small>Percentage</small>
             </CardBody>
           </Card>
@@ -143,7 +143,7 @@ export const FinancialDashboard = () => {
         <Col md="12">
           <Card>
             <CardBody>
-              <CardTitle tag="h5">Production Overview</CardTitle>
+              <CardTitle tag="h2">Production Overview</CardTitle>
               <Row>
                 <Col md="6">
                   <p>

@@ -70,10 +70,10 @@ export const ContaminationEvent = () => {
 
   return (
     <div>
-      <h2 id="contamination-event-heading" data-cy="ContaminationEventHeading">
+      <h1 id="contamination-event-heading" data-cy="ContaminationEventHeading">
         Contamination Events
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link
@@ -86,7 +86,7 @@ export const ContaminationEvent = () => {
             &nbsp; Create a new Contamination Event
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {contaminationEventList && contaminationEventList.length > 0 ? (
           <Table responsive>

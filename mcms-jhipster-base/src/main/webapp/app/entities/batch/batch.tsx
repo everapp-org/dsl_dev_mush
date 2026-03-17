@@ -207,10 +207,10 @@ export const Batch = () => {
 
   return (
     <div>
-      <h2 id="batch-heading" data-cy="BatchHeading">
+      <h1 id="batch-heading" data-cy="BatchHeading">
         Batches
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           {canModifyBatch && (
@@ -225,7 +225,7 @@ export const Batch = () => {
             </>
           )}
         </div>
-      </h2>
+      </h1>
 
       {/* Invalid page message */}
       {showInvalidPageMessage && (
@@ -416,7 +416,7 @@ export const Batch = () => {
                         color="info"
                         size="sm"
                         data-cy="entityDetailsButton"
-                        disabled={batch._isOptimistic}
+                        disabled={batch._isOptimistic} aria-disabled={batch._isOptimistic}
                         aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>

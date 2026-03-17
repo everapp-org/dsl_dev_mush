@@ -88,9 +88,9 @@ export const FlushCycleUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.flushCycle.home.createOrEditLabel" data-cy="FlushCycleCreateUpdateHeading">
+          <h1 id="mcmsApp.flushCycle.home.createOrEditLabel" data-cy="FlushCycleCreateUpdateHeading">
             Create or edit a Flush Cycle
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -195,7 +195,7 @@ export const FlushCycleUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

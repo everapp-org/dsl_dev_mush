@@ -73,9 +73,9 @@ export const MandatoryFieldCheckUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.mandatoryFieldCheck.home.createOrEditLabel" data-cy="MandatoryFieldCheckCreateUpdateHeading">
+          <h1 id="mcmsApp.mandatoryFieldCheck.home.createOrEditLabel" data-cy="MandatoryFieldCheckCreateUpdateHeading">
             Create or edit a Mandatory Field Check
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -140,7 +140,7 @@ export const MandatoryFieldCheckUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

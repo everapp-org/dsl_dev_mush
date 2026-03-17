@@ -22,7 +22,7 @@ export const BatchMaterialUsageDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="batchMaterialUsageDetailsHeading">Batch Material Usage</h2>
+        <h1 data-cy="batchMaterialUsageDetailsHeading">Batch Material Usage</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

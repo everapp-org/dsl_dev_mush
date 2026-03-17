@@ -305,3 +305,87 @@ select.is-invalid {
     padding-left: 1.5rem;
   }
 }
+
+/* ==========================================================================
+Feature #279: Disabled buttons clearly indicated
+Ensures disabled buttons are accessible to screen readers and visually distinct
+WCAG 2.1 Success Criterion 1.3.1 (Info and Relationships)
+========================================================================== */
+
+/* Enhanced disabled button styling - clear visual indication */
+button:disabled,
+.btn:disabled,
+.btn.disabled,
+a.btn:disabled,
+a.btn.disabled,
+button[aria-disabled='true'],
+.btn[aria-disabled='true'],
+a.btn[aria-disabled='true'] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+
+  /* Additional visual cues */
+  filter: grayscale(20%) !important;
+
+  /* Ensure text remains readable even when disabled */
+  color: #6c757d !important;
+  border-color: #dee2e6 !important;
+}
+
+/* Ensure disabled primary buttons maintain some brand color */
+.btn-primary:disabled,
+.btn-primary.disabled,
+.btn-primary[aria-disabled='true'] {
+  background-color: #6c9bcf !important;
+  border-color: #6c9bcf !important;
+  color: #ffffff !important;
+}
+
+/* Ensure disabled danger buttons maintain warning appearance */
+.btn-danger:disabled,
+.btn-danger.disabled,
+.btn-danger[aria-disabled='true'] {
+  background-color: #e8a0a6 !important;
+  border-color: #e8a0a6 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure disabled success buttons maintain positive appearance */
+.btn-success:disabled,
+.btn-success.disabled,
+.btn-success[aria-disabled='true'] {
+  background-color: #8dc99d !important;
+  border-color: #8dc99d !important;
+  color: #ffffff !important;
+}
+
+/* Ensure disabled info buttons maintain informational appearance */
+.btn-info:disabled,
+.btn-info.disabled,
+.btn-info[aria-disabled='true'] {
+  background-color: #8bbfe8 !important;
+  border-color: #8bbfe8 !important;
+  color: #ffffff !important;
+}
+
+/* High contrast mode: Extra emphasis for disabled state */
+@media (prefers-contrast: high) {
+  button:disabled,
+  .btn:disabled,
+  .btn.disabled,
+  button[aria-disabled='true'],
+  .btn[aria-disabled='true'] {
+    border: 2px dashed #6c757d !important;
+    opacity: 0.6 !important;
+  }
+}
+
+/* Ensure disabled state doesn't remove focus indicator for keyboard users */
+button:disabled:focus,
+.btn:disabled:focus,
+button[aria-disabled='true']:focus,
+.btn[aria-disabled='true']:focus {
+  outline: 2px solid #6c757d !important;
+  outline-offset: 2px !important;
+}

@@ -21,7 +21,7 @@ export const ProductDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="productDetailsHeading">Product</h2>
+        <h1 data-cy="productDetailsHeading">Product</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

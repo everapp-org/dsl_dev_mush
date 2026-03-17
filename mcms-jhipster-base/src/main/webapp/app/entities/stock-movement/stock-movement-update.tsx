@@ -92,9 +92,9 @@ export const StockMovementUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.stockMovement.home.createOrEditLabel" data-cy="StockMovementCreateUpdateHeading">
+          <h1 id="mcmsApp.stockMovement.home.createOrEditLabel" data-cy="StockMovementCreateUpdateHeading">
             Create or edit a Stock Movement
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -193,7 +193,7 @@ export const StockMovementUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

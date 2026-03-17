@@ -50,7 +50,7 @@ export const TaskDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="taskDetailsHeading">Task</h2>
+        <h1 data-cy="taskDetailsHeading">Task</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>
@@ -108,7 +108,7 @@ export const TaskDetail = () => {
         &nbsp;
         {canComplete && (
           <>
-            <Button onClick={handleCompleteTask} color="success" disabled={completing}>
+            <Button onClick={handleCompleteTask} color="success" disabled={completing} aria-disabled={completing}>
               <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Mark Complete</span>
             </Button>
             &nbsp;

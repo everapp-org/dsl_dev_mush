@@ -101,7 +101,7 @@ export const BatchDetail = () => {
   return (
     <Row>
       <Col md="12">
-        <h2 data-cy="batchDetailsHeading">
+        <h1 data-cy="batchDetailsHeading">
           Batch: {batchEntity.batchCode}
           <div className="d-inline ms-3">
             <Button tag={Link} to="/batch" replace color="info" data-cy="entityDetailsBackButton" size="sm">
@@ -163,7 +163,7 @@ export const BatchDetail = () => {
               </>
             )}
           </div>
-        </h2>
+        </h1>
 
         <Nav tabs className="mt-3">
           <NavItem>
@@ -314,7 +314,7 @@ export const BatchDetail = () => {
           </TabPane>
 
           <TabPane tabId="phaseHistory">
-            <h4>Phase Execution History</h4>
+            <h3>Phase Execution History</h3>
             {loadingRelated ? (
               <p>Loading...</p>
             ) : phaseExecutions.length > 0 ? (
@@ -354,7 +354,7 @@ export const BatchDetail = () => {
           </TabPane>
 
           <TabPane tabId="harvests">
-            <h4>Flush Cycles</h4>
+            <h3>Flush Cycles</h3>
             {loadingRelated ? (
               <p>Loading...</p>
             ) : flushCycles.length > 0 ? (

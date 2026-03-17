@@ -76,9 +76,9 @@ export const MaterialUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.material.home.createOrEditLabel" data-cy="MaterialCreateUpdateHeading">
+          <h1 id="mcmsApp.material.home.createOrEditLabel" data-cy="MaterialCreateUpdateHeading">
             Create or edit a Material
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -144,7 +144,7 @@ export const MaterialUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

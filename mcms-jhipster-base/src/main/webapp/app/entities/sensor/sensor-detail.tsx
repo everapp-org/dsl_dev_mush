@@ -27,7 +27,7 @@ export const SensorDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="sensorDetailsHeading">Sensor</h2>
+        <h1 data-cy="sensorDetailsHeading">Sensor</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

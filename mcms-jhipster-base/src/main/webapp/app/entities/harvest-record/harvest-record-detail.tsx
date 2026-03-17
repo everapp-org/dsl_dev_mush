@@ -22,7 +22,7 @@ export const HarvestRecordDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="harvestRecordDetailsHeading">Harvest Record</h2>
+        <h1 data-cy="harvestRecordDetailsHeading">Harvest Record</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

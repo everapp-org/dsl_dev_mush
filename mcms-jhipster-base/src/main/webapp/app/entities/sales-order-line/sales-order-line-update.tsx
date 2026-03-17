@@ -104,9 +104,9 @@ export const SalesOrderLineUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.salesOrderLine.home.createOrEditLabel" data-cy="SalesOrderLineCreateUpdateHeading">
+          <h1 id="mcmsApp.salesOrderLine.home.createOrEditLabel" data-cy="SalesOrderLineCreateUpdateHeading">
             Create or edit a Sales Order Line
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -238,7 +238,7 @@ export const SalesOrderLineUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

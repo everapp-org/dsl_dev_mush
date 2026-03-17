@@ -65,10 +65,10 @@ export const BatchMaterialUsage = () => {
 
   return (
     <div>
-      <h2 id="batch-material-usage-heading" data-cy="BatchMaterialUsageHeading">
+      <h1 id="batch-material-usage-heading" data-cy="BatchMaterialUsageHeading">
         Batch Material Usages
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link
@@ -81,7 +81,7 @@ export const BatchMaterialUsage = () => {
             &nbsp; Create a new Batch Material Usage
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {batchMaterialUsageList && batchMaterialUsageList.length > 0 ? (
           <Table responsive>

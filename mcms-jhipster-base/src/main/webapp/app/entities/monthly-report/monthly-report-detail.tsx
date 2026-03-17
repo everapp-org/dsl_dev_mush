@@ -25,7 +25,7 @@ export const MonthlyReportDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="monthlyReportDetailsHeading">Monthly Report</h2>
+        <h1 data-cy="monthlyReportDetailsHeading">Monthly Report</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

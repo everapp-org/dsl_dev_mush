@@ -69,10 +69,10 @@ export const Sensor = () => {
 
   return (
     <div>
-      <h2 id="sensor-heading" data-cy="SensorHeading">
+      <h1 id="sensor-heading" data-cy="SensorHeading">
         Sensors
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           {canManageSensors && (
@@ -82,7 +82,7 @@ export const Sensor = () => {
             </Link>
           )}
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {sensorList && sensorList.length > 0 ? (
           <Table responsive>

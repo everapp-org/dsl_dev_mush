@@ -65,10 +65,10 @@ export const SalesOrder = () => {
 
   return (
     <div>
-      <h2 id="sales-order-heading" data-cy="SalesOrderHeading">
+      <h1 id="sales-order-heading" data-cy="SalesOrderHeading">
         Sales Orders
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/sales-order/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -76,7 +76,7 @@ export const SalesOrder = () => {
             &nbsp; Create a new Sales Order
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {salesOrderList && salesOrderList.length > 0 ? (
           <Table responsive>

@@ -79,9 +79,9 @@ export const SensorUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.sensor.home.createOrEditLabel" data-cy="SensorCreateUpdateHeading">
+          <h1 id="mcmsApp.sensor.home.createOrEditLabel" data-cy="SensorCreateUpdateHeading">
             Create or edit a Sensor
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -150,7 +150,7 @@ export const SensorUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

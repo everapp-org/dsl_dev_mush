@@ -178,9 +178,9 @@ export const BatchUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.batch.home.createOrEditLabel" data-cy="BatchCreateUpdateHeading">
+          <h1 id="mcmsApp.batch.home.createOrEditLabel" data-cy="BatchCreateUpdateHeading">
             Create or edit a Batch
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -345,7 +345,7 @@ export const BatchUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon={updating ? 'spinner' : 'save'} spin={updating} />
                 &nbsp; {updating ? 'Saving...' : 'Save'}
               </Button>

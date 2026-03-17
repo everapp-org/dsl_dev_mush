@@ -22,7 +22,7 @@ export const SensorReadingDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="sensorReadingDetailsHeading">Sensor Reading</h2>
+        <h1 data-cy="sensorReadingDetailsHeading">Sensor Reading</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

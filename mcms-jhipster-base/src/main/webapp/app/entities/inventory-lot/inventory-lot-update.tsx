@@ -87,9 +87,9 @@ export const InventoryLotUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.inventoryLot.home.createOrEditLabel" data-cy="InventoryLotCreateUpdateHeading">
+          <h1 id="mcmsApp.inventoryLot.home.createOrEditLabel" data-cy="InventoryLotCreateUpdateHeading">
             Create or edit a Inventory Lot
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -222,7 +222,7 @@ export const InventoryLotUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

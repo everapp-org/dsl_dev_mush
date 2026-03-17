@@ -65,10 +65,10 @@ export const InventoryLot = () => {
 
   return (
     <div>
-      <h2 id="inventory-lot-heading" data-cy="InventoryLotHeading">
+      <h1 id="inventory-lot-heading" data-cy="InventoryLotHeading">
         Inventory Lots
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/inventory-lot/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -76,7 +76,7 @@ export const InventoryLot = () => {
             &nbsp; Create a new Inventory Lot
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {inventoryLotList && inventoryLotList.length > 0 ? (
           <Table responsive>

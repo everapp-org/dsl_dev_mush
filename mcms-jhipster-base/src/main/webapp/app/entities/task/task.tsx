@@ -93,10 +93,10 @@ export const Task = () => {
 
   return (
     <div>
-      <h2 id="task-heading" data-cy="TaskHeading">
+      <h1 id="task-heading" data-cy="TaskHeading">
         Tasks
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           {isAdminOrManager && (
@@ -106,7 +106,7 @@ export const Task = () => {
             </Link>
           )}
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {taskList && taskList.length > 0 ? (
           <Table responsive>

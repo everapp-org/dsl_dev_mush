@@ -96,17 +96,17 @@ export const UserManagement = () => {
 
   return (
     <div>
-      <h2 id="user-management-page-heading" data-cy="userManagementPageHeading">
+      <h1 id="user-management-page-heading" data-cy="userManagementPageHeading">
         Users
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="new" className="btn btn-primary jh-create-entity">
             <FontAwesomeIcon icon="plus" /> Create a new user
           </Link>
         </div>
-      </h2>
+      </h1>
       <Table responsive striped>
         <thead>
           <tr>
@@ -180,7 +180,7 @@ export const UserManagement = () => {
                   <Button tag={Link} to={`${user.login}/edit`} color="primary" size="sm">
                     <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                   </Button>
-                  <Button tag={Link} to={`${user.login}/delete`} color="danger" size="sm" disabled={account.login === user.login}>
+                  <Button tag={Link} to={`${user.login}/delete`} color="danger" size="sm" disabled={account.login === user.login} aria-disabled={account.login === user.login}>
                     <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                   </Button>
                 </div>

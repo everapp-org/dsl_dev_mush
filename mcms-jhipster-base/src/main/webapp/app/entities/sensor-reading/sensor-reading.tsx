@@ -66,10 +66,10 @@ export const SensorReading = () => {
 
   return (
     <div>
-      <h2 id="sensor-reading-heading" data-cy="SensorReadingHeading">
+      <h1 id="sensor-reading-heading" data-cy="SensorReadingHeading">
         Sensor Readings
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           <Link to="/sensor-reading/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
@@ -77,7 +77,7 @@ export const SensorReading = () => {
             &nbsp; Create a new Sensor Reading
           </Link>
         </div>
-      </h2>
+      </h1>
       <div className="table-responsive">
         {sensorReadingList && sensorReadingList.length > 0 ? (
           <Table responsive>

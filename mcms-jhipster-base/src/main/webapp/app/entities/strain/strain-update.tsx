@@ -94,9 +94,9 @@ export const StrainUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="mcmsApp.strain.home.createOrEditLabel" data-cy="StrainCreateUpdateHeading">
+          <h1 id="mcmsApp.strain.home.createOrEditLabel" data-cy="StrainCreateUpdateHeading">
             Create or edit a Strain
-          </h2>
+          </h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
@@ -214,7 +214,7 @@ export const StrainUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
                 <FontAwesomeIcon icon={updating ? 'spinner' : 'save'} spin={updating} />
                 &nbsp; {updating ? 'Saving...' : 'Save'}
               </Button>

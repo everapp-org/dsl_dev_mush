@@ -21,7 +21,7 @@ export const SalesOrderLineDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="salesOrderLineDetailsHeading">Sales Order Line</h2>
+        <h1 data-cy="salesOrderLineDetailsHeading">Sales Order Line</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

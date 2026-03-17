@@ -22,7 +22,7 @@ export const SupplyOrderLineDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="supplyOrderLineDetailsHeading">Supply Order Line</h2>
+        <h1 data-cy="supplyOrderLineDetailsHeading">Supply Order Line</h1>
         <dl className="jh-entity-details">
           <dt>
             <span id="id">ID</span>

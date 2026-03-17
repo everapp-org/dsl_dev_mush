@@ -40,11 +40,11 @@ export const HealthPage = () => {
 
   return (
     <div>
-      <h2 id="health-page-heading" data-cy="healthPageHeading">
+      <h1 id="health-page-heading" data-cy="healthPageHeading">
         Health Checks
-      </h2>
+      </h1>
       <p>
-        <Button onClick={fetchSystemHealth} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching}>
+        <Button onClick={fetchSystemHealth} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching} aria-disabled={isFetching}>
           <FontAwesomeIcon icon="sync" />
           &nbsp; Refresh
         </Button>
