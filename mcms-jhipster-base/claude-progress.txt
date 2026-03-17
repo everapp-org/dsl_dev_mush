@@ -2454,3 +2454,29 @@ Feature #217: Supply order line receive endpoint - PASSING (NEW)
 
 Progress: 213/405 (52.6%)
 Commit: e330100
+
+---
+
+## Session: 2026-03-17 (Session 74)
+
+### Completed Features (217/405 - 53.6%)
+
+#### Feature #220: Room alerts endpoint ✅
+- Added GET /api/rooms/{id}/alerts endpoint
+- Backend: EnvironmentalAlertRepository.findByRoomId() method
+- Frontend: Redux action getAlertsInRoom, alerts table on room detail page
+- Displays alerts with severity badges, links to alert details
+
+#### Feature #221: Batch timeline endpoint ✅
+- Added GET /api/batches/{id}/timeline endpoint
+- Returns phase executions ordered by sequence
+- Updated batch-detail.tsx to use standardized timeline endpoint
+- Timeline visualized in phase history tab
+
+## Session Summary
+- Features Completed: 2 (UI-Backend Integration)
+- Progress: 217/405 (53.6%)
+- Commits: e5a948d, 2707f7e
+- Lint: Passed (1 pre-existing warning)
+- No mock data patterns found
+- Both servers running stable
