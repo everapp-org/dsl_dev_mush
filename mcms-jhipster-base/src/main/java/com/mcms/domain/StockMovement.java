@@ -104,6 +104,26 @@ public class StockMovement implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    /**
+     * Validation: For CONSUMPTION, ADJUSTMENT_OUT, WASTE movements,
+     * quantity cannot exceed inventoryLot.quantityOnHand
+     */
+    @AssertTrue(message = "Insufficient quantity")
+    public boolean isQuantitySufficient() {
+        if (inventoryLot == null || quantity == null || movementType == null) {
+            return true; // Skip validation if required fields are null
+        }
+
+        // Only validate for outbound movements
+        if (movementType == StockMovementType.CONSUMPTION ||
+            movementType == StockMovementType.ADJUSTMENT_OUT ||
+            movementType == StockMovementType.WASTE) {
+            return quantity.compareTo(inventoryLot.getQuantityOnHand()) <= 0;
+        }
+
+        return true; // No validation needed for inbound movements
+    }
+
     public Long getId() {
         return this.id;
     }

@@ -138,6 +138,17 @@ public class SupplyOrderLine implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    /**
+     * Validation: quantityReceived cannot exceed quantityOrdered
+     */
+    @AssertTrue(message = "Cannot exceed ordered quantity")
+    public boolean isQuantityReceivedValid() {
+        if (quantityReceived == null || quantityOrdered == null) {
+            return true; // Skip validation if either is null
+        }
+        return quantityReceived.compareTo(quantityOrdered) <= 0;
+    }
+
     public Long getId() {
         return this.id;
     }

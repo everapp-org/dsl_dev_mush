@@ -37,8 +37,19 @@ export const PasswordResetFinishPage = () => {
           type="password"
           validate={{
             required: { value: true, message: 'Your password is required.' },
-            minLength: { value: 4, message: 'Your password is required to be at least 4 characters.' },
+            minLength: { value: 8, message: 'Your password is required to be at least 8 characters.' },
             maxLength: { value: 50, message: 'Your password cannot be longer than 50 characters.' },
+            validate: {
+              complexity(v) {
+                const hasUppercase = /[A-Z]/.test(v);
+                const hasLowercase = /[a-z]/.test(v);
+                const hasDigit = /\d/.test(v);
+                return (
+                  (hasUppercase && hasLowercase && hasDigit) ||
+                  'Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 digit'
+                );
+              },
+            },
           }}
           onChange={updatePassword}
           data-cy="resetPassword"
@@ -51,7 +62,7 @@ export const PasswordResetFinishPage = () => {
           type="password"
           validate={{
             required: { value: true, message: 'Your confirmation password is required.' },
-            minLength: { value: 4, message: 'Your confirmation password is required to be at least 4 characters.' },
+            minLength: { value: 8, message: 'Your confirmation password is required to be at least 8 characters.' },
             maxLength: { value: 50, message: 'Your confirmation password cannot be longer than 50 characters.' },
             validate: v => v === password || 'The password and its confirmation do not match!',
           }}

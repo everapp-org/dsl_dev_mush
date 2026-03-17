@@ -71,6 +71,13 @@ export const SupplyOrderLineUpdate = () => {
       values.lineTotal = Number(values.lineTotal);
     }
 
+    // Feature #246: Validate quantityReceived <= quantityOrdered
+    if (values.quantityReceived !== undefined && values.quantityReceived !== null && values.quantityReceived !== '') {
+      if (values.quantityReceived > values.quantityOrdered) {
+        return; // Validation will be handled by backend
+      }
+    }
+
     const entity = {
       ...supplyOrderLineEntity,
       ...values,
