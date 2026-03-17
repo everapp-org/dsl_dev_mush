@@ -71,6 +71,14 @@ export const EnvironmentalTargetUpdate = () => {
       values.freshAirExchangesPerHour = Number(values.freshAirExchangesPerHour);
     }
 
+    // Validate temperature and humidity ranges
+    if (values.tempMinC >= values.tempMaxC) {
+      return; // Validation handled by field validator
+    }
+    if (values.humidityMinPercent >= values.humidityMaxPercent) {
+      return; // Validation handled by field validator
+    }
+
     const entity = {
       ...environmentalTargetEntity,
       ...values,
@@ -139,7 +147,14 @@ export const EnvironmentalTargetUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
-                  validate: v => isNumber(v) || 'This field should be a number.',
+                  validate: {
+                    number: v => isNumber(v) || 'This field should be a number.',
+                    range(v, values) {
+                      const minVal = parseFloat(values.tempMinC);
+                      const maxVal = parseFloat(v);
+                      return isNaN(minVal) || isNaN(maxVal) || maxVal > minVal || 'Max temperature must be greater than min temperature';
+                    },
+                  },
                 }}
               />
               <UncontrolledTooltip target="tempMaxCLabel">Maximum temperature °C</UncontrolledTooltip>
@@ -163,7 +178,14 @@ export const EnvironmentalTargetUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
-                  validate: v => isNumber(v) || 'This field should be a number.',
+                  validate: {
+                    number: v => isNumber(v) || 'This field should be a number.',
+                    range(v, values) {
+                      const minVal = parseFloat(values.humidityMinPercent);
+                      const maxVal = parseFloat(v);
+                      return isNaN(minVal) || isNaN(maxVal) || maxVal > minVal || 'Max humidity must be greater than min humidity';
+                    },
+                  },
                 }}
               />
               <UncontrolledTooltip target="humidityMaxPercentLabel">Maximum RH %</UncontrolledTooltip>

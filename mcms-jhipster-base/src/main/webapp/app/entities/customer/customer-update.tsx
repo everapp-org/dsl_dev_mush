@@ -104,7 +104,19 @@ export const CustomerUpdate = () => {
                   },
                 }}
               />
-              <ValidatedField label="Phone" id="customer-phone" name="phone" data-cy="phone" type="text" />
+              <ValidatedField
+                label="Phone"
+                id="customer-phone"
+                name="phone"
+                data-cy="phone"
+                type="text"
+                validate={{
+                  pattern: {
+                    value: /^\+?[\d\s\-().]+$/,
+                    message: 'Invalid phone number format',
+                  },
+                }}
+              />
               <ValidatedField label="Address" id="customer-address" name="address" data-cy="address" type="textarea" />
               <ValidatedField
                 label="Delivery Preference"

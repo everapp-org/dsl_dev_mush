@@ -61,6 +61,7 @@ public class Supplier implements Serializable {
      * Phone number
      */
     @Schema(description = "Phone number")
+    @Pattern(regexp = "^\\+?[\\d\\s\\-\\(\\)\\.]+$", message = "Invalid phone number format")
     @Column(name = "phone")
     private String phone;
 

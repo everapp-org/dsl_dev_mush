@@ -71,6 +71,7 @@ public class Batch implements Serializable {
      * Total substrate bags/blocks in batch
      */
     @Schema(description = "Total substrate bags/blocks in batch")
+    @Min(value = 1, message = "Number of bags must be greater than 0")
     @Column(name = "number_of_bags")
     private Integer numberOfBags;
 

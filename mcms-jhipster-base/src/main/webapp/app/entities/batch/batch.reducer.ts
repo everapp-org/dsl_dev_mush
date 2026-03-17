@@ -122,7 +122,7 @@ export const discardBatch = createAsyncThunk(
 
 export const BatchSlice = createEntitySlice({
   name: 'batch',
-  initialState,
+  initialState: initialState as any,
   extraReducers(builder) {
     builder
       .addCase(getEntity.fulfilled, (state, action) => {
@@ -131,15 +131,16 @@ export const BatchSlice = createEntitySlice({
       })
       // Optimistic UI: Remove entity immediately on delete pending
       .addCase(deleteEntity.pending, (state, action) => {
-        state.errorMessage = null;
-        state.updateSuccess = false;
-        state.updating = true;
+        const batchState = state as unknown as BatchState;
+        batchState.errorMessage = null;
+        batchState.updateSuccess = false;
+        batchState.updating = true;
 
         // Find and store the entity being deleted for potential rollback
         const entityId = action.meta.arg;
-        const entityToDelete = state.entities.find(e => e.id === entityId);
+        const entityToDelete = batchState.entities.find(e => e.id === entityId);
         if (entityToDelete) {
-          state.deletedEntity = entityToDelete;
+          batchState.deletedEntity = entityToDelete;
           // Remove entity immediately (optimistic delete)
           state.entities = state.entities.filter(e => e.id !== entityId);
           state.totalItems = state.totalItems - 1;

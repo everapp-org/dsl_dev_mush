@@ -39,6 +39,7 @@ public class Customer implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @Pattern(regexp = "^\\+?[\\d\\s\\-\\(\\)\\.]+$", message = "Invalid phone number format")
     @Column(name = "phone")
     private String phone;
 

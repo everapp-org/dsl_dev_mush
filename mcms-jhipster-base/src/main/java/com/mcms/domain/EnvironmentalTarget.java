@@ -228,6 +228,17 @@ public class EnvironmentalTarget implements Serializable {
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
+    /**
+     * Validate that min values are less than max values
+     */
+    @AssertTrue(message = "Min temperature must be less than max temperature, and min humidity must be less than max humidity")
+    public boolean isValidRanges() {
+        boolean tempValid = tempMinC == null || tempMaxC == null || tempMinC.compareTo(tempMaxC) < 0;
+        boolean humidityValid = humidityMinPercent == null || humidityMaxPercent == null ||
+                                humidityMinPercent.compareTo(humidityMaxPercent) < 0;
+        return tempValid && humidityValid;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

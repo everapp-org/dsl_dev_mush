@@ -120,7 +120,19 @@ export const SupplierUpdate = () => {
                 }}
               />
               <UncontrolledTooltip target="emailLabel">Email</UncontrolledTooltip>
-              <ValidatedField label="Phone" id="supplier-phone" name="phone" data-cy="phone" type="text" />
+              <ValidatedField
+                label="Phone"
+                id="supplier-phone"
+                name="phone"
+                data-cy="phone"
+                type="text"
+                validate={{
+                  pattern: {
+                    value: /^\+?[\d\s\-().]+$/,
+                    message: 'Invalid phone number format',
+                  },
+                }}
+              />
               <UncontrolledTooltip target="phoneLabel">Phone number</UncontrolledTooltip>
               <ValidatedField label="Address" id="supplier-address" name="address" data-cy="address" type="textarea" />
               <UncontrolledTooltip target="addressLabel">Full address</UncontrolledTooltip>
