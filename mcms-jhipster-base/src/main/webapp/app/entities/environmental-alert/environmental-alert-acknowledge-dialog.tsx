@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { Button, Col, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { acknowledgeAlert, getEntity } from './environmental-alert.reducer';
+import FocusTrapModal from 'app/shared/layout/modal/focus-trap-modal';
 
 export const EnvironmentalAlertAcknowledgeDialog = () => {
   const dispatch = useAppDispatch();
@@ -43,7 +44,7 @@ export const EnvironmentalAlertAcknowledgeDialog = () => {
   };
 
   return (
-    <Modal isOpen={showModal} toggle={handleClose}>
+    <FocusTrapModal isOpen={showModal} toggle={handleClose}>
       <ModalHeader toggle={handleClose} data-cy="environmentalAlertAcknowledgeDialogHeading">
         Acknowledge Environmental Alert
       </ModalHeader>
@@ -80,7 +81,7 @@ export const EnvironmentalAlertAcknowledgeDialog = () => {
           </Button>
         </ModalFooter>
       </ValidatedForm>
-    </Modal>
+    </FocusTrapModal>
   );
 };
 
