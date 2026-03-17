@@ -380,11 +380,17 @@ export const Batch = () => {
             </thead>
             <tbody>
               {batchList.map((batch, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
+                <tr key={`entity-${i}`} data-cy="entityTable" style={{ opacity: batch._isOptimistic ? 0.6 : 1 }}>
                   <td>
-                    <Button tag={Link} to={`/batch/${batch.id}`} color="link" size="sm">
-                      {batch.id}
-                    </Button>
+                    {batch._isOptimistic ? (
+                      <span className="text-muted">
+                        <FontAwesomeIcon icon="spinner" spin /> Saving...
+                      </span>
+                    ) : (
+                      <Button tag={Link} to={`/batch/${batch.id}`} color="link" size="sm">
+                        {batch.id}
+                      </Button>
+                    )}
                   </td>
                   <td>{batch.batchCode}</td>
                   <td>{batch.startDate ? <TextFormat type="date" value={batch.startDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
@@ -404,10 +410,17 @@ export const Batch = () => {
                   <td>{batch.recipe ? <Link to={`/substrate-recipe/${batch.recipe.id}`}>{batch.recipe.name}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/batch/${batch.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                      <Button
+                        tag={Link}
+                        to={`/batch/${batch.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        disabled={batch._isOptimistic}
+                      >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      {canModifyBatch && (
+                      {canModifyBatch && !batch._isOptimistic && (
                         <>
                           <Button tag={Link} to={`/batch/${batch.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>

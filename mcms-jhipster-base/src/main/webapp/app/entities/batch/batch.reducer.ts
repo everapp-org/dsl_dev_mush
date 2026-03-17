@@ -5,7 +5,12 @@ import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IBatch, defaultValue } from 'app/shared/model/batch.model';
 
-const initialState: EntityState<IBatch> = {
+// Extend EntityState to include optimistic entity tracking
+interface BatchState extends EntityState<IBatch> {
+  optimisticEntity: IBatch | null;
+}
+
+const initialState: BatchState = {
   loading: false,
   errorMessage: null,
   entities: [],
@@ -13,6 +18,7 @@ const initialState: EntityState<IBatch> = {
   updating: false,
   totalItems: 0,
   updateSuccess: false,
+  optimisticEntity: null, // Track optimistically added entity
 };
 
 const apiUrl = 'api/batches';
@@ -126,6 +132,49 @@ export const BatchSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = {};
       })
+      // Optimistic UI: Add entity immediately on create pending
+      .addCase(createEntity.pending, (state, action) => {
+        state.errorMessage = null;
+        state.updateSuccess = false;
+        state.updating = true;
+
+        // Add optimistic entity with temporary ID
+        const optimisticEntity = {
+          ...action.meta.arg,
+          id: `temp-${Date.now()}`,
+          _isOptimistic: true,
+        };
+        state.optimisticEntity = optimisticEntity;
+        state.entities = [optimisticEntity, ...state.entities];
+        state.totalItems = state.totalItems + 1;
+      })
+      // Optimistic UI: Replace optimistic entity with real one on success
+      .addCase(createEntity.fulfilled, (state, action) => {
+        state.updating = false;
+        state.loading = false;
+        state.updateSuccess = true;
+        state.entity = action.payload.data;
+
+        // Remove optimistic entity and let getEntities fetch the real list
+        if (state.optimisticEntity) {
+          state.entities = state.entities.filter(e => e.id !== state.optimisticEntity.id);
+          state.optimisticEntity = null;
+        }
+      })
+      // Optimistic UI: Remove optimistic entity on failure
+      .addCase(createEntity.rejected, (state, action) => {
+        state.updating = false;
+        state.loading = false;
+        state.updateSuccess = false;
+        state.errorMessage = action.error.message;
+
+        // Rollback: remove optimistic entity
+        if (state.optimisticEntity) {
+          state.entities = state.entities.filter(e => e.id !== state.optimisticEntity.id);
+          state.totalItems = state.totalItems - 1;
+          state.optimisticEntity = null;
+        }
+      })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
 
@@ -141,9 +190,10 @@ export const BatchSlice = createEntitySlice({
             const predicate = action.meta.arg.sort.split(',')[0];
             return order === ASC ? (a[predicate] < b[predicate] ? -1 : 1) : b[predicate] < a[predicate] ? -1 : 1;
           }),
+          optimisticEntity: null, // Clear optimistic entity when fresh data loads
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, discardBatch), (state, action) => {
+      .addMatcher(isFulfilled(updateEntity, partialUpdateEntity, discardBatch), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -154,7 +204,7 @@ export const BatchSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, discardBatch), state => {
+      .addMatcher(isPending(updateEntity, partialUpdateEntity, deleteEntity, discardBatch), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;
