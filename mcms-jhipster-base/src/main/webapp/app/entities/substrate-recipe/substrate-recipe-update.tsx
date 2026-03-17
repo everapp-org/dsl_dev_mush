@@ -24,7 +24,7 @@ export const SubstrateRecipeUpdate = () => {
   const substrateBaseValues = Object.keys(SubstrateBase);
 
   const handleClose = () => {
-    navigate('/substrate-recipe');
+    navigate('/substrate-recipe', { replace: true });
   };
 
   useEffect(() => {

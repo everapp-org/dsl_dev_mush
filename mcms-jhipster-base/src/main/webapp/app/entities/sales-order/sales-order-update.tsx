@@ -28,7 +28,7 @@ export const SalesOrderUpdate = () => {
   const paymentStatusValues = Object.keys(PaymentStatus);
 
   const handleClose = () => {
-    navigate('/sales-order');
+    navigate('/sales-order', { replace: true });
   };
 
   useEffect(() => {

@@ -28,7 +28,7 @@ export const InventoryLotUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/inventory-lot');
+    navigate('/inventory-lot', { replace: true });
   };
 
   useEffect(() => {

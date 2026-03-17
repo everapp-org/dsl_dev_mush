@@ -33,7 +33,7 @@ export const EnvironmentalAlertUpdate = () => {
   const sensorUnitValues = Object.keys(SensorUnit);
 
   const handleClose = () => {
-    navigate('/environmental-alert');
+    navigate('/environmental-alert', { replace: true });
   };
 
   useEffect(() => {

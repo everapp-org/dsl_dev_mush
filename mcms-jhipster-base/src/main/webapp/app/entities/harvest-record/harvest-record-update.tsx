@@ -26,7 +26,7 @@ export const HarvestRecordUpdate = () => {
   const qualityGradeValues = Object.keys(QualityGrade);
 
   const handleClose = () => {
-    navigate('/harvest-record');
+    navigate('/harvest-record', { replace: true });
   };
 
   useEffect(() => {

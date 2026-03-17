@@ -26,7 +26,7 @@ export const RoomUpdate = () => {
   const roomStatusValues = Object.keys(RoomStatus);
 
   const handleClose = () => {
-    navigate('/room');
+    navigate('/room', { replace: true });
   };
 
   useEffect(() => {

@@ -32,7 +32,7 @@ export const SalesOrderLineUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/sales-order-line');
+    navigate('/sales-order-line', { replace: true });
   };
 
   useEffect(() => {

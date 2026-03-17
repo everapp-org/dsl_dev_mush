@@ -26,7 +26,7 @@ export const TaskUpdate = () => {
   const updateSuccess = useAppSelector(state => state.task.updateSuccess);
 
   const handleClose = () => {
-    navigate('/task');
+    navigate('/task', { replace: true });
   };
 
   useEffect(() => {

@@ -28,7 +28,7 @@ export const BatchUpdate = () => {
   const phaseNameValues = Object.keys(PhaseName);
 
   const handleClose = () => {
-    navigate('/batch');
+    navigate('/batch', { replace: true });
   };
 
   useEffect(() => {

@@ -34,7 +34,7 @@ export const ContaminationEventUpdate = () => {
   const contaminationActionValues = Object.keys(ContaminationAction);
 
   const handleClose = () => {
-    navigate('/contamination-event');
+    navigate('/contamination-event', { replace: true });
   };
 
   useEffect(() => {

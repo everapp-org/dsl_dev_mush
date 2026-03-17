@@ -28,7 +28,7 @@ export const SensorUpdate = () => {
   const sensorStatusValues = Object.keys(SensorStatus);
 
   const handleClose = () => {
-    navigate('/sensor');
+    navigate('/sensor', { replace: true });
   };
 
   useEffect(() => {

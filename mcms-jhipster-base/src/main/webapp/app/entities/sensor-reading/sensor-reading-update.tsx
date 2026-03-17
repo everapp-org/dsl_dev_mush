@@ -27,7 +27,7 @@ export const SensorReadingUpdate = () => {
   const sensorUnitValues = Object.keys(SensorUnit);
 
   const handleClose = () => {
-    navigate('/sensor-reading');
+    navigate('/sensor-reading', { replace: true });
   };
 
   useEffect(() => {

@@ -30,7 +30,7 @@ export const SupplyOrderLineUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/supply-order-line');
+    navigate('/supply-order-line', { replace: true });
   };
 
   useEffect(() => {

@@ -26,7 +26,7 @@ export const ProductUpdate = () => {
   const qualityGradeValues = Object.keys(QualityGrade);
 
   const handleClose = () => {
-    navigate('/product');
+    navigate('/product', { replace: true });
   };
 
   useEffect(() => {

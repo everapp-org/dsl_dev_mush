@@ -26,7 +26,7 @@ export const EnvironmentalTargetUpdate = () => {
   const phaseNameValues = Object.keys(PhaseName);
 
   const handleClose = () => {
-    navigate('/environmental-target');
+    navigate('/environmental-target', { replace: true });
   };
 
   useEffect(() => {

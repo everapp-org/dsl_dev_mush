@@ -24,7 +24,7 @@ export const SupplierUpdate = () => {
   const supplierTypeValues = Object.keys(SupplierType);
 
   const handleClose = () => {
-    navigate('/supplier');
+    navigate('/supplier', { replace: true });
   };
 
   useEffect(() => {

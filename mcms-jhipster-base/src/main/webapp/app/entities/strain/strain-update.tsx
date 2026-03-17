@@ -22,7 +22,7 @@ export const StrainUpdate = () => {
   const updateSuccess = useAppSelector(state => state.strain.updateSuccess);
 
   const handleClose = () => {
-    navigate('/strain');
+    navigate('/strain', { replace: true });
   };
 
   useEffect(() => {

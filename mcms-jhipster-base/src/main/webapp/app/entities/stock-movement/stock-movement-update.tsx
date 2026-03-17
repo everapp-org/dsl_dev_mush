@@ -31,7 +31,7 @@ export const StockMovementUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/stock-movement');
+    navigate('/stock-movement', { replace: true });
   };
 
   useEffect(() => {

@@ -24,7 +24,7 @@ export const FlushCycleUpdate = () => {
   const updateSuccess = useAppSelector(state => state.flushCycle.updateSuccess);
 
   const handleClose = () => {
-    navigate('/flush-cycle');
+    navigate('/flush-cycle', { replace: true });
   };
 
   useEffect(() => {

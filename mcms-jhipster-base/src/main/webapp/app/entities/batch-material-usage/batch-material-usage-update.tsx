@@ -30,7 +30,7 @@ export const BatchMaterialUsageUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/batch-material-usage');
+    navigate('/batch-material-usage', { replace: true });
   };
 
   useEffect(() => {

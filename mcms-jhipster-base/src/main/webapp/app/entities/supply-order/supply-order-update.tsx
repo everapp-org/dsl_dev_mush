@@ -26,7 +26,7 @@ export const SupplyOrderUpdate = () => {
   const orderStatusValues = Object.keys(OrderStatus);
 
   const handleClose = () => {
-    navigate('/supply-order');
+    navigate('/supply-order', { replace: true });
   };
 
   useEffect(() => {

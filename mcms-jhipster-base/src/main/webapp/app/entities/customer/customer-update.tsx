@@ -22,7 +22,7 @@ export const CustomerUpdate = () => {
   const updateSuccess = useAppSelector(state => state.customer.updateSuccess);
 
   const handleClose = () => {
-    navigate('/customer');
+    navigate('/customer', { replace: true });
   };
 
   useEffect(() => {

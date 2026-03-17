@@ -26,7 +26,7 @@ export const CostRecordUpdate = () => {
   const costCategoryValues = Object.keys(CostCategory);
 
   const handleClose = () => {
-    navigate('/cost-record');
+    navigate('/cost-record', { replace: true });
   };
 
   useEffect(() => {

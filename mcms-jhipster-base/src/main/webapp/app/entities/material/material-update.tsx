@@ -26,7 +26,7 @@ export const MaterialUpdate = () => {
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
   const handleClose = () => {
-    navigate('/material');
+    navigate('/material', { replace: true });
   };
 
   useEffect(() => {

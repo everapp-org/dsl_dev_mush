@@ -25,7 +25,7 @@ export const MonthlyReportUpdate = () => {
   const updateSuccess = useAppSelector(state => state.monthlyReport.updateSuccess);
 
   const handleClose = () => {
-    navigate('/monthly-report');
+    navigate('/monthly-report', { replace: true });
   };
 
   useEffect(() => {

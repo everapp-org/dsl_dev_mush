@@ -24,7 +24,7 @@ export const MandatoryFieldCheckUpdate = () => {
   const updateSuccess = useAppSelector(state => state.mandatoryFieldCheck.updateSuccess);
 
   const handleClose = () => {
-    navigate('/mandatory-field-check');
+    navigate('/mandatory-field-check', { replace: true });
   };
 
   useEffect(() => {

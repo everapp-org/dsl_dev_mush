@@ -28,7 +28,7 @@ export const PhaseExecutionUpdate = () => {
   const phaseNameValues = Object.keys(PhaseName);
 
   const handleClose = () => {
-    navigate('/phase-execution');
+    navigate('/phase-execution', { replace: true });
   };
 
   useEffect(() => {
