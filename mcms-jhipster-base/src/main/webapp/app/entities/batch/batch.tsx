@@ -214,10 +214,15 @@ export const Batch = () => {
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
           {canModifyBatch && (
-            <Link to="/batch/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Create a new Batch
-            </Link>
+            <>
+              <Button tag="a" href="/api/export/batches" className="me-2" color="success" data-cy="entityExportButton">
+                <FontAwesomeIcon icon="download" /> Export CSV
+              </Button>
+              <Link to="/batch/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+                <FontAwesomeIcon icon="plus" />
+                &nbsp; Create a new Batch
+              </Link>
+            </>
           )}
         </div>
       </h2>

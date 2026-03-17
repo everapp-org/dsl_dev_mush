@@ -16,6 +16,7 @@ import com.mcms.service.BatchService;
 import com.mcms.service.exception.InvalidTransitionException;
 import com.mcms.web.rest.dto.DiscardBatchRequest;
 import com.mcms.web.rest.dto.ForceTransitionRequest;
+import com.mcms.web.rest.dto.TraceabilityReport;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -278,6 +279,86 @@ public class BatchResource {
         LOG.debug("REST request to get Batch : {}", id);
         Optional<Batch> batch = batchRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(batch);
+    }
+
+    /**
+     * {@code GET  /batches/:id/traceability} : Get traceability report for a batch (supplier to customer chain).
+     *
+     * @param id the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the traceability report in JSON format.
+     */
+    @GetMapping("/{id}/traceability")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public ResponseEntity<TraceabilityReport> getTraceability(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get traceability for Batch : {}", id);
+
+        Optional<Batch> batchOptional = batchRepository.findOneWithEagerRelationships(id);
+        if (batchOptional.isEmpty()) {
+            throw new BadRequestAlertException("Batch not found", ENTITY_NAME, "notfound");
+        }
+
+        Batch batch = batchOptional.get();
+
+        // Build traceability report
+        TraceabilityReport report = new TraceabilityReport(
+            batch.getBatchCode(),
+            batch.getStartDate(),
+            batch.getCurrentPhase() != null ? batch.getCurrentPhase().toString() : null
+        );
+
+        // Section 1: Materials used (from suppliers)
+        List<BatchMaterialUsage> materialUsages = batchMaterialUsageRepository.findAll().stream()
+            .filter(usage -> usage.getBatch() != null && usage.getBatch().getId().equals(id))
+            .collect(Collectors.toList());
+
+        for (BatchMaterialUsage usage : materialUsages) {
+            TraceabilityReport.MaterialUsageInfo info = new TraceabilityReport.MaterialUsageInfo();
+            info.setMaterialName(usage.getMaterial() != null ? usage.getMaterial().getName() : null);
+            info.setQuantityUsed(usage.getQuantityUsed());
+            info.setUnit(usage.getUnit() != null ? usage.getUnit().toString() : null);
+            info.setUsageDate(usage.getUsageDate());
+
+            InventoryLot lot = usage.getInventoryLot();
+            if (lot != null) {
+                info.setLotCode(lot.getLotCode());
+                if (lot.getSupplyOrderLine() != null) {
+                    SupplyOrderLine supplyLine = lot.getSupplyOrderLine();
+                    if (supplyLine.getSupplyOrder() != null) {
+                        info.setSupplyOrderCode(supplyLine.getSupplyOrder().getOrderCode());
+                        if (supplyLine.getSupplyOrder().getSupplier() != null) {
+                            info.setSupplierName(supplyLine.getSupplyOrder().getSupplier().getName());
+                        }
+                    }
+                }
+            }
+
+            report.getMaterialsUsed().add(info);
+        }
+
+        // Section 2: Sales (to customers)
+        List<SalesOrderLine> salesLines = salesOrderLineRepository.findAll().stream()
+            .filter(line -> line.getBatch() != null && line.getBatch().getId().equals(id))
+            .collect(Collectors.toList());
+
+        for (SalesOrderLine line : salesLines) {
+            TraceabilityReport.SalesInfo info = new TraceabilityReport.SalesInfo();
+            info.setProductName(line.getProduct() != null ? line.getProduct().getName() : null);
+            info.setQuantity(line.getWeightKg());
+            info.setUnit(line.getUnit() != null ? line.getUnit().toString() : "kg");
+
+            if (line.getSalesOrder() != null) {
+                info.setSalesOrderCode(line.getSalesOrder().getOrderCode());
+                info.setOrderDate(line.getSalesOrder().getOrderDate());
+                info.setDeliveryDate(line.getSalesOrder().getActualDeliveryDate());
+                if (line.getSalesOrder().getCustomer() != null) {
+                    info.setCustomerName(line.getSalesOrder().getCustomer().getName());
+                }
+            }
+
+            report.getSales().add(info);
+        }
+
+        return ResponseEntity.ok().body(report);
     }
 
     /**

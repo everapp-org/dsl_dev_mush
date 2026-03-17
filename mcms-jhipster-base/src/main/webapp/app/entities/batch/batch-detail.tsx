@@ -20,6 +20,7 @@ export const BatchDetail = () => {
   const [costRecords, setCostRecords] = useState([]);
   const [materialUsages, setMaterialUsages] = useState([]);
   const [contaminationEvents, setContaminationEvents] = useState([]);
+  const [traceabilityData, setTraceabilityData] = useState(null);
   const [loadingRelated, setLoadingRelated] = useState(false);
 
   const { id } = useParams<'id'>();
@@ -62,6 +63,11 @@ export const BatchDetail = () => {
         case 'contamination': {
           const contaminationRes = await axios.get(`/api/contamination-events/by-batch/${id}`);
           setContaminationEvents(contaminationRes.data);
+          break;
+        }
+        case 'traceability': {
+          const traceabilityRes = await axios.get(`/api/batches/${id}/traceability`);
+          setTraceabilityData(traceabilityRes.data);
           break;
         }
         default:
@@ -205,6 +211,15 @@ export const BatchDetail = () => {
               style={{ cursor: 'pointer' }}
             >
               Contamination
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={activeTab === 'traceability' ? 'active' : ''}
+              onClick={() => toggleTab('traceability')}
+              style={{ cursor: 'pointer' }}
+            >
+              Traceability
             </NavLink>
           </NavItem>
         </Nav>
@@ -522,6 +537,125 @@ export const BatchDetail = () => {
             ) : (
               <Alert color="success">
                 <FontAwesomeIcon icon="check-circle" /> No contamination events recorded for this batch.
+              </Alert>
+            )}
+          </TabPane>
+
+          <TabPane tabId="traceability">
+            <h4>Traceability Report (Supplier to Customer Chain)</h4>
+            {loadingRelated ? (
+              <p>Loading...</p>
+            ) : traceabilityData ? (
+              <>
+                <div className="mb-4">
+                  <h5>Batch Information</h5>
+                  <dl className="row">
+                    <dt className="col-sm-3">Batch Code:</dt>
+                    <dd className="col-sm-9">{traceabilityData.batchCode}</dd>
+                    <dt className="col-sm-3">Start Date:</dt>
+                    <dd className="col-sm-9">
+                      <TextFormat value={traceabilityData.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                    </dd>
+                    <dt className="col-sm-3">Current Phase:</dt>
+                    <dd className="col-sm-9">{traceabilityData.currentPhase}</dd>
+                  </dl>
+                </div>
+
+                <div className="mb-4">
+                  <h5>Materials Used (From Suppliers)</h5>
+                  {traceabilityData.materialsUsed && traceabilityData.materialsUsed.length > 0 ? (
+                    <Table striped responsive>
+                      <thead>
+                        <tr>
+                          <th>Material</th>
+                          <th>Supplier</th>
+                          <th>Supply Order</th>
+                          <th>Lot Code</th>
+                          <th>Quantity Used</th>
+                          <th>Unit</th>
+                          <th>Usage Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {traceabilityData.materialsUsed.map((material: any, index: number) => (
+                          <tr key={index}>
+                            <td>{material.materialName || '-'}</td>
+                            <td>{material.supplierName || '-'}</td>
+                            <td>{material.supplyOrderCode || '-'}</td>
+                            <td>{material.lotCode || '-'}</td>
+                            <td>{material.quantityUsed || '-'}</td>
+                            <td>{material.unit || '-'}</td>
+                            <td>
+                              {material.usageDate ? (
+                                <TextFormat value={material.usageDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                              ) : (
+                                '-'
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <Alert color="info">
+                      <FontAwesomeIcon icon="info-circle" /> No material usage records found.
+                    </Alert>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <h5>Sales (To Customers)</h5>
+                  {traceabilityData.sales && traceabilityData.sales.length > 0 ? (
+                    <Table striped responsive>
+                      <thead>
+                        <tr>
+                          <th>Customer</th>
+                          <th>Sales Order</th>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Unit</th>
+                          <th>Order Date</th>
+                          <th>Delivery Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {traceabilityData.sales.map((sale: any, index: number) => (
+                          <tr key={index}>
+                            <td>{sale.customerName || '-'}</td>
+                            <td>{sale.salesOrderCode || '-'}</td>
+                            <td>{sale.productName || '-'}</td>
+                            <td>{sale.quantity || '-'}</td>
+                            <td>{sale.unit || '-'}</td>
+                            <td>
+                              {sale.orderDate ? <TextFormat value={sale.orderDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}
+                            </td>
+                            <td>
+                              {sale.deliveryDate ? (
+                                <TextFormat value={sale.deliveryDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                              ) : (
+                                '-'
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <Alert color="info">
+                      <FontAwesomeIcon icon="info-circle" /> No sales records found.
+                    </Alert>
+                  )}
+                </div>
+
+                <div className="mt-3">
+                  <Button tag="a" href={`/api/batches/${id}/export-traceability`} color="success" size="sm">
+                    <FontAwesomeIcon icon="download" /> Export as CSV
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Alert color="info">
+                <FontAwesomeIcon icon="info-circle" /> No traceability data available.
               </Alert>
             )}
           </TabPane>
