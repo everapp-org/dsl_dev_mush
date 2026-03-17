@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -13,9 +14,14 @@ export const InventoryLotDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
+  const [movements, setMovements] = useState([]);
 
   useEffect(() => {
     dispatch(getEntity(id));
+    // Fetch stock movements for this lot
+    axios.get(`/api/inventory-lots/${id}/movements`).then(response => {
+      setMovements(response.data);
+    });
   }, []);
 
   const inventoryLotEntity = useAppSelector(state => state.inventoryLot.entity);
@@ -109,6 +115,41 @@ export const InventoryLotDetail = () => {
         <Button tag={Link} to={`/inventory-lot/${inventoryLotEntity.id}/edit`} replace color="primary">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
+      </Col>
+      <Col md="8" className="mt-4">
+        <h3>Stock Movement Audit Trail</h3>
+        {movements.length === 0 ? (
+          <div className="alert alert-info">
+            <FontAwesomeIcon icon="info-circle" /> No stock movements found for this lot.
+          </div>
+        ) : (
+          <Table responsive striped>
+            <thead>
+              <tr>
+                <th>Movement Date</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Batch</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              {movements.map((movement: any) => (
+                <tr key={movement.id}>
+                  <td>
+                    {movement.movementDate ? <TextFormat value={movement.movementDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}
+                  </td>
+                  <td>{movement.movementType || '-'}</td>
+                  <td>{movement.quantityMoved || '-'}</td>
+                  <td>{movement.unit || '-'}</td>
+                  <td>{movement.batch ? <Link to={`/batch/${movement.batch.id}`}>{movement.batch.batchCode}</Link> : '-'}</td>
+                  <td>{movement.purpose || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Col>
     </Row>
   );

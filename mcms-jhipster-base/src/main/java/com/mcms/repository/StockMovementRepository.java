@@ -41,4 +41,9 @@ public interface StockMovementRepository extends JpaRepository<StockMovement, Lo
         "select stockMovement from StockMovement stockMovement left join fetch stockMovement.inventoryLot left join fetch stockMovement.batch where stockMovement.id =:id"
     )
     Optional<StockMovement> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select stockMovement from StockMovement stockMovement left join fetch stockMovement.inventoryLot left join fetch stockMovement.batch where stockMovement.inventoryLot.id =:lotId order by stockMovement.movementDate desc"
+    )
+    List<StockMovement> findByInventoryLotIdOrderByMovementDateDesc(@Param("lotId") Long lotId);
 }

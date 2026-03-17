@@ -56,7 +56,7 @@ export const BatchDetail = () => {
           break;
         }
         case 'materials': {
-          const materialRes = await axios.get(`/api/batch-material-usages/by-batch/${id}`);
+          const materialRes = await axios.get(`/api/batch-material-usages?batchId=${id}`);
           setMaterialUsages(materialRes.data);
           break;
         }

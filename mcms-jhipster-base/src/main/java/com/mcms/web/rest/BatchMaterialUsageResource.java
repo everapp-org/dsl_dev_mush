@@ -160,14 +160,19 @@ public class BatchMaterialUsageResource {
     /**
      * {@code GET  /batch-material-usages} : get all the batchMaterialUsages.
      *
+     * @param batchId optional batch ID to filter by.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of batchMaterialUsages in body.
      */
     @GetMapping("")
     public List<BatchMaterialUsage> getAllBatchMaterialUsages(
+        @RequestParam(name = "batchId", required = false) Long batchId,
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
         LOG.debug("REST request to get all BatchMaterialUsages");
+        if (batchId != null) {
+            return batchMaterialUsageRepository.findByBatchIdOrderByUsageDateDesc(batchId);
+        }
         if (eagerload) {
             return batchMaterialUsageRepository.findAllWithEagerRelationships();
         } else {

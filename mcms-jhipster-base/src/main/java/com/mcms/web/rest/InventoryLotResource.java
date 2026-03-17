@@ -1,7 +1,9 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.InventoryLot;
+import com.mcms.domain.StockMovement;
 import com.mcms.repository.InventoryLotRepository;
+import com.mcms.repository.StockMovementRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +37,11 @@ public class InventoryLotResource {
     private String applicationName;
 
     private final InventoryLotRepository inventoryLotRepository;
+    private final StockMovementRepository stockMovementRepository;
 
-    public InventoryLotResource(InventoryLotRepository inventoryLotRepository) {
+    public InventoryLotResource(InventoryLotRepository inventoryLotRepository, StockMovementRepository stockMovementRepository) {
         this.inventoryLotRepository = inventoryLotRepository;
+        this.stockMovementRepository = stockMovementRepository;
     }
 
     /**
@@ -208,5 +212,17 @@ public class InventoryLotResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code GET  /inventory-lots/:id/movements} : get all stock movements for an inventory lot.
+     *
+     * @param id the id of the inventory lot.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of stock movements in body.
+     */
+    @GetMapping("/{id}/movements")
+    public List<StockMovement> getInventoryLotMovements(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get StockMovements for InventoryLot : {}", id);
+        return stockMovementRepository.findByInventoryLotIdOrderByMovementDateDesc(id);
     }
 }
