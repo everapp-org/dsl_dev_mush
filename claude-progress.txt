@@ -7738,3 +7738,19 @@ Verify that frontend TypeScript enums match backend Java enums for PhaseName and
 - **Progress:** 207/405 features (51.1%)
 - **Commit:** 3699f27 - docs: verify date formatting and enum matching
 
+
+---
+
+## Session 70: Features #212, #213 (2026-03-17)
+
+### Feature #212: Boolean fields as checkboxes ✅
+Verified existing implementation - boolean fields shown as checkboxes in UI
+
+### Feature #213: Cascading deletes handled ✅
+NEW: Implemented cascade delete confirmation with warning dialog
+- Backend: Added countByBatchId to 5 repositories, modified delete endpoint
+- Frontend: Enhanced delete dialog with cascade warning and force delete
+- Returns 409 Conflict if batch has children, requires cascade=true to proceed
+
+Progress: 209/405 features (51.6%)
+Commit: c59a7cb
