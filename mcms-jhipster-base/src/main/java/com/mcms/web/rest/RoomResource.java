@@ -2,8 +2,10 @@ package com.mcms.web.rest;
 
 import com.mcms.domain.Batch;
 import com.mcms.domain.Room;
+import com.mcms.domain.Sensor;
 import com.mcms.repository.PhaseExecutionRepository;
 import com.mcms.repository.RoomRepository;
+import com.mcms.repository.SensorRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -40,10 +42,12 @@ public class RoomResource {
 
     private final RoomRepository roomRepository;
     private final PhaseExecutionRepository phaseExecutionRepository;
+    private final SensorRepository sensorRepository;
 
-    public RoomResource(RoomRepository roomRepository, PhaseExecutionRepository phaseExecutionRepository) {
+    public RoomResource(RoomRepository roomRepository, PhaseExecutionRepository phaseExecutionRepository, SensorRepository sensorRepository) {
         this.roomRepository = roomRepository;
         this.phaseExecutionRepository = phaseExecutionRepository;
+        this.sensorRepository = sensorRepository;
     }
 
     /**
@@ -236,5 +240,18 @@ public class RoomResource {
             .distinct()
             .collect(Collectors.toList());
         return batches;
+    }
+
+    /**
+     * {@code GET  /rooms/:id/sensors} : get all sensors installed in the room.
+     *
+     * @param id the id of the room.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of sensors in body.
+     */
+    @GetMapping("/{id}/sensors")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<Sensor> getSensorsInRoom(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get Sensors in Room : {}", id);
+        return sensorRepository.findByRoomId(id);
     }
 }

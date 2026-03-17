@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -178,14 +179,27 @@ public class SensorReadingResource {
      * {@code GET  /sensor-readings} : get all the sensorReadings.
      *
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param sensorId optional sensor ID to filter by
+     * @param from optional start time for time range query (ISO 8601 format)
+     * @param to optional end time for time range query (ISO 8601 format)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of sensorReadings in body.
      */
     @GetMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<SensorReading> getAllSensorReadings(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @RequestParam(name = "sensorId", required = false) Long sensorId,
+        @RequestParam(name = "from", required = false) Instant from,
+        @RequestParam(name = "to", required = false) Instant to
     ) {
-        LOG.debug("REST request to get all SensorReadings");
+        LOG.debug("REST request to get all SensorReadings with sensorId={}, from={}, to={}", sensorId, from, to);
+
+        // If sensorId and time range are provided, use the time series query
+        if (sensorId != null && from != null && to != null) {
+            return sensorReadingRepository.findBySensorAndTimeRange(sensorId, from, to);
+        }
+
+        // Otherwise, return all readings
         if (eagerload) {
             return sensorReadingRepository.findAllWithEagerRelationships();
         } else {

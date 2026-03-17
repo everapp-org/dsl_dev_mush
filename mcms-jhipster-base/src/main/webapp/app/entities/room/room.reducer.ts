@@ -5,9 +5,11 @@ import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IRoom, defaultValue } from 'app/shared/model/room.model';
 import { IBatch } from 'app/shared/model/batch.model';
+import { ISensor } from 'app/shared/model/sensor.model';
 
 interface RoomState extends EntityState<IRoom> {
   batchesInRoom: IBatch[];
+  sensorsInRoom: ISensor[];
 }
 
 const initialState: RoomState = {
@@ -18,6 +20,7 @@ const initialState: RoomState = {
   updating: false,
   updateSuccess: false,
   batchesInRoom: [],
+  sensorsInRoom: [],
 };
 
 const apiUrl = 'api/rooms';
@@ -92,6 +95,15 @@ export const getBatchesInRoom = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getSensorsInRoom = createAsyncThunk(
+  'room/fetch_sensors_in_room',
+  async (id: string | number) => {
+    const requestUrl = `${apiUrl}/${id}/sensors`;
+    return axios.get<ISensor[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const RoomSlice = createEntitySlice({
@@ -112,6 +124,11 @@ export const RoomSlice = createEntitySlice({
         state.loading = false;
         const roomState = state as unknown as RoomState;
         roomState.batchesInRoom = action.payload.data;
+      })
+      .addCase(getSensorsInRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        const roomState = state as unknown as RoomState;
+        roomState.sensorsInRoom = action.payload.data;
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data } = action.payload;
@@ -135,7 +152,7 @@ export const RoomSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity, getBatchesInRoom), state => {
+      .addMatcher(isPending(getEntities, getEntity, getBatchesInRoom, getSensorsInRoom), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

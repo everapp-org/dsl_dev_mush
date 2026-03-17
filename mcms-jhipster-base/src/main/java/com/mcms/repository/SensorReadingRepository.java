@@ -1,6 +1,7 @@
 package com.mcms.repository;
 
 import com.mcms.domain.SensorReading;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -37,4 +38,16 @@ public interface SensorReadingRepository extends JpaRepository<SensorReading, Lo
 
     @Query("select sensorReading from SensorReading sensorReading left join fetch sensorReading.sensor where sensorReading.id =:id")
     Optional<SensorReading> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select sensorReading from SensorReading sensorReading left join fetch sensorReading.sensor " +
+        "where sensorReading.sensor.id = :sensorId " +
+        "and sensorReading.timestamp between :from and :to " +
+        "order by sensorReading.timestamp asc"
+    )
+    List<SensorReading> findBySensorAndTimeRange(
+        @Param("sensorId") Long sensorId,
+        @Param("from") Instant from,
+        @Param("to") Instant to
+    );
 }

@@ -8,7 +8,7 @@ import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntity, getBatchesInRoom } from './room.reducer';
+import { getEntity, getBatchesInRoom, getSensorsInRoom } from './room.reducer';
 
 export const RoomDetail = () => {
   const dispatch = useAppDispatch();
@@ -18,10 +18,12 @@ export const RoomDetail = () => {
   useEffect(() => {
     dispatch(getEntity(id));
     dispatch(getBatchesInRoom(id));
+    dispatch(getSensorsInRoom(id));
   }, []);
 
   const roomEntity = useAppSelector(state => state.room.entity);
   const batchesInRoom = useAppSelector(state => state.room.batchesInRoom);
+  const sensorsInRoom = useAppSelector(state => state.room.sensorsInRoom);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
 
   return (
@@ -131,6 +133,41 @@ export const RoomDetail = () => {
           </>
         ) : (
           <p className="text-muted">No batches currently in this room.</p>
+        )}
+        <h3 className="mt-4">Installed Sensors</h3>
+        {sensorsInRoom && sensorsInRoom.length > 0 ? (
+          <Table responsive striped>
+            <thead>
+              <tr>
+                <th>Sensor Code</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Manufacturer</th>
+                <th>Model</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sensorsInRoom.map(sensor => (
+                <tr key={sensor.id}>
+                  <td>
+                    <Link to={`/sensor/${sensor.id}`}>{sensor.sensorCode}</Link>
+                  </td>
+                  <td>{sensor.sensorType}</td>
+                  <td>{sensor.status}</td>
+                  <td>{sensor.manufacturer}</td>
+                  <td>{sensor.model}</td>
+                  <td>
+                    <Button tag={Link} to={`/sensor/${sensor.id}`} color="info" size="sm">
+                      <FontAwesomeIcon icon="eye" /> View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <p className="text-muted">No sensors installed in this room.</p>
         )}
         <Button tag={Link} to="/room" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

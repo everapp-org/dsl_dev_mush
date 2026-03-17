@@ -34,4 +34,7 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
 
     @Query("select sensor from Sensor sensor left join fetch sensor.room where sensor.id =:id")
     Optional<Sensor> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query("select sensor from Sensor sensor left join fetch sensor.room where sensor.room.id = :roomId")
+    List<Sensor> findByRoomId(@Param("roomId") Long roomId);
 }
