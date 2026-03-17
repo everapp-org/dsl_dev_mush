@@ -77,6 +77,17 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const createEntitiesBulk = createAsyncThunk(
+  'sensorReading/create_entities_bulk',
+  async (entities: ISensorReading[], thunkAPI) => {
+    const cleanedEntities = entities.map(e => cleanEntity(e));
+    const result = await axios.post<ISensorReading[]>(`${apiUrl}/bulk`, cleanedEntities);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const SensorReadingSlice = createEntitySlice({
@@ -115,12 +126,17 @@ export const SensorReadingSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
+      .addMatcher(isFulfilled(createEntitiesBulk), (state, action) => {
+        state.updating = false;
+        state.loading = false;
+        state.updateSuccess = true;
+      })
       .addMatcher(isPending(getEntities, getEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, createEntitiesBulk), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

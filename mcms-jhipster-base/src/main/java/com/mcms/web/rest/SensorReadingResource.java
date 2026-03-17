@@ -62,6 +62,33 @@ public class SensorReadingResource {
     }
 
     /**
+     * {@code POST  /sensor-readings/bulk} : Create multiple sensor readings at once.
+     * This is optimized for IoT devices sending batches of readings.
+     *
+     * @param readings the list of sensor readings to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the list of created readings.
+     */
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
+    public ResponseEntity<List<SensorReading>> createSensorReadingsBulk(@Valid @RequestBody List<SensorReading> readings) {
+        LOG.debug("REST request to save {} SensorReadings in bulk", readings.size());
+
+        // Validate that none of the readings have an ID
+        for (SensorReading reading : readings) {
+            if (reading.getId() != null) {
+                throw new BadRequestAlertException("A new sensorReading cannot already have an ID", ENTITY_NAME, "idexists");
+            }
+        }
+
+        // Save all readings
+        List<SensorReading> savedReadings = sensorReadingRepository.saveAll(readings);
+
+        return ResponseEntity.status(201)
+            .headers(HeaderUtil.createAlert(applicationName, "Bulk created " + savedReadings.size() + " sensor readings", ""))
+            .body(savedReadings);
+    }
+
+    /**
      * {@code PUT  /sensor-readings/:id} : Updates an existing sensorReading.
      *
      * @param id the id of the sensorReading to save.
