@@ -93,6 +93,8 @@ export const BatchDetail = () => {
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
+      // Update URL to persist tab selection across navigation
+      setSearchParams({ tab });
     }
   };
 
