@@ -7900,3 +7900,111 @@ The room sensors feature shows clean entity relationship handling:
 - Both servers stable and running
 - Codebase clean with no uncommitted changes
 - Ready for next feature batch
+
+---
+
+## Session: 2026-03-17 (Session 75)
+
+### Completed Features (219/405 - 54.1%)
+
+#### Feature #222: Flush cycles by batch ✅
+**Status:** PASSING (NEW IMPLEMENTATION)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Provide query parameter filtering for flush cycles by batch ID using GET /api/flush-cycles?batchId=X
+
+**Implementation:**
+
+1. **Backend - FlushCycleResource.java:**
+   - Line 185-205: Modified getAllFlushCycles method
+   - Added @RequestParam batchId (optional)
+   - When batchId provided, calls findByBatchIdOrderByFlushNumber
+   - Falls back to findAllWithEagerRelationships when no filter
+   - Repository method already existed (findByBatchIdOrderByFlushNumber)
+
+2. **Frontend - batch-detail.tsx:**
+   - Line 49: Changed from `/api/flush-cycles/by-batch/${id}` 
+   - To: `/api/flush-cycles?batchId=${id}`
+   - Uses query parameter style for consistency
+
+**Verification Steps:**
+1. ✅ Added optional batchId query parameter to getAllFlushCycles
+2. ✅ Backend reuses existing repository method
+3. ✅ Frontend updated to use query parameter style
+4. ✅ Backend compiles: mvn compile succeeded
+5. ✅ Frontend lints: npm run lint succeeded (1 pre-existing warning)
+6. ✅ No mock data: 0 matches for mock patterns
+
+---
+
+#### Feature #223: Cost records by batch ✅
+**Status:** PASSING (NEW IMPLEMENTATION)
+**Category:** UI-Backend Integration
+
+**Purpose:**
+Provide query parameter filtering for cost records by batch ID using GET /api/cost-records?batchId=X
+
+**Implementation:**
+
+1. **Backend - CostRecordResource.java:**
+   - Line 165-187: Modified getAllCostRecords method
+   - Added @RequestParam batchId (optional)
+   - When batchId provided, calls findByBatchIdOrderByRecordDateDesc
+   - Falls back to findAllWithEagerRelationships when no filter
+   - Repository method already existed (findByBatchIdOrderByRecordDateDesc)
+
+2. **Frontend - batch-detail.tsx:**
+   - Line 54: Changed from `/api/cost-records/by-batch/${id}`
+   - To: `/api/cost-records?batchId=${id}`
+   - Uses query parameter style for consistency
+
+**Verification Steps:**
+1. ✅ Added optional batchId query parameter to getAllCostRecords
+2. ✅ Backend reuses existing repository method
+3. ✅ Frontend updated to use query parameter style
+4. ✅ Backend compiles: mvn compile succeeded
+5. ✅ Frontend lints: npm run lint succeeded (1 pre-existing warning)
+6. ✅ No mock data: 0 matches for mock patterns
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both UI-Backend Integration)
+- **Feature #222:** Flush cycles with query parameter filtering (MODIFIED)
+- **Feature #223:** Cost records with query parameter filtering (MODIFIED)
+- **Code Changes:**
+  - Backend: 2 files modified (FlushCycleResource.java, CostRecordResource.java)
+  - Frontend: 1 file modified (batch-detail.tsx)
+- **Progress:** 219/405 features (54.1%)
+- **Session Type:** YOLO mode verification
+- **Commit:** a899933 - feat: implement query parameter filtering for flush cycles and cost records
+
+---
+
+## Technical Notes - Session 75
+
+### Query Parameter Pattern
+Both features implement consistent query parameter filtering:
+- **Standard REST Pattern:** GET /api/entity?filterId=X instead of /api/entity/by-filter/X
+- **Optional Parameters:** @RequestParam(required = false) for backward compatibility
+- **Repository Reuse:** Both features reused existing findByBatchId methods
+- **Fallback Behavior:** When no filter provided, returns all entities with eager loading
+
+### Code Consistency
+The changes maintain consistency across the codebase:
+- **Pattern Matching:** Similar to SensorReadingResource (line 191) and BatchResource (line 255)
+- **Backward Compatible:** Existing /by-batch/{id} endpoints remain for legacy clients
+- **Security:** @PreAuthorize annotations preserved (ADMIN, MANAGER for cost records)
+
+### Code Quality
+- **Compilation:** Both backend (mvn compile) and frontend (npm lint) succeed
+- **Lint Status:** 1 pre-existing warning (notification-middleware complexity)
+- **No Mocks:** All filtering uses real JPA repository queries
+- **Type Safety:** Proper Optional<Long> handling for query parameters
+
+### Next Session Recommendations
+- Continue with remaining UI-Backend Integration features
+- Both servers stable and running (backend PID 28600, frontend port 9000)
+- Codebase clean with no uncommitted changes
+- Progress: 219/405 features (54.1%)
