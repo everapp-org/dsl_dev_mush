@@ -9,6 +9,7 @@ import { APP_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 import { getUsersAsAdmin, updateUser } from './user-management.reducer';
 
 export const UserManagement = () => {
@@ -85,6 +86,14 @@ export const UserManagement = () => {
   const users = useAppSelector(state => state.userManagement.users);
   const totalItems = useAppSelector(state => state.userManagement.totalItems);
   const loading = useAppSelector(state => state.userManagement.loading);
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading user list...',
+    loadedMessage: 'User list loaded',
+  });
+
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = pagination.sort;
     const order = pagination.order;

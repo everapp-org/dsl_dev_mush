@@ -9,6 +9,7 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { AUTHORITIES } from 'app/config/constants';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 
 import { getEntities, activateStrain, deactivateStrain } from './strain.reducer';
 
@@ -24,6 +25,13 @@ export const Strain = () => {
   const strainList = useAppSelector(state => state.strain.entities);
   const loading = useAppSelector(state => state.strain.loading);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading strain list...',
+    loadedMessage: 'Strain list loaded',
+  });
 
   const getAllEntities = () => {
     dispatch(

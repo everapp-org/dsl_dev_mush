@@ -10,6 +10,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 
 import { getEntities } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
@@ -40,6 +41,13 @@ export const Batch = () => {
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
   const totalItems = useAppSelector(state => state.batch.totalItems);
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading batch list...',
+    loadedMessage: 'Batch list loaded',
+  });
   const strainList = useAppSelector(state => state.strain.entities);
   const canModifyBatch = useAppSelector(state =>
     hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),

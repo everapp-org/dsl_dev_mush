@@ -7,6 +7,7 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 
 import { getEntities } from './customer.reducer';
 
@@ -20,6 +21,13 @@ export const Customer = () => {
 
   const customerList = useAppSelector(state => state.customer.entities);
   const loading = useAppSelector(state => state.customer.loading);
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading customer list...',
+    loadedMessage: 'Customer list loaded',
+  });
 
   const getAllEntities = () => {
     dispatch(
