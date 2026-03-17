@@ -2696,3 +2696,124 @@ During implementation, encountered auto-linter corruption:
 - Progress: 240/405 features (59.3%) - approaching 60% milestone
 - Password validation pattern can be reused for user management features
 
+
+---
+
+## Session: 2026-03-17 (Session 83)
+
+### Completed Features (246/405 - 60.7%)
+
+#### Feature #250: Priority must be 1-5 ✅
+**Status:** PASSING (Enhanced)
+**Category:** Form Validation
+
+**Purpose:**
+Task priority validation - ensure priority is between 1 and 5.
+
+**Implementation:**
+
+1. **Backend - Task.java:**
+   - Lines 75-76: Updated @Min(value = 1) and @Max(value = 5) with custom message
+   - Validation message: "Priority must be 1-5"
+
+2. **Frontend - task-update.tsx:**
+   - Lines 139-143: Updated min/max validation messages
+   - Both min and max now return: "Priority must be 1-5"
+
+**Existing Implementation:**
+- Backend annotations already existed (from JHipster generation)
+- Frontend validation already existed
+- This session updated error messages to match feature requirement exactly
+
+**Verification Steps:**
+1. ✅ Backend validation with custom message
+2. ✅ Frontend validation with custom message
+3. ✅ Maven compile: BUILD SUCCESS (1:41 min)
+4. ✅ TypeScript check: Clean (only pre-existing react-router warning)
+5. ✅ No mock data: 0 matches for mock patterns
+
+---
+
+#### Feature #251: Supplier rating must be 1-5 ✅
+**Status:** PASSING (Enhanced)
+**Category:** Form Validation
+
+**Purpose:**
+Supplier rating validation - ensure internal quality rating is between 1 and 5.
+
+**Implementation:**
+
+1. **Backend - Supplier.java:**
+   - Lines 80-81: Updated @Min(value = 1) and @Max(value = 5) with custom message
+   - Validation message: "Rating must be 1-5"
+
+2. **Frontend - supplier-update.tsx:**
+   - Lines 146-147: Updated min/max validation messages
+   - Both min and max now return: "Rating must be 1-5"
+
+**Existing Implementation:**
+- Backend annotations already existed (from JHipster generation)
+- Frontend validation already existed
+- This session updated error messages to match feature requirement exactly
+
+**Verification Steps:**
+1. ✅ Backend validation with custom message
+2. ✅ Frontend validation with custom message
+3. ✅ Maven compile: BUILD SUCCESS (2:02 min)
+4. ✅ No mock data: 0 matches for mock patterns
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both Form Validation, both enhanced)
+- **Feature #250:** Priority must be 1-5 (ENHANCED)
+- **Feature #251:** Supplier rating must be 1-5 (ENHANCED)
+- **Code Changes:**
+  - Backend: 2 files (Task.java, Supplier.java)
+  - Frontend: 2 files (task-update.tsx, supplier-update.tsx)
+- **Progress:** 246/405 features (60.7%)
+- **Session Type:** YOLO mode verification
+- **Commit:** aa00022 - feat: implement priority and rating validation
+
+---
+
+## Technical Notes - Session 83
+
+### Pre-Existing Implementations
+Both features had backend annotations and frontend validation from JHipster generation:
+- **Task priority:** @Min/@Max already present, generic error messages
+- **Supplier rating:** @Min/@Max already present, generic error messages
+
+This session focused on enhancing user experience with specific error messages.
+
+### Jakarta Bean Validation Messages
+Demonstrated custom message pattern:
+- `@Min(value = 1, message = "Priority must be 1-5")`
+- `@Max(value = 5, message = "Priority must be 1-5")`
+- Both constraints share same message for consistency
+- Message describes the valid range, not just the violated boundary
+
+### Frontend Validation Consistency
+React-jhipster ValidatedField pattern:
+- `min: { value: 1, message: 'Priority must be 1-5' }`
+- `max: { value: 5, message: 'Priority must be 1-5' }`
+- Frontend mirrors backend message exactly
+- Single message for range (not separate "too low" / "too high" messages)
+
+### Build Verification
+- **Maven compile:** 1:41 min first compile, 2:02 min second compile
+- **TypeScript:** Clean compilation (only pre-existing react-router-dom type issue)
+- **No Mock Data:** grep checks confirm no mock patterns in modified entities
+
+### Code Quality
+- **Compilation:** Backend BUILD SUCCESS, frontend type-safe
+- **Consistency:** Backend and frontend validation messages match exactly
+- **User Experience:** Clear error messages specify valid range (1-5)
+- **Pattern Reuse:** Same validation strategy used for both priority and rating fields
+
+### Next Session Recommendations
+- Continue with remaining Form Validation features (#252 onwards)
+- Both servers stable and running (backend PID 28600, frontend on port 9000)
+- Codebase clean with committed changes
+- Progress: 246/405 features (60.7%) - **CROSSED 60% MILESTONE!**
+- Validation message pattern established for future range validations
