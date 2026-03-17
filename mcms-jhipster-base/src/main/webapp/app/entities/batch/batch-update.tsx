@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
+import { Alert, Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -27,13 +27,41 @@ export const BatchUpdate = () => {
   const updateSuccess = useAppSelector(state => state.batch.updateSuccess);
   const phaseNameValues = Object.keys(PhaseName);
 
+  // Track form dirty state for unsaved changes warning
+  const [formIsDirty, setFormIsDirty] = useState(false);
+  const [formValues, setFormValues] = useState({});
+  const [showAutosaveNotice, setShowAutosaveNotice] = useState(false);
+  const AUTOSAVE_KEY = isNew ? 'batch-create-autosave' : `batch-edit-autosave-${id}`;
+
   const handleClose = () => {
+    // Clear autosave on intentional close
+    localStorage.removeItem(AUTOSAVE_KEY);
     navigate('/batch', { replace: true });
+  };
+
+  const clearAutosave = () => {
+    localStorage.removeItem(AUTOSAVE_KEY);
+    setShowAutosaveNotice(false);
+    setFormIsDirty(false);
+    window.location.reload();
   };
 
   useEffect(() => {
     if (isNew) {
       dispatch(reset());
+      // Try to restore autosaved data
+      const savedData = localStorage.getItem(AUTOSAVE_KEY);
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setFormValues(parsed);
+          setFormIsDirty(true);
+          setShowAutosaveNotice(true);
+        } catch (e) {
+          console.error('Failed to restore autosaved data', e);
+          localStorage.removeItem(AUTOSAVE_KEY);
+        }
+      }
     } else {
       dispatch(getEntity(id));
     }
@@ -44,9 +72,26 @@ export const BatchUpdate = () => {
 
   useEffect(() => {
     if (updateSuccess) {
+      setFormIsDirty(false); // Clear dirty state on successful save
+      localStorage.removeItem(AUTOSAVE_KEY); // Clear autosave on success
       handleClose();
     }
   }, [updateSuccess]);
+
+  // Warn user before leaving page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (formIsDirty) {
+        e.preventDefault();
+        e.returnValue = ''; // Modern browsers show generic message
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [formIsDirty]);
 
   const saveEntity = values => {
     if (values.id !== undefined && typeof values.id !== 'number') {
@@ -78,6 +123,8 @@ export const BatchUpdate = () => {
       recipe: substrateRecipes.find(it => it.id.toString() === values.recipe?.toString()),
     };
 
+    setFormIsDirty(false); // Clear dirty state when saving
+    localStorage.removeItem(AUTOSAVE_KEY); // Clear autosave when saving
     if (isNew) {
       dispatch(createEntity(entity));
     } else {
@@ -85,15 +132,47 @@ export const BatchUpdate = () => {
     }
   };
 
-  const defaultValues = () =>
-    isNew
-      ? {}
-      : {
-          currentPhase: 'INOCULATION',
-          ...batchEntity,
-          strain: batchEntity?.strain?.id,
-          recipe: batchEntity?.recipe?.id,
-        };
+  // Mark form as dirty when user makes changes and autosave
+  const handleFormChange = (e: any) => {
+    if (!formIsDirty) {
+      setFormIsDirty(true);
+    }
+
+    // Autosave to localStorage after a short delay
+    if (isNew) {
+      setTimeout(() => {
+        const formElement = e.target.closest('form');
+        if (formElement) {
+          const formData = new FormData(formElement);
+          const values: any = {};
+          formData.forEach((value, key) => {
+            // Handle checkboxes and regular inputs
+            if (formElement.querySelector(`[name="${key}"][type="checkbox"]`)) {
+              values[key] = formElement.querySelector(`[name="${key}"]`).checked;
+            } else {
+              values[key] = value;
+            }
+          });
+          localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(values));
+          setFormValues(values);
+        }
+      }, 500);
+    }
+  };
+
+  const defaultValues = () => {
+    if (isNew) {
+      // Use autosaved values if available
+      return Object.keys(formValues).length > 0 ? formValues : {};
+    } else {
+      return {
+        currentPhase: 'INOCULATION',
+        ...batchEntity,
+        strain: batchEntity?.strain?.id,
+        recipe: batchEntity?.recipe?.id,
+      };
+    }
+  };
 
   return (
     <div>
@@ -106,10 +185,18 @@ export const BatchUpdate = () => {
       </Row>
       <Row className="justify-content-center">
         <Col md="8">
+          {showAutosaveNotice && (
+            <Alert color="info" className="mb-3">
+              <FontAwesomeIcon icon="info-circle" /> Your unsaved changes from a previous session have been restored.{' '}
+              <Button color="link" size="sm" onClick={clearAutosave} className="p-0">
+                Start fresh instead
+              </Button>
+            </Alert>
+          )}
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity} onChange={handleFormChange}>
               {!isNew ? <ValidatedField name="id" required readOnly id="batch-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Batch Code"
