@@ -63,6 +63,11 @@ public class StockMovementResource {
         }
         // Use service to automatically update inventory lot quantity
         stockMovement = stockMovementService.createStockMovement(stockMovement);
+
+        // Reload the entity with eager relationships to include the updated inventory lot quantity
+        stockMovement = stockMovementRepository.findOneWithEagerRelationships(stockMovement.getId())
+            .orElse(stockMovement);
+
         return ResponseEntity.created(new URI("/api/stock-movements/" + stockMovement.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, stockMovement.getId().toString()))
             .body(stockMovement);

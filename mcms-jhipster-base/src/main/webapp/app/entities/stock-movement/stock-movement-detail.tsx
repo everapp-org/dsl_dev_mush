@@ -74,7 +74,14 @@ export const StockMovementDetail = () => {
           <dt>Inventory Lot</dt>
           <dd>
             {stockMovementEntity.inventoryLot ? (
-              <Link to={`/inventory-lot/${stockMovementEntity.inventoryLot.id}`}>{stockMovementEntity.inventoryLot.lotCode}</Link>
+              <div>
+                <Link to={`/inventory-lot/${stockMovementEntity.inventoryLot.id}`}>{stockMovementEntity.inventoryLot.lotCode}</Link>
+                {stockMovementEntity.inventoryLot.quantityOnHand !== undefined && (
+                  <span className="text-muted ms-2">
+                    (Current quantity: {stockMovementEntity.inventoryLot.quantityOnHand} {stockMovementEntity.inventoryLot.unit})
+                  </span>
+                )}
+              </div>
             ) : (
               ''
             )}
