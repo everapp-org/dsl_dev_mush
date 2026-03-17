@@ -155,6 +155,17 @@ public class Batch implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    /**
+     * Validation: end date must be after start date
+     */
+    @AssertTrue(message = "End date must be after start date")
+    private boolean isEndDateValid() {
+        if (endDate == null || startDate == null) {
+            return true; // Skip validation if either date is missing
+        }
+        return endDate.isAfter(startDate);
+    }
+
     public Long getId() {
         return this.id;
     }

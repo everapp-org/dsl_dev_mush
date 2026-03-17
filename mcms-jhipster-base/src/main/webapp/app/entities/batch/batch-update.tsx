@@ -220,7 +220,23 @@ export const BatchUpdate = () => {
                 }}
               />
               <UncontrolledTooltip target="startDateLabel">Inoculation date</UncontrolledTooltip>
-              <ValidatedField label="End Date" id="batch-endDate" name="endDate" data-cy="endDate" type="date" />
+              <ValidatedField
+                label="End Date"
+                id="batch-endDate"
+                name="endDate"
+                data-cy="endDate"
+                type="date"
+                validate={{
+                  validate: {
+                    afterStartDate(value, allValues) {
+                      if (!value || !allValues.startDate) return true; // Skip if either is empty
+                      const startDate = new Date(allValues.startDate);
+                      const endDate = new Date(value);
+                      return endDate > startDate || 'End date must be after start date';
+                    },
+                  },
+                }}
+              />
               <UncontrolledTooltip target="endDateLabel">Batch completion date</UncontrolledTooltip>
               <ValidatedField label="Current Phase" id="batch-currentPhase" name="currentPhase" data-cy="currentPhase" type="select">
                 {phaseNameValues.map(phaseName => (

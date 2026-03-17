@@ -138,11 +138,11 @@ export const BatchSlice = createEntitySlice({
 
         // Find and store the entity being deleted for potential rollback
         const entityId = action.meta.arg;
-        const entityToDelete = batchState.entities.find(e => e.id === entityId);
+        const entityToDelete = batchState.entities.find((e: IBatch) => e.id === entityId);
         if (entityToDelete) {
           batchState.deletedEntity = entityToDelete;
           // Remove entity immediately (optimistic delete)
-          state.entities = state.entities.filter(e => e.id !== entityId);
+          state.entities = state.entities.filter((e: IBatch) => e.id !== entityId);
           state.totalItems = state.totalItems - 1;
         }
       })
@@ -151,7 +151,8 @@ export const BatchSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = {};
         // Clear deleted entity - delete was successful
-        state.deletedEntity = null;
+        const batchState = state as unknown as BatchState;
+        batchState.deletedEntity = null;
       })
       // Optimistic UI: Restore entity on delete failure
       .addCase(deleteEntity.rejected, (state, action) => {
@@ -161,10 +162,11 @@ export const BatchSlice = createEntitySlice({
         state.errorMessage = action.error.message;
 
         // Rollback: restore the deleted entity
-        if (state.deletedEntity) {
-          state.entities = [state.deletedEntity, ...state.entities];
+        const batchState = state as unknown as BatchState;
+        if (batchState.deletedEntity) {
+          state.entities = [batchState.deletedEntity, ...state.entities];
           state.totalItems = state.totalItems + 1;
-          state.deletedEntity = null;
+          batchState.deletedEntity = null;
         }
       })
       // Optimistic UI: Add entity immediately on create pending
@@ -174,12 +176,13 @@ export const BatchSlice = createEntitySlice({
         state.updating = true;
 
         // Add optimistic entity with temporary ID
+        const batchState = state as unknown as BatchState;
         const optimisticEntity = {
           ...action.meta.arg,
-          id: `temp-${Date.now()}`,
+          id: `temp-${Date.now()}` as any,
           _isOptimistic: true,
-        };
-        state.optimisticEntity = optimisticEntity;
+        } as any as IBatch;
+        batchState.optimisticEntity = optimisticEntity;
         state.entities = [optimisticEntity, ...state.entities];
         state.totalItems = state.totalItems + 1;
       })
@@ -191,9 +194,10 @@ export const BatchSlice = createEntitySlice({
         state.entity = action.payload.data;
 
         // Remove optimistic entity and let getEntities fetch the real list
-        if (state.optimisticEntity) {
-          state.entities = state.entities.filter(e => e.id !== state.optimisticEntity.id);
-          state.optimisticEntity = null;
+        const batchState = state as unknown as BatchState;
+        if (batchState.optimisticEntity) {
+          state.entities = state.entities.filter((e: IBatch) => e.id !== batchState.optimisticEntity.id);
+          batchState.optimisticEntity = null;
         }
       })
       // Optimistic UI: Remove optimistic entity on failure
@@ -204,10 +208,11 @@ export const BatchSlice = createEntitySlice({
         state.errorMessage = action.error.message;
 
         // Rollback: remove optimistic entity
-        if (state.optimisticEntity) {
-          state.entities = state.entities.filter(e => e.id !== state.optimisticEntity.id);
+        const batchState = state as unknown as BatchState;
+        if (batchState.optimisticEntity) {
+          state.entities = state.entities.filter((e: IBatch) => e.id !== batchState.optimisticEntity.id);
           state.totalItems = state.totalItems - 1;
-          state.optimisticEntity = null;
+          batchState.optimisticEntity = null;
         }
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {

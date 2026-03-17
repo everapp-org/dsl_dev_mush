@@ -68,6 +68,8 @@ public class Strain implements Serializable {
      * Min RH %
      */
     @Schema(description = "Min RH %")
+    @DecimalMin(value = "0", message = "Humidity must be between 0 and 100")
+    @DecimalMax(value = "100", message = "Humidity must be between 0 and 100")
     @Column(name = "optimal_humidity_min", precision = 21, scale = 2)
     private BigDecimal optimalHumidityMin;
 
@@ -75,6 +77,8 @@ public class Strain implements Serializable {
      * Max RH %
      */
     @Schema(description = "Max RH %")
+    @DecimalMin(value = "0", message = "Humidity must be between 0 and 100")
+    @DecimalMax(value = "100", message = "Humidity must be between 0 and 100")
     @Column(name = "optimal_humidity_max", precision = 21, scale = 2)
     private BigDecimal optimalHumidityMax;
 

@@ -166,6 +166,8 @@ export const EnvironmentalTargetUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
+                  min: { value: 0, message: 'Humidity must be between 0 and 100' },
+                  max: { value: 100, message: 'Humidity must be between 0 and 100' },
                   validate: v => isNumber(v) || 'This field should be a number.',
                 }}
               />
@@ -178,6 +180,8 @@ export const EnvironmentalTargetUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
+                  min: { value: 0, message: 'Humidity must be between 0 and 100' },
+                  max: { value: 100, message: 'Humidity must be between 0 and 100' },
                   validate: {
                     number: v => isNumber(v) || 'This field should be a number.',
                     range(v, values) {

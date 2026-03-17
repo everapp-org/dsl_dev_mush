@@ -64,6 +64,7 @@ public class Task implements Serializable {
      * When it was completed
      */
     @Schema(description = "When it was completed")
+    @PastOrPresent(message = "Completed date cannot be in the future")
     @Column(name = "completed_date")
     private LocalDate completedDate;
 

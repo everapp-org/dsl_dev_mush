@@ -152,6 +152,10 @@ export const StrainUpdate = () => {
                 name="optimalHumidityMin"
                 data-cy="optimalHumidityMin"
                 type="text"
+                validate={{
+                  min: { value: 0, message: 'Humidity must be between 0 and 100' },
+                  max: { value: 100, message: 'Humidity must be between 0 and 100' },
+                }}
               />
               <UncontrolledTooltip target="optimalHumidityMinLabel">Min RH %</UncontrolledTooltip>
               <ValidatedField
@@ -160,6 +164,10 @@ export const StrainUpdate = () => {
                 name="optimalHumidityMax"
                 data-cy="optimalHumidityMax"
                 type="text"
+                validate={{
+                  min: { value: 0, message: 'Humidity must be between 0 and 100' },
+                  max: { value: 100, message: 'Humidity must be between 0 and 100' },
+                }}
               />
               <UncontrolledTooltip target="optimalHumidityMaxLabel">Max RH %</UncontrolledTooltip>
               <ValidatedField

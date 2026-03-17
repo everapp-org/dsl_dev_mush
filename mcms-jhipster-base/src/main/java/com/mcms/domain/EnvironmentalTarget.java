@@ -58,6 +58,8 @@ public class EnvironmentalTarget implements Serializable {
      */
     @Schema(description = "Minimum RH %", required = true)
     @NotNull
+    @DecimalMin(value = "0", message = "Humidity must be between 0 and 100")
+    @DecimalMax(value = "100", message = "Humidity must be between 0 and 100")
     @Column(name = "humidity_min_percent", precision = 21, scale = 2, nullable = false)
     private BigDecimal humidityMinPercent;
 
@@ -66,6 +68,8 @@ public class EnvironmentalTarget implements Serializable {
      */
     @Schema(description = "Maximum RH %", required = true)
     @NotNull
+    @DecimalMin(value = "0", message = "Humidity must be between 0 and 100")
+    @DecimalMax(value = "100", message = "Humidity must be between 0 and 100")
     @Column(name = "humidity_max_percent", precision = 21, scale = 2, nullable = false)
     private BigDecimal humidityMaxPercent;
 
