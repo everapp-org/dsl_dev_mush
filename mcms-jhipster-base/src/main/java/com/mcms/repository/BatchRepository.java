@@ -42,19 +42,26 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         value = "select distinct batch from Batch batch " +
         "left join fetch batch.strain " +
         "left join fetch batch.recipe " +
-        "where (:phase is null or batch.currentPhase = :phase) " +
+        "where (:search is null or lower(batch.batchCode) like lower(concat('%', :search, '%')) " +
+        "   or lower(batch.note) like lower(concat('%', :search, '%')) " +
+        "   or lower(batch.completionNote) like lower(concat('%', :search, '%'))) " +
+        "and (:phase is null or batch.currentPhase = :phase) " +
         "and (:strainId is null or batch.strain.id = :strainId) " +
         "and (:isActive is null or batch.isActive = :isActive) " +
         "and (:startDateFrom is null or batch.startDate >= :startDateFrom) " +
         "and (:startDateTo is null or batch.startDate <= :startDateTo)",
         countQuery = "select count(distinct batch) from Batch batch " +
-        "where (:phase is null or batch.currentPhase = :phase) " +
+        "where (:search is null or lower(batch.batchCode) like lower(concat('%', :search, '%')) " +
+        "   or lower(batch.note) like lower(concat('%', :search, '%')) " +
+        "   or lower(batch.completionNote) like lower(concat('%', :search, '%'))) " +
+        "and (:phase is null or batch.currentPhase = :phase) " +
         "and (:strainId is null or batch.strain.id = :strainId) " +
         "and (:isActive is null or batch.isActive = :isActive) " +
         "and (:startDateFrom is null or batch.startDate >= :startDateFrom) " +
         "and (:startDateTo is null or batch.startDate <= :startDateTo)"
     )
     Page<Batch> findAllWithFilters(
+        @Param("search") String search,
         @Param("phase") String phase,
         @Param("strainId") Long strainId,
         @Param("isActive") Boolean isActive,

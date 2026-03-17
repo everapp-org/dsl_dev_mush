@@ -285,6 +285,6 @@ public class StrainResource {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
     public List<Batch> getBatchesByStrain(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Batches by Strain : {}", id);
-        return batchRepository.findAllWithFilters(null, id, null, null, null, Pageable.unpaged()).getContent();
+        return batchRepository.findAllWithFilters(null, null, id, null, null, null, Pageable.unpaged()).getContent();
     }
 }

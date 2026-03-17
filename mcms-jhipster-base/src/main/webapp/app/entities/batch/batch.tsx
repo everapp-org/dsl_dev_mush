@@ -26,6 +26,7 @@ export const Batch = () => {
 
   // Filter state
   const [filters, setFilters] = useState({
+    search: '',
     phase: '',
     strainId: '',
     isActive: '',
@@ -53,6 +54,7 @@ export const Batch = () => {
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
     setFilters({
+      search: params.get('search') || '',
       phase: params.get('phase') || '',
       strainId: params.get('strainId') || '',
       isActive: params.get('isActive') || '',
@@ -67,6 +69,7 @@ export const Batch = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        search: filters.search || undefined,
         phase: filters.phase || undefined,
         strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
         isActive: filters.isActive ? filters.isActive === 'true' : undefined,
@@ -81,6 +84,7 @@ export const Batch = () => {
     params.set('page', paginationState.activePage.toString());
     params.set('sort', `${paginationState.sort},${paginationState.order}`);
 
+    if (filters.search) params.set('search', filters.search);
     if (filters.phase) params.set('phase', filters.phase);
     if (filters.strainId) params.set('strainId', filters.strainId);
     if (filters.isActive) params.set('isActive', filters.isActive);
@@ -176,6 +180,7 @@ export const Batch = () => {
 
   const handleClearFilters = () => {
     setFilters({
+      search: '',
       phase: '',
       strainId: '',
       isActive: '',
@@ -188,7 +193,8 @@ export const Batch = () => {
     });
   };
 
-  const hasActiveFilters = filters.phase || filters.strainId || filters.isActive || filters.startDateFrom || filters.startDateTo;
+  const hasActiveFilters =
+    filters.search || filters.phase || filters.strainId || filters.isActive || filters.startDateFrom || filters.startDateTo;
 
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = paginationState.sort;
@@ -226,6 +232,20 @@ export const Batch = () => {
       {/* Filter Section */}
       <Card className="mb-3">
         <CardBody>
+          <Row className="mb-3">
+            <Col md="12">
+              <FormGroup>
+                <Label for="search-filter">Search</Label>
+                <Input
+                  type="text"
+                  id="search-filter"
+                  placeholder="Search by batch code, note, or completion note..."
+                  value={filters.search}
+                  onChange={handleFilterChange('search')}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
           <Row>
             <Col md="3">
               <FormGroup>

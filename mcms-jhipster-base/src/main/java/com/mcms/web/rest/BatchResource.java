@@ -236,23 +236,24 @@ public class BatchResource {
     public ResponseEntity<List<Batch>> getAllBatches(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @RequestParam(name = "search", required = false) String search,
         @RequestParam(name = "phase", required = false) String phase,
         @RequestParam(name = "strainId", required = false) Long strainId,
         @RequestParam(name = "isActive", required = false) Boolean isActive,
         @RequestParam(name = "startDateFrom", required = false) LocalDate startDateFrom,
         @RequestParam(name = "startDateTo", required = false) LocalDate startDateTo
     ) {
-        LOG.debug("REST request to get a page of Batches with filters: phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}",
-            phase, strainId, isActive, startDateFrom, startDateTo);
+        LOG.debug("REST request to get a page of Batches with filters: search={}, phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}",
+            search, phase, strainId, isActive, startDateFrom, startDateTo);
 
         Page<Batch> page;
 
         // Check if any filters are applied
-        boolean hasFilters = phase != null || strainId != null || isActive != null || startDateFrom != null || startDateTo != null;
+        boolean hasFilters = search != null || phase != null || strainId != null || isActive != null || startDateFrom != null || startDateTo != null;
 
         if (hasFilters) {
             // Use filtered query
-            page = batchRepository.findAllWithFilters(phase, strainId, isActive, startDateFrom, startDateTo, pageable);
+            page = batchRepository.findAllWithFilters(search, phase, strainId, isActive, startDateFrom, startDateTo, pageable);
         } else if (eagerload) {
             // Use eager loading without filters
             page = batchRepository.findAllWithEagerRelationships(pageable);

@@ -20,6 +20,7 @@ const apiUrl = 'api/batches';
 // Actions
 
 export interface IQueryParamsWithFilters extends IQueryParams {
+  search?: string;
   phase?: string;
   strainId?: number;
   isActive?: boolean;
@@ -29,11 +30,12 @@ export interface IQueryParamsWithFilters extends IQueryParams {
 
 export const getEntities = createAsyncThunk(
   'batch/fetch_entity_list',
-  async ({ page, size, sort, phase, strainId, isActive, startDateFrom, startDateTo }: IQueryParamsWithFilters) => {
+  async ({ page, size, sort, search, phase, strainId, isActive, startDateFrom, startDateTo }: IQueryParamsWithFilters) => {
     const params = new URLSearchParams();
     if (sort) params.append('sort', sort);
     if (page !== undefined) params.append('page', page.toString());
     if (size !== undefined) params.append('size', size.toString());
+    if (search) params.append('search', search);
     if (phase) params.append('phase', phase);
     if (strainId !== undefined) params.append('strainId', strainId.toString());
     if (isActive !== undefined) params.append('isActive', isActive.toString());
