@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import jakarta.validation.constraints.AssertTrue;
 
 /**
  * Time-series sensor reading - the IoT data stream.
@@ -63,6 +64,36 @@ public class SensorReading implements Serializable {
     private Sensor sensor;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    /**
+     * Validation: Sensor reading value must be within reasonable range for the unit type
+     */
+    @AssertTrue(message = "Sensor reading value out of reasonable range")
+    private boolean isValueWithinReasonableRange() {
+        if (value == null || unit == null) {
+            return true; // No validation if either is null
+        }
+
+        switch (unit) {
+            case CELSIUS:
+                // Temperature: -20°C to 60°C (mushroom cultivation range with buffer)
+                return value.compareTo(new BigDecimal("-20")) >= 0 && value.compareTo(new BigDecimal("60")) <= 0;
+            case HUMIDITY_PERCENT:
+                // Humidity: 0% to 100%
+                return value.compareTo(BigDecimal.ZERO) >= 0 && value.compareTo(new BigDecimal("100")) <= 0;
+            case PPM_CO2:
+                // CO2: 0 to 10000 ppm
+                return value.compareTo(BigDecimal.ZERO) >= 0 && value.compareTo(new BigDecimal("10000")) <= 0;
+            case LUX:
+                // Light: 0 to 100000 lux
+                return value.compareTo(BigDecimal.ZERO) >= 0 && value.compareTo(new BigDecimal("100000")) <= 0;
+            case AIRFLOW_MS:
+                // Airflow: 0 to 50 m/s
+                return value.compareTo(BigDecimal.ZERO) >= 0 && value.compareTo(new BigDecimal("50")) <= 0;
+            default:
+                return true; // Unknown unit, no validation
+        }
+    }
 
     public Long getId() {
         return this.id;

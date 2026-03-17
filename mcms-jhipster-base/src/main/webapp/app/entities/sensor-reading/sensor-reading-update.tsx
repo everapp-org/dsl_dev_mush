@@ -118,7 +118,43 @@ export const SensorReadingUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
-                  validate: v => isNumber(v) || 'This field should be a number.',
+                  validate: {
+                    number: v => isNumber(v) || 'This field should be a number.',
+                    reasonableRange: (v, formValues) => {
+                      if (!v || !isNumber(v)) return true; // Let the number check handle this
+                      const numValue = Number(v);
+                      const unit = formValues.unit || sensorReadingEntity?.unit || 'CELSIUS';
+
+                      switch (unit) {
+                        case 'CELSIUS':
+                          if (numValue < -20 || numValue > 60) {
+                            return 'Temperature must be between -20°C and 60°C';
+                          }
+                          break;
+                        case 'HUMIDITY_PERCENT':
+                          if (numValue < 0 || numValue > 100) {
+                            return 'Humidity must be between 0% and 100%';
+                          }
+                          break;
+                        case 'PPM_CO2':
+                          if (numValue < 0 || numValue > 10000) {
+                            return 'CO2 must be between 0 and 10000 ppm';
+                          }
+                          break;
+                        case 'LUX':
+                          if (numValue < 0 || numValue > 100000) {
+                            return 'Light must be between 0 and 100000 lux';
+                          }
+                          break;
+                        case 'AIRFLOW_MS':
+                          if (numValue < 0 || numValue > 50) {
+                            return 'Airflow must be between 0 and 50 m/s';
+                          }
+                          break;
+                      }
+                      return true;
+                    },
+                  },
                 }}
               />
               <UncontrolledTooltip target="valueLabel">Measured value</UncontrolledTooltip>
