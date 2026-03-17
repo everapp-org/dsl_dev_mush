@@ -10,6 +10,9 @@ import com.mcms.domain.enumeration.PhaseName;
 import com.mcms.repository.BatchAuditLogRepository;
 import com.mcms.repository.BatchMaterialUsageRepository;
 import com.mcms.repository.BatchRepository;
+import com.mcms.repository.CostRecordRepository;
+import com.mcms.repository.FlushCycleRepository;
+import com.mcms.repository.PhaseExecutionRepository;
 import com.mcms.repository.SalesOrderLineRepository;
 import com.mcms.repository.UserRepository;
 import com.mcms.service.BatchService;
@@ -68,6 +71,9 @@ public class BatchResource {
     private final UserRepository userRepository;
     private final BatchMaterialUsageRepository batchMaterialUsageRepository;
     private final SalesOrderLineRepository salesOrderLineRepository;
+    private final FlushCycleRepository flushCycleRepository;
+    private final PhaseExecutionRepository phaseExecutionRepository;
+    private final CostRecordRepository costRecordRepository;
     private final BatchService batchService;
 
     public BatchResource(
@@ -77,6 +83,9 @@ public class BatchResource {
         UserRepository userRepository,
         BatchMaterialUsageRepository batchMaterialUsageRepository,
         SalesOrderLineRepository salesOrderLineRepository,
+        FlushCycleRepository flushCycleRepository,
+        PhaseExecutionRepository phaseExecutionRepository,
+        CostRecordRepository costRecordRepository,
         BatchService batchService
     ) {
         this.batchRepository = batchRepository;
@@ -85,6 +94,9 @@ public class BatchResource {
         this.userRepository = userRepository;
         this.batchMaterialUsageRepository = batchMaterialUsageRepository;
         this.salesOrderLineRepository = salesOrderLineRepository;
+        this.flushCycleRepository = flushCycleRepository;
+        this.phaseExecutionRepository = phaseExecutionRepository;
+        this.costRecordRepository = costRecordRepository;
         this.batchService = batchService;
     }
 
@@ -664,12 +676,42 @@ public class BatchResource {
      * {@code DELETE  /batches/:id} : delete the "id" batch.
      *
      * @param id the id of the batch to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     * @param cascade whether to cascade delete related entities.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)} or {@code 409 (CONFLICT)} if batch has related entities and cascade is false.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
-    public ResponseEntity<Void> deleteBatch(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Batch : {}", id);
+    public ResponseEntity<Void> deleteBatch(
+        @PathVariable("id") Long id,
+        @RequestParam(value = "cascade", required = false, defaultValue = "false") boolean cascade
+    ) {
+        LOG.debug("REST request to delete Batch : {}, cascade: {}", id, cascade);
+
+        // Check for related entities
+        long flushCycleCount = flushCycleRepository.countByBatchId(id);
+        long phaseExecutionCount = phaseExecutionRepository.countByBatchId(id);
+        long costRecordCount = costRecordRepository.countByBatchId(id);
+        long materialUsageCount = batchMaterialUsageRepository.countByBatchId(id);
+        long salesOrderLineCount = salesOrderLineRepository.countByBatchId(id);
+
+        long totalRelated = flushCycleCount + phaseExecutionCount + costRecordCount + materialUsageCount + salesOrderLineCount;
+
+        // If there are related entities and cascade is not requested, return conflict
+        if (totalRelated > 0 && !cascade) {
+            String message = String.format(
+                "Batch has %d related records (FlushCycles: %d, PhaseExecutions: %d, CostRecords: %d, MaterialUsages: %d, SalesOrderLines: %d). Use cascade=true to force delete.",
+                totalRelated,
+                flushCycleCount,
+                phaseExecutionCount,
+                costRecordCount,
+                materialUsageCount,
+                salesOrderLineCount
+            );
+            return ResponseEntity.status(HttpStatus.CONFLICT).header("X-mcmsApp-error", message).header("X-mcmsApp-params", "batch")
+                .build();
+        }
+
+        // Proceed with delete (JPA will handle cascading based on relationship configuration)
         batchRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))

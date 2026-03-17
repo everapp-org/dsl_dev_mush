@@ -46,4 +46,8 @@ public interface BatchMaterialUsageRepository extends JpaRepository<BatchMateria
         "select batchMaterialUsage from BatchMaterialUsage batchMaterialUsage left join fetch batchMaterialUsage.inventoryLot left join fetch batchMaterialUsage.material where batchMaterialUsage.batch.id = :batchId order by batchMaterialUsage.usageDate desc"
     )
     List<BatchMaterialUsage> findByBatchIdOrderByUsageDateDesc(@Param("batchId") Long batchId);
+
+    // Count material usages for a batch
+    @Query("select count(bmu) from BatchMaterialUsage bmu where bmu.batch.id = :batchId")
+    long countByBatchId(@Param("batchId") Long batchId);
 }

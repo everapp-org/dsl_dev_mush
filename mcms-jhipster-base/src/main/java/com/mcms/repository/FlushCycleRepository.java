@@ -45,4 +45,8 @@ public interface FlushCycleRepository extends JpaRepository<FlushCycle, Long> {
     default List<FlushCycle> findByBatchId(Long batchId) {
         return findByBatchIdOrderByFlushNumber(batchId);
     }
+
+    // Count flush cycles for a batch
+    @Query("select count(fc) from FlushCycle fc where fc.batch.id = :batchId")
+    long countByBatchId(@Param("batchId") Long batchId);
 }

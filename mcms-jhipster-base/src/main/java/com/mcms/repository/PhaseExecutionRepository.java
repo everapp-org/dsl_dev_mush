@@ -52,4 +52,8 @@ public interface PhaseExecutionRepository extends JpaRepository<PhaseExecution, 
 
     // Count total phase executions for a batch
     long countByBatch(com.mcms.domain.Batch batch);
+
+    // Count phase executions for a batch by ID
+    @Query("select count(pe) from PhaseExecution pe where pe.batch.id = :batchId")
+    long countByBatchId(@Param("batchId") Long batchId);
 }

@@ -44,4 +44,8 @@ public interface SalesOrderLineRepository extends JpaRepository<SalesOrderLine, 
 
     @Query("select sol from SalesOrderLine sol where sol.batch.id = :batchId")
     List<SalesOrderLine> findByBatchId(@Param("batchId") Long batchId);
+
+    // Count sales order lines for a batch
+    @Query("select count(sol) from SalesOrderLine sol where sol.batch.id = :batchId")
+    long countByBatchId(@Param("batchId") Long batchId);
 }

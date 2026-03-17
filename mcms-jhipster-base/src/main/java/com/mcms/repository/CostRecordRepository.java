@@ -40,4 +40,8 @@ public interface CostRecordRepository extends JpaRepository<CostRecord, Long> {
 
     @Query("select costRecord from CostRecord costRecord where costRecord.batch.id = :batchId order by costRecord.recordDate desc")
     List<CostRecord> findByBatchIdOrderByRecordDateDesc(@Param("batchId") Long batchId);
+
+    // Count cost records for a batch
+    @Query("select count(cr) from CostRecord cr where cr.batch.id = :batchId")
+    long countByBatchId(@Param("batchId") Long batchId);
 }
