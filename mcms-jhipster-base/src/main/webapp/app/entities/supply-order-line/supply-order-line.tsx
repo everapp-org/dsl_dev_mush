@@ -202,6 +202,17 @@ export const SupplyOrderLine = () => {
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>
+                      {!supplyOrderLine.isReceived && (
+                        <Button
+                          tag={Link}
+                          to={`/supply-order-line/${supplyOrderLine.id}/receive`}
+                          color="success"
+                          size="sm"
+                          data-cy="entityReceiveButton"
+                        >
+                          <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Receive</span>
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>

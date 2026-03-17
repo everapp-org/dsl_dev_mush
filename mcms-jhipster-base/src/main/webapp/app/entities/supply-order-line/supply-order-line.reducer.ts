@@ -77,6 +77,18 @@ export const deleteEntity = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const receiveSupplyLine = createAsyncThunk(
+  'supplyOrderLine/receive_supply_line',
+  async (request: { id: number; quantityReceived: number }, thunkAPI) => {
+    const result = await axios.put<ISupplyOrderLine>(`${apiUrl}/${request.id}/receive`, {
+      quantityReceived: request.quantityReceived,
+    });
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const SupplyOrderLineSlice = createEntitySlice({
@@ -109,7 +121,7 @@ export const SupplyOrderLineSlice = createEntitySlice({
           }),
         };
       })
-      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity, receiveSupplyLine), (state, action) => {
         state.updating = false;
         state.loading = false;
         state.updateSuccess = true;
@@ -120,7 +132,7 @@ export const SupplyOrderLineSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity, receiveSupplyLine), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

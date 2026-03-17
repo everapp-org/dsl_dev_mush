@@ -1,12 +1,16 @@
 package com.mcms.web.rest;
 
+import com.mcms.domain.InventoryLot;
 import com.mcms.domain.SupplyOrderLine;
+import com.mcms.repository.InventoryLotRepository;
 import com.mcms.repository.SupplyOrderLineRepository;
+import com.mcms.web.rest.dto.ReceiveSupplyLineRequest;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,9 +39,11 @@ public class SupplyOrderLineResource {
     private String applicationName;
 
     private final SupplyOrderLineRepository supplyOrderLineRepository;
+    private final InventoryLotRepository inventoryLotRepository;
 
-    public SupplyOrderLineResource(SupplyOrderLineRepository supplyOrderLineRepository) {
+    public SupplyOrderLineResource(SupplyOrderLineRepository supplyOrderLineRepository, InventoryLotRepository inventoryLotRepository) {
         this.supplyOrderLineRepository = supplyOrderLineRepository;
+        this.inventoryLotRepository = inventoryLotRepository;
     }
 
     /**
@@ -200,6 +206,58 @@ public class SupplyOrderLineResource {
         LOG.debug("REST request to get SupplyOrderLine : {}", id);
         Optional<SupplyOrderLine> supplyOrderLine = supplyOrderLineRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(supplyOrderLine);
+    }
+
+    /**
+     * {@code PUT  /supply-order-lines/:id/receive} : Mark a supply order line as received.
+     *
+     * @param id the id of the supplyOrderLine to receive.
+     * @param request the receive request with quantityReceived.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated supplyOrderLine.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PutMapping("/{id}/receive")
+    public ResponseEntity<SupplyOrderLine> receiveSupplyOrderLine(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody ReceiveSupplyLineRequest request
+    ) throws URISyntaxException {
+        LOG.debug("REST request to receive SupplyOrderLine : {}, quantityReceived={}", id, request.getQuantityReceived());
+
+        // 1. Fetch the supply order line
+        Optional<SupplyOrderLine> supplyOrderLineOpt = supplyOrderLineRepository.findOneWithEagerRelationships(id);
+        if (supplyOrderLineOpt.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+        SupplyOrderLine supplyOrderLine = supplyOrderLineOpt.get();
+
+        // 2. Update the supply order line
+        supplyOrderLine.setQuantityReceived(request.getQuantityReceived());
+        supplyOrderLine.setIsReceived(true);
+        supplyOrderLine = supplyOrderLineRepository.save(supplyOrderLine);
+
+        // 3. Generate unique lot code
+        long lotCount = inventoryLotRepository.count() + 1;
+        String lotCode = String.format("LOT-%d-%04d", LocalDate.now().getYear(), lotCount);
+
+        // 4. Create inventory lot
+        InventoryLot inventoryLot = new InventoryLot();
+        inventoryLot.setLotCode(lotCode);
+        inventoryLot.setReceivedDate(LocalDate.now());
+        inventoryLot.setQuantityReceived(request.getQuantityReceived());
+        inventoryLot.setQuantityOnHand(request.getQuantityReceived());
+        inventoryLot.setUnit(supplyOrderLine.getUnit());
+        inventoryLot.setExpiryDate(supplyOrderLine.getExpiryDate());
+        inventoryLot.setSupplierLotNumber(supplyOrderLine.getLotNumber());
+        inventoryLot.setIsExhausted(false);
+        inventoryLot.setMaterial(supplyOrderLine.getMaterial());
+        inventoryLot.setSupplyOrderLine(supplyOrderLine);
+        inventoryLotRepository.save(inventoryLot);
+
+        LOG.info("Supply order line {} received: {} units, inventory lot {} created", id, request.getQuantityReceived(), lotCode);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, supplyOrderLine.getId().toString()))
+            .body(supplyOrderLine);
     }
 
     /**
