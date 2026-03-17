@@ -2534,3 +2534,165 @@ Verify that JWT tokens persist through network interruptions.
 - Progress: 227/405 features (56.0%)
 - Session Type: Verification-only (YOLO mode)
 
+
+---
+
+## Session: 2026-03-17 (Session 81)
+
+### Completed Features (240/405 - 59.3%)
+
+#### Feature #244: Start date before end date ✅
+**Status:** PASSING (Verified existing implementation)
+**Category:** Form Validation
+
+**Purpose:**
+Prevent invalid date ranges on Batch entity. Reject batches where end_date is before start_date with error message.
+
+**Existing Implementation:**
+
+1. **Backend - Batch.java:**
+   - Lines 157-164: @AssertTrue validation method isEndDateValid()
+   - Checks if endDate.isAfter(startDate)
+   - Returns true if either date is null (optional field validation)
+   - Error message: "End date must be after start date"
+
+2. **Frontend - batch-update.tsx:**
+   - Lines 223-236: ValidatedField with cross-field validation
+   - validate.afterStartDate(value, allValues) method
+   - Compares new Date(endDate) > new Date(startDate)
+   - Same error message as backend
+
+**Implementation Note:**
+This feature was already implemented in commit ddc453f (features #242-243 session).
+The validation was identical to what was needed for feature #244.
+
+**Verification Steps:**
+1. ✅ Backend @AssertTrue annotation exists
+2. ✅ Frontend cross-field validation exists
+3. ✅ Lint passes (1 pre-existing warning)
+4. ✅ Backend compilation succeeds
+
+---
+
+#### Feature #245: Password complexity enforced ✅
+**Status:** PASSING (NEW IMPLEMENTATION)
+**Category:** Form Validation
+
+**Purpose:**
+Enforce password complexity requirements: minimum 8 characters, at least 1 uppercase, 1 lowercase, and 1 digit.
+
+**Implementation:**
+
+1. **Backend - ManagedUserVM.java:**
+   - Line 11: Changed PASSWORD_MIN_LENGTH from 4 to 8
+   - This constant is used by all password validation
+
+2. **Backend - AccountResource.java:**
+   - Lines 188-200: Added isPasswordComplexityValid() method
+   - Checks hasUppercase, hasLowercase, hasDigit using Character stream
+   - Returns true only if all three conditions met
+   - Applied to 3 endpoints:
+     - Line 60: registerAccount (registration)
+     - Line 131: changePassword (change password)
+     - Line 165: finishPasswordReset (reset password)
+
+3. **Frontend - password.tsx:**
+   - Lines 67-78: Updated newPassword field validation
+   - minLength: 8 (was 4)
+   - Added complexity() validation function
+   - Uses regex: /[A-Z]/, /[a-z]/, /\d/
+   - Error: "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 digit"
+   - Line 82: Updated confirmPassword minLength: 8
+
+4. **Frontend - register.tsx:**
+   - Lines 84-95: Updated firstPassword field
+   - minLength: 8, complexity validation
+   - Line 97: Updated secondPassword minLength: 8
+
+5. **Frontend - password-reset-finish.tsx:**
+   - Lines 40-51: Updated newPassword field
+   - minLength: 8, complexity validation
+   - Line 54: Updated confirmPassword minLength: 8
+
+**Verification Steps:**
+1. ✅ Backend PASSWORD_MIN_LENGTH = 8
+2. ✅ Backend isPasswordComplexityValid() checks uppercase, lowercase, digit
+3. ✅ All 3 password endpoints validate complexity
+4. ✅ All 3 frontend forms have complexity validation
+5. ✅ Lint passes (1 pre-existing warning)
+6. ✅ Backend compiles successfully
+
+**YOLO Verification:**
+- ✅ Frontend lint: npm run lint succeeded
+- ✅ Backend compile: mvn compile succeeded
+- ✅ No mock data: 0 matches for mock patterns
+- ✅ Consistent validation: backend and frontend match
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both Form Validation)
+- **Feature #244:** Start date before end date (VERIFIED - already implemented)
+- **Feature #245:** Password complexity enforced (NEW)
+- **Code Changes:**
+  - Backend: 2 files (ManagedUserVM.java, AccountResource.java)
+  - Frontend: 3 files (password.tsx, register.tsx, password-reset-finish.tsx)
+- **Progress:** 240/405 features (59.3%)
+- **Session Type:** YOLO mode verification
+- **Commit:** 76242c7 - feat: implement password complexity validation
+
+---
+
+## Technical Notes - Session 81
+
+### Feature #244 - Already Implemented
+Feature #244 was already implemented in commit ddc453f alongside features #242-243.
+The validation logic added was identical:
+- Backend: @AssertTrue method comparing dates
+- Frontend: Cross-field validation in ValidatedField
+- Both return same error message
+
+This demonstrates good parallel work - multiple agents implementing similar features.
+The feature was correctly marked as passing without duplicate work.
+
+### Password Complexity Architecture
+Feature #245 demonstrates comprehensive security validation:
+
+**Backend Strategy:**
+- Single source of truth: ManagedUserVM.PASSWORD_MIN_LENGTH
+- Reusable validation: isPasswordComplexityValid() method
+- Applied consistently: registration, password change, password reset
+- Stream-based checks: password.chars().anyMatch(Character::isUpperCase)
+
+**Frontend Strategy:**
+- Mirror backend rules: min 8 chars, uppercase, lowercase, digit
+- Regex validation: /[A-Z]/, /[a-z]/, /\d/
+- User-friendly error: descriptive message with all requirements
+- Consistent UX: all 3 password forms have identical validation
+
+**Security Considerations:**
+- Backend validation prevents API bypass
+- Frontend validation provides immediate feedback
+- Both validations use same requirements (no mismatch)
+- Password complexity increases security against brute force attacks
+
+### Linting Issues Encountered
+During implementation, encountered auto-linter corruption:
+- ESLint auto-fix changed "complexity(v) {" to "complexity())"
+- Broke syntax in 3 files
+- Required manual fix to restore method shorthand syntax
+- Lesson: Monitor file changes during long-running lint operations
+
+### Code Quality
+- **Compilation:** Both backend (mvn) and frontend (npm lint) succeed
+- **Lint Status:** 1 pre-existing warning (notification-middleware complexity)
+- **No Mocks:** All validation uses real Spring Security and React Hook Form
+- **Type Safety:** TypeScript validation functions, Java stream operations
+
+### Next Session Recommendations
+- Continue with remaining Form Validation features
+- Both servers stable and running (backend running, frontend on port 9000)
+- Codebase clean with 1 uncommitted change (progress notes)
+- Progress: 240/405 features (59.3%) - approaching 60% milestone
+- Password validation pattern can be reused for user management features
+
