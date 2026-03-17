@@ -90,12 +90,17 @@ export const Strain = () => {
         </div>
       </h2>
       <div className="mb-3">
+        <Label for="strainSearchInput" className="visually-hidden">
+          Search strains by name, species, or variety
+        </Label>
         <Input
           type="text"
+          id="strainSearchInput"
           placeholder="Search by name, species, or variety..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           data-cy="strainSearchInput"
+          aria-label="Search strains by name, species, or variety"
         />
       </div>
       <div className="table-responsive">
@@ -175,20 +180,20 @@ export const Strain = () => {
                   <td>{strain.active ? 'true' : 'false'}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/strain/${strain.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                      <Button tag={Link} to={`/strain/${strain.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
-                      <Button tag={Link} to={`/strain/${strain.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                      <Button tag={Link} to={`/strain/${strain.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
                       {isAdmin && (
                         <>
                           {strain.active ? (
-                            <Button onClick={() => handleDeactivate(strain.id)} color="warning" size="sm" data-cy="entityDeactivateButton">
+                            <Button onClick={() => handleDeactivate(strain.id)} color="warning" size="sm" data-cy="entityDeactivateButton" aria-label="Deactivate">
                               <FontAwesomeIcon icon="ban" /> <span className="d-none d-md-inline">Deactivate</span>
                             </Button>
                           ) : (
-                            <Button onClick={() => handleActivate(strain.id)} color="success" size="sm" data-cy="entityActivateButton">
+                            <Button onClick={() => handleActivate(strain.id)} color="success" size="sm" data-cy="entityActivateButton" aria-label="Activate">
                               <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Activate</span>
                             </Button>
                           )}
@@ -198,7 +203,8 @@ export const Strain = () => {
                         onClick={() => (window.location.href = `/strain/${strain.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton"
+                        data-cy="entityDeleteButton" aria-label="Delete"
+                        
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

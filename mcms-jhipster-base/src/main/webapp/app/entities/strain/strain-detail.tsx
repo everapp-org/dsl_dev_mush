@@ -157,11 +157,11 @@ export const StrainDetail = () => {
           <>
             &nbsp;
             {strainEntity.active ? (
-              <Button onClick={handleDeactivate} color="warning" data-cy="entityDeactivateButton">
+              <Button onClick={handleDeactivate} color="warning" data-cy="entityDeactivateButton" aria-label="Deactivate">
                 <FontAwesomeIcon icon="ban" /> <span className="d-none d-md-inline">Deactivate</span>
               </Button>
             ) : (
-              <Button onClick={handleActivate} color="success" data-cy="entityActivateButton">
+              <Button onClick={handleActivate} color="success" data-cy="entityActivateButton" aria-label="Activate">
                 <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Activate</span>
               </Button>
             )}

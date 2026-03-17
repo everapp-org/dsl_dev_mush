@@ -132,7 +132,7 @@ export const HarvestRecord = () => {
                   </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/harvest-record/${harvestRecord.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                      <Button tag={Link} to={`/harvest-record/${harvestRecord.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
                       <Button
@@ -140,7 +140,7 @@ export const HarvestRecord = () => {
                         to={`/harvest-record/${harvestRecord.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton"
+                        data-cy="entityEditButton" aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -148,7 +148,7 @@ export const HarvestRecord = () => {
                         onClick={() => (window.location.href = `/harvest-record/${harvestRecord.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton"
+                        data-cy="entityDeleteButton" aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

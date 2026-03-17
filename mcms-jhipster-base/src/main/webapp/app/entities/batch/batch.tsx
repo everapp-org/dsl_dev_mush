@@ -417,12 +417,13 @@ export const Batch = () => {
                         size="sm"
                         data-cy="entityDetailsButton"
                         disabled={batch._isOptimistic}
+                        aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
                       {canModifyBatch && !batch._isOptimistic && (
                         <>
-                          <Button tag={Link} to={`/batch/${batch.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                          <Button tag={Link} to={`/batch/${batch.id}/edit`} color="primary" size="sm" data-cy="entityEditButton" aria-label="Edit">
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                           </Button>
                           <Button
@@ -430,6 +431,7 @@ export const Batch = () => {
                             color="danger"
                             size="sm"
                             data-cy="entityDeleteButton"
+                            aria-label="Delete"
                           >
                             <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                           </Button>

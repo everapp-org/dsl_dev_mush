@@ -148,7 +148,7 @@ export const StockMovement = () => {
                   <td>{stockMovement.batch ? <Link to={`/batch/${stockMovement.batch.id}`}>{stockMovement.batch.batchCode}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/stock-movement/${stockMovement.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                      <Button tag={Link} to={`/stock-movement/${stockMovement.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
                       <Button
@@ -156,7 +156,7 @@ export const StockMovement = () => {
                         to={`/stock-movement/${stockMovement.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton"
+                        data-cy="entityEditButton" aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -164,7 +164,7 @@ export const StockMovement = () => {
                         onClick={() => (window.location.href = `/stock-movement/${stockMovement.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton"
+                        data-cy="entityDeleteButton" aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

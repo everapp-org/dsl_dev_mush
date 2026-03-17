@@ -182,7 +182,7 @@ export const EnvironmentalAlert = () => {
                         to={`/environmental-alert/${environmentalAlert.id}`}
                         color="info"
                         size="sm"
-                        data-cy="entityDetailsButton"
+                        data-cy="entityDetailsButton" aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                       </Button>
@@ -191,7 +191,7 @@ export const EnvironmentalAlert = () => {
                         to={`/environmental-alert/${environmentalAlert.id}/edit`}
                         color="primary"
                         size="sm"
-                        data-cy="entityEditButton"
+                        data-cy="entityEditButton" aria-label="Edit"
                       >
                         <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                       </Button>
@@ -199,7 +199,7 @@ export const EnvironmentalAlert = () => {
                         onClick={() => (window.location.href = `/environmental-alert/${environmentalAlert.id}/delete`)}
                         color="danger"
                         size="sm"
-                        data-cy="entityDeleteButton"
+                        data-cy="entityDeleteButton" aria-label="Delete"
                       >
                         <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                       </Button>

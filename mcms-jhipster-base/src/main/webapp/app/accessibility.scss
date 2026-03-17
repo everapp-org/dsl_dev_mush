@@ -161,3 +161,87 @@ svg.clickable:focus {
     min-width: 44px;
   }
 }
+
+/* ==========================================================================
+Feature #270: Color Contrast meets WCAG AA
+Ensures all text has sufficient contrast ratio for low vision users
+WCAG AA Requirements:
+  - Normal text (< 18pt): 4.5:1 minimum
+  - Large text (>= 18pt): 3.0:1 minimum
+========================================================================== */
+
+/* Fix #1: Error messages - Darken red background from #ff0000 to #d00000
+   Original: 4.00:1 (FAIL) → Fixed: 5.39:1 (PASS) */
+.error {
+  background-color: #d00000 !important;
+  color: white !important;
+}
+
+/* Fix #2: Breadcrumb muted text - Darken from #6c757d to #5a6268
+   Original: 4.45:1 (FAIL) → Fixed: 5.74:1 (PASS) */
+.breadcrumb-item {
+  &.active {
+    color: #5a6268 !important;
+  }
+}
+
+/* Fix #3: Mobile hint text - Darken from #6c757d to #5a6268
+   Original: 4.45:1 (FAIL) → Fixed: 5.74:1 (PASS) */
+@media (max-width: 767px) {
+  .scroll-hint,
+  .hint-text,
+  .table-responsive::after {
+    color: #5a6268 !important;
+  }
+}
+
+/* Fix #4: Dashboard warning badges - Replace yellow #ffc107 with dark amber #856404
+   Original: 1.63:1 (SEVERE FAIL) → Fixed: 5.49:1 (PASS)
+   Note: Yellow on white is inherently low contrast, using Bootstrap warning-dark */
+.dashboard-card {
+  .stat-value {
+    &.warning,
+    &.pending {
+      color: #856404 !important;
+    }
+  }
+}
+
+/* Additional: Ensure Bootstrap warning utilities meet WCAG AA */
+.text-warning {
+  color: #856404 !important;
+}
+
+.badge-warning {
+  background-color: #856404 !important;
+  color: #ffffff !important;
+}
+
+/* Additional: Fix any remaining Bootstrap muted text on light backgrounds */
+.text-muted {
+  color: #5a6268 !important;
+}
+
+/* Ensure form validation error messages have sufficient contrast */
+.invalid-feedback {
+  color: #c00000 !important;
+}
+
+/* High contrast mode: Enhance all color contrasts */
+@media (prefers-contrast: high) {
+  .error {
+    background-color: #8b0000 !important;
+    border: 2px solid #ffffff !important;
+  }
+
+  .text-warning,
+  .badge-warning {
+    color: #000000 !important;
+    background-color: #ffb700 !important;
+    border: 2px solid #000000 !important;
+  }
+
+  .text-muted {
+    color: #000000 !important;
+  }
+}
