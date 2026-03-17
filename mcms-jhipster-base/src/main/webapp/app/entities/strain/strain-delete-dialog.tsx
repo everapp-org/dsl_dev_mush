@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { deleteEntity, getEntity } from './strain.reducer';
+import FocusTrapModal from 'app/shared/layout/modal/focus-trap-modal';
 
 export const StrainDeleteDialog = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +39,7 @@ export const StrainDeleteDialog = () => {
   };
 
   return (
-    <Modal isOpen toggle={handleClose}>
+    <FocusTrapModal isOpen toggle={handleClose}>
       <ModalHeader toggle={handleClose} data-cy="strainDeleteDialogHeading">
         Confirm delete operation
       </ModalHeader>
@@ -53,7 +54,7 @@ export const StrainDeleteDialog = () => {
           &nbsp; Delete
         </Button>
       </ModalFooter>
-    </Modal>
+    </FocusTrapModal>
   );
 };
 

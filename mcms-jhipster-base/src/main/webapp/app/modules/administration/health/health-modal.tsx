@@ -20,8 +20,8 @@ const HealthModal = ({ handleClose, healthObject, showModal }) => {
         <Table bordered>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Value</th>
+              <th scope="col">Name</th>
+              <th scope="col">Value</th>
             </tr>
           </thead>
           <tbody>

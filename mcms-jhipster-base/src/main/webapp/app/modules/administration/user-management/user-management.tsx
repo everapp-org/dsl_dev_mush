@@ -110,27 +110,27 @@ export const UserManagement = () => {
       <Table responsive striped>
         <thead>
           <tr>
-            <th className="hand" onClick={sort('id')}>
+            <th scope="col" className="hand" onClick={sort('id')}>
               ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
             </th>
-            <th className="hand" onClick={sort('login')}>
+            <th scope="col" className="hand" onClick={sort('login')}>
               Login <FontAwesomeIcon icon={getSortIconByFieldName('login')} />
             </th>
-            <th className="hand" onClick={sort('email')}>
+            <th scope="col" className="hand" onClick={sort('email')}>
               Email <FontAwesomeIcon icon={getSortIconByFieldName('email')} />
             </th>
-            <th />
-            <th>Profiles</th>
-            <th className="hand" onClick={sort('createdDate')}>
+            <th scope="col" />
+            <th scope="col">Profiles</th>
+            <th scope="col" className="hand" onClick={sort('createdDate')}>
               Created date <FontAwesomeIcon icon={getSortIconByFieldName('createdDate')} />
             </th>
-            <th className="hand" onClick={sort('lastModifiedBy')}>
+            <th scope="col" className="hand" onClick={sort('lastModifiedBy')}>
               Modified by <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedBy')} />
             </th>
-            <th id="modified-date-sort" className="hand" onClick={sort('lastModifiedDate')}>
+            <th scope="col" id="modified-date-sort" className="hand" onClick={sort('lastModifiedDate')}>
               Modified date <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedDate')} />
             </th>
-            <th />
+            <th scope="col" />
           </tr>
         </thead>
         <tbody>

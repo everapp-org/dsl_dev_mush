@@ -324,58 +324,58 @@ export const Batch = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('batchCode')}>
+                <th scope="col" className="hand" onClick={sort('batchCode')}>
                   Batch Code <FontAwesomeIcon icon={getSortIconByFieldName('batchCode')} />
                 </th>
-                <th className="hand" onClick={sort('startDate')}>
+                <th scope="col" className="hand" onClick={sort('startDate')}>
                   Start Date <FontAwesomeIcon icon={getSortIconByFieldName('startDate')} />
                 </th>
-                <th className="hand" onClick={sort('endDate')}>
+                <th scope="col" className="hand" onClick={sort('endDate')}>
                   End Date <FontAwesomeIcon icon={getSortIconByFieldName('endDate')} />
                 </th>
-                <th className="hand" onClick={sort('currentPhase')}>
+                <th scope="col" className="hand" onClick={sort('currentPhase')}>
                   Current Phase <FontAwesomeIcon icon={getSortIconByFieldName('currentPhase')} />
                 </th>
-                <th className="hand" onClick={sort('numberOfBags')}>
+                <th scope="col" className="hand" onClick={sort('numberOfBags')}>
                   Number Of Bags <FontAwesomeIcon icon={getSortIconByFieldName('numberOfBags')} />
                 </th>
-                <th className="hand" onClick={sort('substrateWeightKg')}>
+                <th scope="col" className="hand" onClick={sort('substrateWeightKg')}>
                   Substrate Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('substrateWeightKg')} />
                 </th>
-                <th className="hand" onClick={sort('spawnWeightKg')}>
+                <th scope="col" className="hand" onClick={sort('spawnWeightKg')}>
                   Spawn Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('spawnWeightKg')} />
                 </th>
-                <th className="hand" onClick={sort('targetYieldKg')}>
+                <th scope="col" className="hand" onClick={sort('targetYieldKg')}>
                   Target Yield Kg <FontAwesomeIcon icon={getSortIconByFieldName('targetYieldKg')} />
                 </th>
-                <th className="hand" onClick={sort('actualTotalYieldKg')}>
+                <th scope="col" className="hand" onClick={sort('actualTotalYieldKg')}>
                   Actual Total Yield Kg <FontAwesomeIcon icon={getSortIconByFieldName('actualTotalYieldKg')} />
                 </th>
-                <th className="hand" onClick={sort('biologicalEfficiencyPercent')}>
+                <th scope="col" className="hand" onClick={sort('biologicalEfficiencyPercent')}>
                   Biological Efficiency Percent <FontAwesomeIcon icon={getSortIconByFieldName('biologicalEfficiencyPercent')} />
                 </th>
-                <th className="hand" onClick={sort('isContaminated')}>
+                <th scope="col" className="hand" onClick={sort('isContaminated')}>
                   Is Contaminated <FontAwesomeIcon icon={getSortIconByFieldName('isContaminated')} />
                 </th>
-                <th className="hand" onClick={sort('isActive')}>
+                <th scope="col" className="hand" onClick={sort('isActive')}>
                   Is Active <FontAwesomeIcon icon={getSortIconByFieldName('isActive')} />
                 </th>
-                <th className="hand" onClick={sort('completionNote')}>
+                <th scope="col" className="hand" onClick={sort('completionNote')}>
                   Completion Note <FontAwesomeIcon icon={getSortIconByFieldName('completionNote')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Strain <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Recipe <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

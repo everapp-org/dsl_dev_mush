@@ -126,11 +126,11 @@ export const SupplierDetail = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th>Order Code</th>
-                <th>Order Date</th>
-                <th>Status</th>
-                <th>Total Amount</th>
-                <th>Actions</th>
+                <th scope="col">Order Code</th>
+                <th scope="col">Order Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total Amount</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

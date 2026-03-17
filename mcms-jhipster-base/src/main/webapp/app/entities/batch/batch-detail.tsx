@@ -321,13 +321,13 @@ export const BatchDetail = () => {
               <Table striped responsive>
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>Phase</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Duration (days)</th>
-                    <th>Room</th>
-                    <th>Responsible</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Phase</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Duration (days)</th>
+                    <th scope="col">Room</th>
+                    <th scope="col">Responsible</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -361,13 +361,13 @@ export const BatchDetail = () => {
               <Table striped responsive>
                 <thead>
                   <tr>
-                    <th>Flush #</th>
-                    <th>Harvest Start</th>
-                    <th>Harvest End</th>
-                    <th>Yield (kg)</th>
-                    <th>Bags Harvested</th>
-                    <th>Avg Fruit Weight (g)</th>
-                    <th>Rehydrated</th>
+                    <th scope="col">Flush #</th>
+                    <th scope="col">Harvest Start</th>
+                    <th scope="col">Harvest End</th>
+                    <th scope="col">Yield (kg)</th>
+                    <th scope="col">Bags Harvested</th>
+                    <th scope="col">Avg Fruit Weight (g)</th>
+                    <th scope="col">Rehydrated</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -412,11 +412,11 @@ export const BatchDetail = () => {
                 <Table striped responsive>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Category</th>
-                      <th>Description</th>
-                      <th>Amount</th>
-                      <th>Currency</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Amount</th>
+                      <th scope="col">Currency</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -460,12 +460,12 @@ export const BatchDetail = () => {
               <Table striped responsive>
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Material</th>
-                    <th>Quantity Used</th>
-                    <th>Unit</th>
-                    <th>Purpose</th>
-                    <th>Lot</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Material</th>
+                    <th scope="col">Quantity Used</th>
+                    <th scope="col">Unit</th>
+                    <th scope="col">Purpose</th>
+                    <th scope="col">Lot</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -498,13 +498,13 @@ export const BatchDetail = () => {
               <Table striped responsive>
                 <thead>
                   <tr>
-                    <th>Detected Date</th>
-                    <th>Type</th>
-                    <th>Severity</th>
-                    <th>Affected Bags</th>
-                    <th>Loss (kg)</th>
-                    <th>Action Taken</th>
-                    <th>Resolved</th>
+                    <th scope="col">Detected Date</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Severity</th>
+                    <th scope="col">Affected Bags</th>
+                    <th scope="col">Loss (kg)</th>
+                    <th scope="col">Action Taken</th>
+                    <th scope="col">Resolved</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -570,13 +570,13 @@ export const BatchDetail = () => {
                     <Table striped responsive>
                       <thead>
                         <tr>
-                          <th>Material</th>
-                          <th>Supplier</th>
-                          <th>Supply Order</th>
-                          <th>Lot Code</th>
-                          <th>Quantity Used</th>
-                          <th>Unit</th>
-                          <th>Usage Date</th>
+                          <th scope="col">Material</th>
+                          <th scope="col">Supplier</th>
+                          <th scope="col">Supply Order</th>
+                          <th scope="col">Lot Code</th>
+                          <th scope="col">Quantity Used</th>
+                          <th scope="col">Unit</th>
+                          <th scope="col">Usage Date</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -612,13 +612,13 @@ export const BatchDetail = () => {
                     <Table striped responsive>
                       <thead>
                         <tr>
-                          <th>Customer</th>
-                          <th>Sales Order</th>
-                          <th>Product</th>
-                          <th>Quantity</th>
-                          <th>Unit</th>
-                          <th>Order Date</th>
-                          <th>Delivery Date</th>
+                          <th scope="col">Customer</th>
+                          <th scope="col">Sales Order</th>
+                          <th scope="col">Product</th>
+                          <th scope="col">Quantity</th>
+                          <th scope="col">Unit</th>
+                          <th scope="col">Order Date</th>
+                          <th scope="col">Delivery Date</th>
                         </tr>
                       </thead>
                       <tbody>

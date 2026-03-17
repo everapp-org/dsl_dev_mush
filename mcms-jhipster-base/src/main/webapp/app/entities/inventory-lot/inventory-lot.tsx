@@ -82,46 +82,46 @@ export const InventoryLot = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('lotCode')}>
+                <th scope="col" className="hand" onClick={sort('lotCode')}>
                   Lot Code <FontAwesomeIcon icon={getSortIconByFieldName('lotCode')} />
                 </th>
-                <th className="hand" onClick={sort('receivedDate')}>
+                <th scope="col" className="hand" onClick={sort('receivedDate')}>
                   Received Date <FontAwesomeIcon icon={getSortIconByFieldName('receivedDate')} />
                 </th>
-                <th className="hand" onClick={sort('quantityReceived')}>
+                <th scope="col" className="hand" onClick={sort('quantityReceived')}>
                   Quantity Received <FontAwesomeIcon icon={getSortIconByFieldName('quantityReceived')} />
                 </th>
-                <th className="hand" onClick={sort('quantityOnHand')}>
+                <th scope="col" className="hand" onClick={sort('quantityOnHand')}>
                   Quantity On Hand <FontAwesomeIcon icon={getSortIconByFieldName('quantityOnHand')} />
                 </th>
-                <th className="hand" onClick={sort('unit')}>
+                <th scope="col" className="hand" onClick={sort('unit')}>
                   Unit <FontAwesomeIcon icon={getSortIconByFieldName('unit')} />
                 </th>
-                <th className="hand" onClick={sort('expiryDate')}>
+                <th scope="col" className="hand" onClick={sort('expiryDate')}>
                   Expiry Date <FontAwesomeIcon icon={getSortIconByFieldName('expiryDate')} />
                 </th>
-                <th className="hand" onClick={sort('storageLocation')}>
+                <th scope="col" className="hand" onClick={sort('storageLocation')}>
                   Storage Location <FontAwesomeIcon icon={getSortIconByFieldName('storageLocation')} />
                 </th>
-                <th className="hand" onClick={sort('supplierLotNumber')}>
+                <th scope="col" className="hand" onClick={sort('supplierLotNumber')}>
                   Supplier Lot Number <FontAwesomeIcon icon={getSortIconByFieldName('supplierLotNumber')} />
                 </th>
-                <th className="hand" onClick={sort('isExhausted')}>
+                <th scope="col" className="hand" onClick={sort('isExhausted')}>
                   Is Exhausted <FontAwesomeIcon icon={getSortIconByFieldName('isExhausted')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Material <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Supply Order Line <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

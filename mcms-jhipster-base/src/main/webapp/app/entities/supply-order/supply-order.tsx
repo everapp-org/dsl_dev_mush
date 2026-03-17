@@ -82,40 +82,40 @@ export const SupplyOrder = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('orderCode')}>
+                <th scope="col" className="hand" onClick={sort('orderCode')}>
                   Order Code <FontAwesomeIcon icon={getSortIconByFieldName('orderCode')} />
                 </th>
-                <th className="hand" onClick={sort('orderDate')}>
+                <th scope="col" className="hand" onClick={sort('orderDate')}>
                   Order Date <FontAwesomeIcon icon={getSortIconByFieldName('orderDate')} />
                 </th>
-                <th className="hand" onClick={sort('expectedDeliveryDate')}>
+                <th scope="col" className="hand" onClick={sort('expectedDeliveryDate')}>
                   Expected Delivery Date <FontAwesomeIcon icon={getSortIconByFieldName('expectedDeliveryDate')} />
                 </th>
-                <th className="hand" onClick={sort('actualDeliveryDate')}>
+                <th scope="col" className="hand" onClick={sort('actualDeliveryDate')}>
                   Actual Delivery Date <FontAwesomeIcon icon={getSortIconByFieldName('actualDeliveryDate')} />
                 </th>
-                <th className="hand" onClick={sort('status')}>
+                <th scope="col" className="hand" onClick={sort('status')}>
                   Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                 </th>
-                <th className="hand" onClick={sort('totalAmount')}>
+                <th scope="col" className="hand" onClick={sort('totalAmount')}>
                   Total Amount <FontAwesomeIcon icon={getSortIconByFieldName('totalAmount')} />
                 </th>
-                <th className="hand" onClick={sort('currency')}>
+                <th scope="col" className="hand" onClick={sort('currency')}>
                   Currency <FontAwesomeIcon icon={getSortIconByFieldName('currency')} />
                 </th>
-                <th className="hand" onClick={sort('shippingAddress')}>
+                <th scope="col" className="hand" onClick={sort('shippingAddress')}>
                   Shipping Address <FontAwesomeIcon icon={getSortIconByFieldName('shippingAddress')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Supplier <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

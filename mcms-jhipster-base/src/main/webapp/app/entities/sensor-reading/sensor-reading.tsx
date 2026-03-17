@@ -83,22 +83,22 @@ export const SensorReading = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('timestamp')}>
+                <th scope="col" className="hand" onClick={sort('timestamp')}>
                   Timestamp <FontAwesomeIcon icon={getSortIconByFieldName('timestamp')} />
                 </th>
-                <th className="hand" onClick={sort('value')}>
+                <th scope="col" className="hand" onClick={sort('value')}>
                   Value <FontAwesomeIcon icon={getSortIconByFieldName('value')} />
                 </th>
-                <th className="hand" onClick={sort('unit')}>
+                <th scope="col" className="hand" onClick={sort('unit')}>
                   Unit <FontAwesomeIcon icon={getSortIconByFieldName('unit')} />
                 </th>
-                <th>
+                <th scope="col">
                   Sensor <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

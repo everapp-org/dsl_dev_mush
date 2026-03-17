@@ -97,10 +97,10 @@ export const MonthlyReportDetail = () => {
           <Table responsive striped>
             <thead>
               <tr>
-                <th>Batch Code</th>
-                <th>Start Date</th>
-                <th>Current Phase</th>
-                <th>Active</th>
+                <th scope="col">Batch Code</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">Current Phase</th>
+                <th scope="col">Active</th>
               </tr>
             </thead>
             <tbody>

@@ -126,12 +126,12 @@ export const InventoryLotDetail = () => {
           <Table responsive striped>
             <thead>
               <tr>
-                <th>Movement Date</th>
-                <th>Type</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-                <th>Batch</th>
-                <th>Purpose</th>
+                <th scope="col">Movement Date</th>
+                <th scope="col">Type</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Unit</th>
+                <th scope="col">Batch</th>
+                <th scope="col">Purpose</th>
               </tr>
             </thead>
             <tbody>

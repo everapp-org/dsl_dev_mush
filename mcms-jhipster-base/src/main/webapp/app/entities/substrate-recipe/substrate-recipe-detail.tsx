@@ -123,11 +123,11 @@ export const SubstrateRecipeDetail = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th>Batch Code</th>
-                <th>Start Date</th>
-                <th>Current Phase</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th scope="col">Batch Code</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">Current Phase</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

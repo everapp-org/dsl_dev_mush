@@ -1,8 +1,9 @@
 import React from 'react';
 import { ValidatedField } from 'react-jhipster';
-import { Alert, Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { Alert, Button, Col, Form, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { type FieldError, useForm } from 'react-hook-form';
+import FocusTrapModal from 'app/shared/layout/modal/focus-trap-modal';
 
 export interface ILoginModalProps {
   showModal: boolean;
@@ -30,7 +31,7 @@ const LoginModal = (props: ILoginModalProps) => {
   };
 
   return (
-    <Modal isOpen={props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
+    <FocusTrapModal isOpen={props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
       <Form onSubmit={handleLoginSubmit}>
         <ModalHeader id="login-title" data-cy="loginTitle" toggle={handleClose}>
           Sign in
@@ -96,7 +97,7 @@ const LoginModal = (props: ILoginModalProps) => {
           </Button>
         </ModalFooter>
       </Form>
-    </Modal>
+    </FocusTrapModal>
   );
 };
 

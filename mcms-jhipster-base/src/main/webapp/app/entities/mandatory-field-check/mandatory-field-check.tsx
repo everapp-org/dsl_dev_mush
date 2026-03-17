@@ -87,22 +87,22 @@ export const MandatoryFieldCheck = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('fieldName')}>
+                <th scope="col" className="hand" onClick={sort('fieldName')}>
                   Field Name <FontAwesomeIcon icon={getSortIconByFieldName('fieldName')} />
                 </th>
-                <th className="hand" onClick={sort('isFilled')}>
+                <th scope="col" className="hand" onClick={sort('isFilled')}>
                   Is Filled <FontAwesomeIcon icon={getSortIconByFieldName('isFilled')} />
                 </th>
-                <th className="hand" onClick={sort('checkDate')}>
+                <th scope="col" className="hand" onClick={sort('checkDate')}>
                   Check Date <FontAwesomeIcon icon={getSortIconByFieldName('checkDate')} />
                 </th>
-                <th>
+                <th scope="col">
                   Phase Execution <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

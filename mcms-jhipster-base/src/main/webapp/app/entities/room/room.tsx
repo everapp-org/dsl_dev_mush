@@ -86,43 +86,43 @@ export const Room = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('name')}>
+                <th scope="col" className="hand" onClick={sort('name')}>
                   Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                 </th>
-                <th className="hand" onClick={sort('code')}>
+                <th scope="col" className="hand" onClick={sort('code')}>
                   Code <FontAwesomeIcon icon={getSortIconByFieldName('code')} />
                 </th>
-                <th className="hand" onClick={sort('roomType')}>
+                <th scope="col" className="hand" onClick={sort('roomType')}>
                   Room Type <FontAwesomeIcon icon={getSortIconByFieldName('roomType')} />
                 </th>
-                <th className="hand" onClick={sort('status')}>
+                <th scope="col" className="hand" onClick={sort('status')}>
                   Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                 </th>
-                <th className="hand" onClick={sort('capacityBags')}>
+                <th scope="col" className="hand" onClick={sort('capacityBags')}>
                   Capacity Bags <FontAwesomeIcon icon={getSortIconByFieldName('capacityBags')} />
                 </th>
-                <th className="hand" onClick={sort('currentOccupancy')}>
+                <th scope="col" className="hand" onClick={sort('currentOccupancy')}>
                   Current Occupancy <FontAwesomeIcon icon={getSortIconByFieldName('currentOccupancy')} />
                 </th>
-                <th className="hand" onClick={sort('areaSqM')}>
+                <th scope="col" className="hand" onClick={sort('areaSqM')}>
                   Area Sq M <FontAwesomeIcon icon={getSortIconByFieldName('areaSqM')} />
                 </th>
-                <th className="hand" onClick={sort('hasHVAC')}>
+                <th scope="col" className="hand" onClick={sort('hasHVAC')}>
                   Has HVAC <FontAwesomeIcon icon={getSortIconByFieldName('hasHVAC')} />
                 </th>
-                <th className="hand" onClick={sort('hasMisting')}>
+                <th scope="col" className="hand" onClick={sort('hasMisting')}>
                   Has Misting <FontAwesomeIcon icon={getSortIconByFieldName('hasMisting')} />
                 </th>
-                <th className="hand" onClick={sort('lastDisinfectionDate')}>
+                <th scope="col" className="hand" onClick={sort('lastDisinfectionDate')}>
                   Last Disinfection Date <FontAwesomeIcon icon={getSortIconByFieldName('lastDisinfectionDate')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

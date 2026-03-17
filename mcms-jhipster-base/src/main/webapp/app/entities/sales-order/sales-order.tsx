@@ -82,55 +82,55 @@ export const SalesOrder = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('orderCode')}>
+                <th scope="col" className="hand" onClick={sort('orderCode')}>
                   Order Code <FontAwesomeIcon icon={getSortIconByFieldName('orderCode')} />
                 </th>
-                <th className="hand" onClick={sort('orderDate')}>
+                <th scope="col" className="hand" onClick={sort('orderDate')}>
                   Order Date <FontAwesomeIcon icon={getSortIconByFieldName('orderDate')} />
                 </th>
-                <th className="hand" onClick={sort('requestedDeliveryDate')}>
+                <th scope="col" className="hand" onClick={sort('requestedDeliveryDate')}>
                   Requested Delivery Date <FontAwesomeIcon icon={getSortIconByFieldName('requestedDeliveryDate')} />
                 </th>
-                <th className="hand" onClick={sort('actualDeliveryDate')}>
+                <th scope="col" className="hand" onClick={sort('actualDeliveryDate')}>
                   Actual Delivery Date <FontAwesomeIcon icon={getSortIconByFieldName('actualDeliveryDate')} />
                 </th>
-                <th className="hand" onClick={sort('status')}>
+                <th scope="col" className="hand" onClick={sort('status')}>
                   Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                 </th>
-                <th className="hand" onClick={sort('totalWeight')}>
+                <th scope="col" className="hand" onClick={sort('totalWeight')}>
                   Total Weight <FontAwesomeIcon icon={getSortIconByFieldName('totalWeight')} />
                 </th>
-                <th className="hand" onClick={sort('totalRevenue')}>
+                <th scope="col" className="hand" onClick={sort('totalRevenue')}>
                   Total Revenue <FontAwesomeIcon icon={getSortIconByFieldName('totalRevenue')} />
                 </th>
-                <th className="hand" onClick={sort('currency')}>
+                <th scope="col" className="hand" onClick={sort('currency')}>
                   Currency <FontAwesomeIcon icon={getSortIconByFieldName('currency')} />
                 </th>
-                <th className="hand" onClick={sort('invoiceNumber')}>
+                <th scope="col" className="hand" onClick={sort('invoiceNumber')}>
                   Invoice Number <FontAwesomeIcon icon={getSortIconByFieldName('invoiceNumber')} />
                 </th>
-                <th className="hand" onClick={sort('paymentStatus')}>
+                <th scope="col" className="hand" onClick={sort('paymentStatus')}>
                   Payment Status <FontAwesomeIcon icon={getSortIconByFieldName('paymentStatus')} />
                 </th>
-                <th className="hand" onClick={sort('paymentDueDate')}>
+                <th scope="col" className="hand" onClick={sort('paymentDueDate')}>
                   Payment Due Date <FontAwesomeIcon icon={getSortIconByFieldName('paymentDueDate')} />
                 </th>
-                <th className="hand" onClick={sort('paymentReceivedDate')}>
+                <th scope="col" className="hand" onClick={sort('paymentReceivedDate')}>
                   Payment Received Date <FontAwesomeIcon icon={getSortIconByFieldName('paymentReceivedDate')} />
                 </th>
-                <th className="hand" onClick={sort('shippingAddress')}>
+                <th scope="col" className="hand" onClick={sort('shippingAddress')}>
                   Shipping Address <FontAwesomeIcon icon={getSortIconByFieldName('shippingAddress')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Customer <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

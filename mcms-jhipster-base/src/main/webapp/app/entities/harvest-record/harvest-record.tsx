@@ -82,28 +82,28 @@ export const HarvestRecord = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('harvestDate')}>
+                <th scope="col" className="hand" onClick={sort('harvestDate')}>
                   Harvest Date <FontAwesomeIcon icon={getSortIconByFieldName('harvestDate')} />
                 </th>
-                <th className="hand" onClick={sort('weightKg')}>
+                <th scope="col" className="hand" onClick={sort('weightKg')}>
                   Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('weightKg')} />
                 </th>
-                <th className="hand" onClick={sort('grade')}>
+                <th scope="col" className="hand" onClick={sort('grade')}>
                   Grade <FontAwesomeIcon icon={getSortIconByFieldName('grade')} />
                 </th>
-                <th className="hand" onClick={sort('pickerName')}>
+                <th scope="col" className="hand" onClick={sort('pickerName')}>
                   Picker Name <FontAwesomeIcon icon={getSortIconByFieldName('pickerName')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Flush Cycle <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

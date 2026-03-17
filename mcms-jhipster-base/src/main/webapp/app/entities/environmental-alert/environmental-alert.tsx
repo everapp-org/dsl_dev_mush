@@ -87,49 +87,49 @@ export const EnvironmentalAlert = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('alertTime')}>
+                <th scope="col" className="hand" onClick={sort('alertTime')}>
                   Alert Time <FontAwesomeIcon icon={getSortIconByFieldName('alertTime')} />
                 </th>
-                <th className="hand" onClick={sort('severity')}>
+                <th scope="col" className="hand" onClick={sort('severity')}>
                   Severity <FontAwesomeIcon icon={getSortIconByFieldName('severity')} />
                 </th>
-                <th className="hand" onClick={sort('parameter')}>
+                <th scope="col" className="hand" onClick={sort('parameter')}>
                   Parameter <FontAwesomeIcon icon={getSortIconByFieldName('parameter')} />
                 </th>
-                <th className="hand" onClick={sort('actualValue')}>
+                <th scope="col" className="hand" onClick={sort('actualValue')}>
                   Actual Value <FontAwesomeIcon icon={getSortIconByFieldName('actualValue')} />
                 </th>
-                <th className="hand" onClick={sort('thresholdValue')}>
+                <th scope="col" className="hand" onClick={sort('thresholdValue')}>
                   Threshold Value <FontAwesomeIcon icon={getSortIconByFieldName('thresholdValue')} />
                 </th>
-                <th className="hand" onClick={sort('message')}>
+                <th scope="col" className="hand" onClick={sort('message')}>
                   Message <FontAwesomeIcon icon={getSortIconByFieldName('message')} />
                 </th>
-                <th className="hand" onClick={sort('acknowledged')}>
+                <th scope="col" className="hand" onClick={sort('acknowledged')}>
                   Acknowledged <FontAwesomeIcon icon={getSortIconByFieldName('acknowledged')} />
                 </th>
-                <th className="hand" onClick={sort('acknowledgedBy')}>
+                <th scope="col" className="hand" onClick={sort('acknowledgedBy')}>
                   Acknowledged By <FontAwesomeIcon icon={getSortIconByFieldName('acknowledgedBy')} />
                 </th>
-                <th className="hand" onClick={sort('acknowledgedAt')}>
+                <th scope="col" className="hand" onClick={sort('acknowledgedAt')}>
                   Acknowledged At <FontAwesomeIcon icon={getSortIconByFieldName('acknowledgedAt')} />
                 </th>
-                <th className="hand" onClick={sort('resolutionNote')}>
+                <th scope="col" className="hand" onClick={sort('resolutionNote')}>
                   Resolution Note <FontAwesomeIcon icon={getSortIconByFieldName('resolutionNote')} />
                 </th>
-                <th>
+                <th scope="col">
                   Room <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Sensor <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input } from 'reactstrap';
+import { Button, Table, Input, Label } from 'reactstrap';
 import { getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -108,52 +108,52 @@ export const Strain = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('name')}>
+                <th scope="col" className="hand" onClick={sort('name')}>
                   Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                 </th>
-                <th className="hand" onClick={sort('species')}>
+                <th scope="col" className="hand" onClick={sort('species')}>
                   Species <FontAwesomeIcon icon={getSortIconByFieldName('species')} />
                 </th>
-                <th className="hand" onClick={sort('variety')}>
+                <th scope="col" className="hand" onClick={sort('variety')}>
                   Variety <FontAwesomeIcon icon={getSortIconByFieldName('variety')} />
                 </th>
-                <th className="hand" onClick={sort('optimalTempMinC')}>
+                <th scope="col" className="hand" onClick={sort('optimalTempMinC')}>
                   Optimal Temp Min C <FontAwesomeIcon icon={getSortIconByFieldName('optimalTempMinC')} />
                 </th>
-                <th className="hand" onClick={sort('optimalTempMaxC')}>
+                <th scope="col" className="hand" onClick={sort('optimalTempMaxC')}>
                   Optimal Temp Max C <FontAwesomeIcon icon={getSortIconByFieldName('optimalTempMaxC')} />
                 </th>
-                <th className="hand" onClick={sort('optimalHumidityMin')}>
+                <th scope="col" className="hand" onClick={sort('optimalHumidityMin')}>
                   Optimal Humidity Min <FontAwesomeIcon icon={getSortIconByFieldName('optimalHumidityMin')} />
                 </th>
-                <th className="hand" onClick={sort('optimalHumidityMax')}>
+                <th scope="col" className="hand" onClick={sort('optimalHumidityMax')}>
                   Optimal Humidity Max <FontAwesomeIcon icon={getSortIconByFieldName('optimalHumidityMax')} />
                 </th>
-                <th className="hand" onClick={sort('optimalCO2MaxPpm')}>
+                <th scope="col" className="hand" onClick={sort('optimalCO2MaxPpm')}>
                   Optimal CO 2 Max Ppm <FontAwesomeIcon icon={getSortIconByFieldName('optimalCO2MaxPpm')} />
                 </th>
-                <th className="hand" onClick={sort('colonizationDaysMin')}>
+                <th scope="col" className="hand" onClick={sort('colonizationDaysMin')}>
                   Colonization Days Min <FontAwesomeIcon icon={getSortIconByFieldName('colonizationDaysMin')} />
                 </th>
-                <th className="hand" onClick={sort('colonizationDaysMax')}>
+                <th scope="col" className="hand" onClick={sort('colonizationDaysMax')}>
                   Colonization Days Max <FontAwesomeIcon icon={getSortIconByFieldName('colonizationDaysMax')} />
                 </th>
-                <th className="hand" onClick={sort('expectedYieldPercent')}>
+                <th scope="col" className="hand" onClick={sort('expectedYieldPercent')}>
                   Expected Yield Percent <FontAwesomeIcon icon={getSortIconByFieldName('expectedYieldPercent')} />
                 </th>
-                <th className="hand" onClick={sort('shelfLifeDays')}>
+                <th scope="col" className="hand" onClick={sort('shelfLifeDays')}>
                   Shelf Life Days <FontAwesomeIcon icon={getSortIconByFieldName('shelfLifeDays')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th className="hand" onClick={sort('active')}>
+                <th scope="col" className="hand" onClick={sort('active')}>
                   Active <FontAwesomeIcon icon={getSortIconByFieldName('active')} />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

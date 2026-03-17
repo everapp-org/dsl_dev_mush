@@ -81,43 +81,43 @@ export const SalesOrderLine = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('lineNumber')}>
+                <th scope="col" className="hand" onClick={sort('lineNumber')}>
                   Line Number <FontAwesomeIcon icon={getSortIconByFieldName('lineNumber')} />
                 </th>
-                <th className="hand" onClick={sort('weightKg')}>
+                <th scope="col" className="hand" onClick={sort('weightKg')}>
                   Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('weightKg')} />
                 </th>
-                <th className="hand" onClick={sort('grade')}>
+                <th scope="col" className="hand" onClick={sort('grade')}>
                   Grade <FontAwesomeIcon icon={getSortIconByFieldName('grade')} />
                 </th>
-                <th className="hand" onClick={sort('quantityUnits')}>
+                <th scope="col" className="hand" onClick={sort('quantityUnits')}>
                   Quantity Units <FontAwesomeIcon icon={getSortIconByFieldName('quantityUnits')} />
                 </th>
-                <th className="hand" onClick={sort('unit')}>
+                <th scope="col" className="hand" onClick={sort('unit')}>
                   Unit <FontAwesomeIcon icon={getSortIconByFieldName('unit')} />
                 </th>
-                <th className="hand" onClick={sort('pricePerKg')}>
+                <th scope="col" className="hand" onClick={sort('pricePerKg')}>
                   Price Per Kg <FontAwesomeIcon icon={getSortIconByFieldName('pricePerKg')} />
                 </th>
-                <th className="hand" onClick={sort('lineTotal')}>
+                <th scope="col" className="hand" onClick={sort('lineTotal')}>
                   Line Total <FontAwesomeIcon icon={getSortIconByFieldName('lineTotal')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Sales Order <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Product <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

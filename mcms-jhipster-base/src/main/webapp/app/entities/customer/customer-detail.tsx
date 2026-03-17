@@ -119,12 +119,12 @@ export const CustomerDetail = () => {
             <Table responsive striped>
               <thead>
                 <tr>
-                  <th>Order Code</th>
-                  <th>Order Date</th>
-                  <th>Status</th>
-                  <th>Payment Status</th>
-                  <th>Total Revenue</th>
-                  <th>Actions</th>
+                  <th scope="col">Order Code</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Payment Status</th>
+                  <th scope="col">Total Revenue</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>

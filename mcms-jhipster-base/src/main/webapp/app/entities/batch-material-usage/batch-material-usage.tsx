@@ -87,34 +87,34 @@ export const BatchMaterialUsage = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('usageDate')}>
+                <th scope="col" className="hand" onClick={sort('usageDate')}>
                   Usage Date <FontAwesomeIcon icon={getSortIconByFieldName('usageDate')} />
                 </th>
-                <th className="hand" onClick={sort('quantityUsed')}>
+                <th scope="col" className="hand" onClick={sort('quantityUsed')}>
                   Quantity Used <FontAwesomeIcon icon={getSortIconByFieldName('quantityUsed')} />
                 </th>
-                <th className="hand" onClick={sort('unit')}>
+                <th scope="col" className="hand" onClick={sort('unit')}>
                   Unit <FontAwesomeIcon icon={getSortIconByFieldName('unit')} />
                 </th>
-                <th className="hand" onClick={sort('purpose')}>
+                <th scope="col" className="hand" onClick={sort('purpose')}>
                   Purpose <FontAwesomeIcon icon={getSortIconByFieldName('purpose')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Inventory Lot <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Material <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

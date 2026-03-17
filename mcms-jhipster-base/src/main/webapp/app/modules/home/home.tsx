@@ -21,7 +21,7 @@ export const Home = () => {
   return (
     <Row>
       <Col md="3" className="pad">
-        <span className="hipster rounded" />
+        <span className="hipster rounded" role="img" aria-label="Decorative mushroom cultivation illustration" />
       </Col>
       <Col md="9">
         <h1 className="display-4">Mushroom Cultivation Management System</h1>

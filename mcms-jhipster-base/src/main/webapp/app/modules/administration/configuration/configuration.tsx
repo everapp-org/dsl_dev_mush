@@ -46,8 +46,8 @@ export const ConfigurationPage = () => {
       <Table className="table table-striped table-bordered table-responsive d-table">
         <thead>
           <tr>
-            <th onClick={changeReversePrefix}>Prefix</th>
-            <th onClick={changeReverseProperties}>Properties</th>
+            <th scope="col" onClick={changeReversePrefix}>Prefix</th>
+            <th scope="col" onClick={changeReverseProperties}>Properties</th>
           </tr>
         </thead>
         <tbody>
@@ -81,8 +81,8 @@ export const ConfigurationPage = () => {
               <Table className="table table-sm table-striped table-bordered table-responsive d-table">
                 <thead>
                   <tr key={envIndex}>
-                    <th className="w-40">Property</th>
-                    <th className="w-60">Value</th>
+                    <th scope="col" className="w-40">Property</th>
+                    <th scope="col" className="w-60">Value</th>
                   </tr>
                 </thead>
                 <tbody>

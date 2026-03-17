@@ -112,40 +112,40 @@ export const Task = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('title')}>
+                <th scope="col" className="hand" onClick={sort('title')}>
                   Title <FontAwesomeIcon icon={getSortIconByFieldName('title')} />
                 </th>
-                <th className="hand" onClick={sort('description')}>
+                <th scope="col" className="hand" onClick={sort('description')}>
                   Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
                 </th>
-                <th className="hand" onClick={sort('dueDate')}>
+                <th scope="col" className="hand" onClick={sort('dueDate')}>
                   Due Date <FontAwesomeIcon icon={getSortIconByFieldName('dueDate')} />
                 </th>
-                <th className="hand" onClick={sort('completed')}>
+                <th scope="col" className="hand" onClick={sort('completed')}>
                   Completed <FontAwesomeIcon icon={getSortIconByFieldName('completed')} />
                 </th>
-                <th className="hand" onClick={sort('completedDate')}>
+                <th scope="col" className="hand" onClick={sort('completedDate')}>
                   Completed Date <FontAwesomeIcon icon={getSortIconByFieldName('completedDate')} />
                 </th>
-                <th className="hand" onClick={sort('priority')}>
+                <th scope="col" className="hand" onClick={sort('priority')}>
                   Priority <FontAwesomeIcon icon={getSortIconByFieldName('priority')} />
                 </th>
-                <th className="hand" onClick={sort('assignedTo')}>
+                <th scope="col" className="hand" onClick={sort('assignedTo')}>
                   Assigned To <FontAwesomeIcon icon={getSortIconByFieldName('assignedTo')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Room <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

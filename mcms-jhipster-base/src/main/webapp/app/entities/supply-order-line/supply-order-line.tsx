@@ -82,55 +82,55 @@ export const SupplyOrderLine = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('lineNumber')}>
+                <th scope="col" className="hand" onClick={sort('lineNumber')}>
                   Line Number <FontAwesomeIcon icon={getSortIconByFieldName('lineNumber')} />
                 </th>
-                <th className="hand" onClick={sort('itemDescription')}>
+                <th scope="col" className="hand" onClick={sort('itemDescription')}>
                   Item Description <FontAwesomeIcon icon={getSortIconByFieldName('itemDescription')} />
                 </th>
-                <th className="hand" onClick={sort('quantityOrdered')}>
+                <th scope="col" className="hand" onClick={sort('quantityOrdered')}>
                   Quantity Ordered <FontAwesomeIcon icon={getSortIconByFieldName('quantityOrdered')} />
                 </th>
-                <th className="hand" onClick={sort('quantityReceived')}>
+                <th scope="col" className="hand" onClick={sort('quantityReceived')}>
                   Quantity Received <FontAwesomeIcon icon={getSortIconByFieldName('quantityReceived')} />
                 </th>
-                <th className="hand" onClick={sort('unit')}>
+                <th scope="col" className="hand" onClick={sort('unit')}>
                   Unit <FontAwesomeIcon icon={getSortIconByFieldName('unit')} />
                 </th>
-                <th className="hand" onClick={sort('unitPrice')}>
+                <th scope="col" className="hand" onClick={sort('unitPrice')}>
                   Unit Price <FontAwesomeIcon icon={getSortIconByFieldName('unitPrice')} />
                 </th>
-                <th className="hand" onClick={sort('lineTotal')}>
+                <th scope="col" className="hand" onClick={sort('lineTotal')}>
                   Line Total <FontAwesomeIcon icon={getSortIconByFieldName('lineTotal')} />
                 </th>
-                <th className="hand" onClick={sort('lotNumber')}>
+                <th scope="col" className="hand" onClick={sort('lotNumber')}>
                   Lot Number <FontAwesomeIcon icon={getSortIconByFieldName('lotNumber')} />
                 </th>
-                <th className="hand" onClick={sort('expiryDate')}>
+                <th scope="col" className="hand" onClick={sort('expiryDate')}>
                   Expiry Date <FontAwesomeIcon icon={getSortIconByFieldName('expiryDate')} />
                 </th>
-                <th className="hand" onClick={sort('qualityOnReceipt')}>
+                <th scope="col" className="hand" onClick={sort('qualityOnReceipt')}>
                   Quality On Receipt <FontAwesomeIcon icon={getSortIconByFieldName('qualityOnReceipt')} />
                 </th>
-                <th className="hand" onClick={sort('isReceived')}>
+                <th scope="col" className="hand" onClick={sort('isReceived')}>
                   Is Received <FontAwesomeIcon icon={getSortIconByFieldName('isReceived')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Supply Order <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Material <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

@@ -93,37 +93,37 @@ export const EnvironmentalTarget = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('phase')}>
+                <th scope="col" className="hand" onClick={sort('phase')}>
                   Phase <FontAwesomeIcon icon={getSortIconByFieldName('phase')} />
                 </th>
-                <th className="hand" onClick={sort('tempMinC')}>
+                <th scope="col" className="hand" onClick={sort('tempMinC')}>
                   Temp Min C <FontAwesomeIcon icon={getSortIconByFieldName('tempMinC')} />
                 </th>
-                <th className="hand" onClick={sort('tempMaxC')}>
+                <th scope="col" className="hand" onClick={sort('tempMaxC')}>
                   Temp Max C <FontAwesomeIcon icon={getSortIconByFieldName('tempMaxC')} />
                 </th>
-                <th className="hand" onClick={sort('humidityMinPercent')}>
+                <th scope="col" className="hand" onClick={sort('humidityMinPercent')}>
                   Humidity Min Percent <FontAwesomeIcon icon={getSortIconByFieldName('humidityMinPercent')} />
                 </th>
-                <th className="hand" onClick={sort('humidityMaxPercent')}>
+                <th scope="col" className="hand" onClick={sort('humidityMaxPercent')}>
                   Humidity Max Percent <FontAwesomeIcon icon={getSortIconByFieldName('humidityMaxPercent')} />
                 </th>
-                <th className="hand" onClick={sort('co2MaxPpm')}>
+                <th scope="col" className="hand" onClick={sort('co2MaxPpm')}>
                   Co 2 Max Ppm <FontAwesomeIcon icon={getSortIconByFieldName('co2MaxPpm')} />
                 </th>
-                <th className="hand" onClick={sort('lightLux')}>
+                <th scope="col" className="hand" onClick={sort('lightLux')}>
                   Light Lux <FontAwesomeIcon icon={getSortIconByFieldName('lightLux')} />
                 </th>
-                <th className="hand" onClick={sort('freshAirExchangesPerHour')}>
+                <th scope="col" className="hand" onClick={sort('freshAirExchangesPerHour')}>
                   Fresh Air Exchanges Per Hour <FontAwesomeIcon icon={getSortIconByFieldName('freshAirExchangesPerHour')} />
                 </th>
-                <th>
+                <th scope="col">
                   Room <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

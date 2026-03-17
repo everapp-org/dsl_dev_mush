@@ -105,12 +105,12 @@ export const RoomDetail = () => {
             <Table responsive striped>
               <thead>
                 <tr>
-                  <th>Batch Code</th>
-                  <th>Strain</th>
-                  <th>Current Phase</th>
-                  <th>Start Date</th>
-                  <th>Bag Count</th>
-                  <th>Actions</th>
+                  <th scope="col">Batch Code</th>
+                  <th scope="col">Strain</th>
+                  <th scope="col">Current Phase</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">Bag Count</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,12 +141,12 @@ export const RoomDetail = () => {
           <Table responsive striped>
             <thead>
               <tr>
-                <th>Sensor Code</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Manufacturer</th>
-                <th>Model</th>
-                <th>Actions</th>
+                <th scope="col">Sensor Code</th>
+                <th scope="col">Type</th>
+                <th scope="col">Status</th>
+                <th scope="col">Manufacturer</th>
+                <th scope="col">Model</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -176,14 +176,14 @@ export const RoomDetail = () => {
           <Table responsive striped>
             <thead>
               <tr>
-                <th>Alert Time</th>
-                <th>Severity</th>
-                <th>Parameter</th>
-                <th>Actual Value</th>
-                <th>Threshold</th>
-                <th>Message</th>
-                <th>Acknowledged</th>
-                <th>Actions</th>
+                <th scope="col">Alert Time</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Parameter</th>
+                <th scope="col">Actual Value</th>
+                <th scope="col">Threshold</th>
+                <th scope="col">Message</th>
+                <th scope="col">Acknowledged</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

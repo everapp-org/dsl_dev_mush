@@ -82,31 +82,31 @@ export const CostRecord = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('recordDate')}>
+                <th scope="col" className="hand" onClick={sort('recordDate')}>
                   Record Date <FontAwesomeIcon icon={getSortIconByFieldName('recordDate')} />
                 </th>
-                <th className="hand" onClick={sort('category')}>
+                <th scope="col" className="hand" onClick={sort('category')}>
                   Category <FontAwesomeIcon icon={getSortIconByFieldName('category')} />
                 </th>
-                <th className="hand" onClick={sort('description')}>
+                <th scope="col" className="hand" onClick={sort('description')}>
                   Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
                 </th>
-                <th className="hand" onClick={sort('amount')}>
+                <th scope="col" className="hand" onClick={sort('amount')}>
                   Amount <FontAwesomeIcon icon={getSortIconByFieldName('amount')} />
                 </th>
-                <th className="hand" onClick={sort('currency')}>
+                <th scope="col" className="hand" onClick={sort('currency')}>
                   Currency <FontAwesomeIcon icon={getSortIconByFieldName('currency')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

@@ -82,40 +82,40 @@ export const FlushCycle = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('flushNumber')}>
+                <th scope="col" className="hand" onClick={sort('flushNumber')}>
                   Flush Number <FontAwesomeIcon icon={getSortIconByFieldName('flushNumber')} />
                 </th>
-                <th className="hand" onClick={sort('harvestStartDate')}>
+                <th scope="col" className="hand" onClick={sort('harvestStartDate')}>
                   Harvest Start Date <FontAwesomeIcon icon={getSortIconByFieldName('harvestStartDate')} />
                 </th>
-                <th className="hand" onClick={sort('harvestEndDate')}>
+                <th scope="col" className="hand" onClick={sort('harvestEndDate')}>
                   Harvest End Date <FontAwesomeIcon icon={getSortIconByFieldName('harvestEndDate')} />
                 </th>
-                <th className="hand" onClick={sort('yieldKg')}>
+                <th scope="col" className="hand" onClick={sort('yieldKg')}>
                   Yield Kg <FontAwesomeIcon icon={getSortIconByFieldName('yieldKg')} />
                 </th>
-                <th className="hand" onClick={sort('yieldBagsHarvested')}>
+                <th scope="col" className="hand" onClick={sort('yieldBagsHarvested')}>
                   Yield Bags Harvested <FontAwesomeIcon icon={getSortIconByFieldName('yieldBagsHarvested')} />
                 </th>
-                <th className="hand" onClick={sort('avgFruitBodyWeightG')}>
+                <th scope="col" className="hand" onClick={sort('avgFruitBodyWeightG')}>
                   Avg Fruit Body Weight G <FontAwesomeIcon icon={getSortIconByFieldName('avgFruitBodyWeightG')} />
                 </th>
-                <th className="hand" onClick={sort('rehydrationDone')}>
+                <th scope="col" className="hand" onClick={sort('rehydrationDone')}>
                   Rehydration Done <FontAwesomeIcon icon={getSortIconByFieldName('rehydrationDone')} />
                 </th>
-                <th className="hand" onClick={sort('rehydrationDurationHours')}>
+                <th scope="col" className="hand" onClick={sort('rehydrationDurationHours')}>
                   Rehydration Duration Hours <FontAwesomeIcon icon={getSortIconByFieldName('rehydrationDurationHours')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

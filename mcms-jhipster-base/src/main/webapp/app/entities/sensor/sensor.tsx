@@ -88,37 +88,37 @@ export const Sensor = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('sensorCode')}>
+                <th scope="col" className="hand" onClick={sort('sensorCode')}>
                   Sensor Code <FontAwesomeIcon icon={getSortIconByFieldName('sensorCode')} />
                 </th>
-                <th className="hand" onClick={sort('sensorType')}>
+                <th scope="col" className="hand" onClick={sort('sensorType')}>
                   Sensor Type <FontAwesomeIcon icon={getSortIconByFieldName('sensorType')} />
                 </th>
-                <th className="hand" onClick={sort('status')}>
+                <th scope="col" className="hand" onClick={sort('status')}>
                   Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                 </th>
-                <th className="hand" onClick={sort('installedDate')}>
+                <th scope="col" className="hand" onClick={sort('installedDate')}>
                   Installed Date <FontAwesomeIcon icon={getSortIconByFieldName('installedDate')} />
                 </th>
-                <th className="hand" onClick={sort('lastCalibrationDate')}>
+                <th scope="col" className="hand" onClick={sort('lastCalibrationDate')}>
                   Last Calibration Date <FontAwesomeIcon icon={getSortIconByFieldName('lastCalibrationDate')} />
                 </th>
-                <th className="hand" onClick={sort('manufacturer')}>
+                <th scope="col" className="hand" onClick={sort('manufacturer')}>
                   Manufacturer <FontAwesomeIcon icon={getSortIconByFieldName('manufacturer')} />
                 </th>
-                <th className="hand" onClick={sort('model')}>
+                <th scope="col" className="hand" onClick={sort('model')}>
                   Model <FontAwesomeIcon icon={getSortIconByFieldName('model')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Room <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

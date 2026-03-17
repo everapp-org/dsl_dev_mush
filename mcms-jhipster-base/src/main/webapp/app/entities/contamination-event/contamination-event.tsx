@@ -92,58 +92,58 @@ export const ContaminationEvent = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
+                <th scope="col" className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('detectedDate')}>
+                <th scope="col" className="hand" onClick={sort('detectedDate')}>
                   Detected Date <FontAwesomeIcon icon={getSortIconByFieldName('detectedDate')} />
                 </th>
-                <th className="hand" onClick={sort('type')}>
+                <th scope="col" className="hand" onClick={sort('type')}>
                   Type <FontAwesomeIcon icon={getSortIconByFieldName('type')} />
                 </th>
-                <th className="hand" onClick={sort('severity')}>
+                <th scope="col" className="hand" onClick={sort('severity')}>
                   Severity <FontAwesomeIcon icon={getSortIconByFieldName('severity')} />
                 </th>
-                <th className="hand" onClick={sort('affectedBags')}>
+                <th scope="col" className="hand" onClick={sort('affectedBags')}>
                   Affected Bags <FontAwesomeIcon icon={getSortIconByFieldName('affectedBags')} />
                 </th>
-                <th className="hand" onClick={sort('affectedPercentage')}>
+                <th scope="col" className="hand" onClick={sort('affectedPercentage')}>
                   Affected Percentage <FontAwesomeIcon icon={getSortIconByFieldName('affectedPercentage')} />
                 </th>
-                <th className="hand" onClick={sort('actionTaken')}>
+                <th scope="col" className="hand" onClick={sort('actionTaken')}>
                   Action Taken <FontAwesomeIcon icon={getSortIconByFieldName('actionTaken')} />
                 </th>
-                <th className="hand" onClick={sort('resolvedDate')}>
+                <th scope="col" className="hand" onClick={sort('resolvedDate')}>
                   Resolved Date <FontAwesomeIcon icon={getSortIconByFieldName('resolvedDate')} />
                 </th>
-                <th className="hand" onClick={sort('lossKg')}>
+                <th scope="col" className="hand" onClick={sort('lossKg')}>
                   Loss Kg <FontAwesomeIcon icon={getSortIconByFieldName('lossKg')} />
                 </th>
-                <th className="hand" onClick={sort('rootCauseAnalysis')}>
+                <th scope="col" className="hand" onClick={sort('rootCauseAnalysis')}>
                   Root Cause Analysis <FontAwesomeIcon icon={getSortIconByFieldName('rootCauseAnalysis')} />
                 </th>
-                <th className="hand" onClick={sort('preventiveMeasures')}>
+                <th scope="col" className="hand" onClick={sort('preventiveMeasures')}>
                   Preventive Measures <FontAwesomeIcon icon={getSortIconByFieldName('preventiveMeasures')} />
                 </th>
-                <th className="hand" onClick={sort('detectedBy')}>
+                <th scope="col" className="hand" onClick={sort('detectedBy')}>
                   Detected By <FontAwesomeIcon icon={getSortIconByFieldName('detectedBy')} />
                 </th>
-                <th className="hand" onClick={sort('photosReference')}>
+                <th scope="col" className="hand" onClick={sort('photosReference')}>
                   Photos Reference <FontAwesomeIcon icon={getSortIconByFieldName('photosReference')} />
                 </th>
-                <th className="hand" onClick={sort('note')}>
+                <th scope="col" className="hand" onClick={sort('note')}>
                   Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
                 </th>
-                <th>
+                <th scope="col">
                   Batch <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Phase Execution <FontAwesomeIcon icon="sort" />
                 </th>
-                <th>
+                <th scope="col">
                   Room <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>
