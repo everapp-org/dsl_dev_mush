@@ -41,7 +41,7 @@ export const BatchDetail = () => {
     try {
       switch (activeTab) {
         case 'phaseHistory': {
-          const phaseRes = await axios.get(`/api/phase-executions/by-batch/${id}`);
+          const phaseRes = await axios.get(`/api/batches/${id}/timeline`);
           setPhaseExecutions(phaseRes.data);
           break;
         }

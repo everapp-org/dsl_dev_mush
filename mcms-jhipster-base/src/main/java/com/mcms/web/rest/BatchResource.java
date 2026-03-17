@@ -4,6 +4,7 @@ import com.mcms.domain.Batch;
 import com.mcms.domain.BatchAuditLog;
 import com.mcms.domain.BatchMaterialUsage;
 import com.mcms.domain.InventoryLot;
+import com.mcms.domain.PhaseExecution;
 import com.mcms.domain.SalesOrderLine;
 import com.mcms.domain.SupplyOrderLine;
 import com.mcms.domain.enumeration.PhaseName;
@@ -291,6 +292,19 @@ public class BatchResource {
         LOG.debug("REST request to get Batch : {}", id);
         Optional<Batch> batch = batchRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(batch);
+    }
+
+    /**
+     * {@code GET  /batches/:id/timeline} : Get the phase execution timeline for a batch.
+     *
+     * @param id the id of the batch.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of phase executions in body.
+     */
+    @GetMapping("/{id}/timeline")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<PhaseExecution> getBatchTimeline(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get timeline for Batch : {}", id);
+        return phaseExecutionRepository.findByBatchIdOrderBySequenceOrder(id);
     }
 
     /**
