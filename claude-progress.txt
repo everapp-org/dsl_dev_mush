@@ -7754,3 +7754,11 @@ NEW: Implemented cascade delete confirmation with warning dialog
 
 Progress: 209/405 features (51.6%)
 Commit: c59a7cb
+
+## Session 71: Features #214, #215 (2026-03-17)
+
+Feature #214: Stock movement updates lot quantity - Backend reloads entity with eager relationships
+Feature #215: Task completion PATCH request - Converted from POST to PATCH
+
+Progress: 211/405 features (52.1%)
+Commits: 34d7896, ee4394b
