@@ -1,8 +1,10 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.Batch;
+import com.mcms.domain.EnvironmentalAlert;
 import com.mcms.domain.Room;
 import com.mcms.domain.Sensor;
+import com.mcms.repository.EnvironmentalAlertRepository;
 import com.mcms.repository.PhaseExecutionRepository;
 import com.mcms.repository.RoomRepository;
 import com.mcms.repository.SensorRepository;
@@ -43,11 +45,13 @@ public class RoomResource {
     private final RoomRepository roomRepository;
     private final PhaseExecutionRepository phaseExecutionRepository;
     private final SensorRepository sensorRepository;
+    private final EnvironmentalAlertRepository environmentalAlertRepository;
 
-    public RoomResource(RoomRepository roomRepository, PhaseExecutionRepository phaseExecutionRepository, SensorRepository sensorRepository) {
+    public RoomResource(RoomRepository roomRepository, PhaseExecutionRepository phaseExecutionRepository, SensorRepository sensorRepository, EnvironmentalAlertRepository environmentalAlertRepository) {
         this.roomRepository = roomRepository;
         this.phaseExecutionRepository = phaseExecutionRepository;
         this.sensorRepository = sensorRepository;
+        this.environmentalAlertRepository = environmentalAlertRepository;
     }
 
     /**
@@ -253,5 +257,18 @@ public class RoomResource {
     public List<Sensor> getSensorsInRoom(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Sensors in Room : {}", id);
         return sensorRepository.findByRoomId(id);
+    }
+
+    /**
+     * {@code GET  /rooms/:id/alerts} : get all environmental alerts for the room.
+     *
+     * @param id the id of the room.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of alerts in body.
+     */
+    @GetMapping("/{id}/alerts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR', 'ROLE_USER')")
+    public List<EnvironmentalAlert> getAlertsInRoom(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get Environmental Alerts in Room : {}", id);
+        return environmentalAlertRepository.findByRoomId(id);
     }
 }

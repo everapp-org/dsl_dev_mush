@@ -6,10 +6,12 @@ import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } fro
 import { IRoom, defaultValue } from 'app/shared/model/room.model';
 import { IBatch } from 'app/shared/model/batch.model';
 import { ISensor } from 'app/shared/model/sensor.model';
+import { IEnvironmentalAlert } from 'app/shared/model/environmental-alert.model';
 
 interface RoomState extends EntityState<IRoom> {
   batchesInRoom: IBatch[];
   sensorsInRoom: ISensor[];
+  alertsInRoom: IEnvironmentalAlert[];
 }
 
 const initialState: RoomState = {
@@ -21,6 +23,7 @@ const initialState: RoomState = {
   updateSuccess: false,
   batchesInRoom: [],
   sensorsInRoom: [],
+  alertsInRoom: [],
 };
 
 const apiUrl = 'api/rooms';
@@ -104,6 +107,15 @@ export const getSensorsInRoom = createAsyncThunk(
   { serializeError: serializeAxiosError },
 );
 
+export const getAlertsInRoom = createAsyncThunk(
+  'room/fetch_alerts_in_room',
+  async (id: string | number) => {
+    const requestUrl = `${apiUrl}/${id}/alerts`;
+    return axios.get<IEnvironmentalAlert[]>(requestUrl);
+  },
+  { serializeError: serializeAxiosError },
+);
+
 // slice
 
 export const RoomSlice = createEntitySlice({
@@ -130,6 +142,11 @@ export const RoomSlice = createEntitySlice({
         const roomState = state as unknown as RoomState;
         roomState.sensorsInRoom = action.payload.data;
       })
+      .addCase(getAlertsInRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        const roomState = state as unknown as RoomState;
+        roomState.alertsInRoom = action.payload.data;
+      })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data } = action.payload;
 
@@ -152,7 +169,7 @@ export const RoomSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity, getBatchesInRoom, getSensorsInRoom), state => {
+      .addMatcher(isPending(getEntities, getEntity, getBatchesInRoom, getSensorsInRoom, getAlertsInRoom), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

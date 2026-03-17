@@ -41,4 +41,9 @@ public interface EnvironmentalAlertRepository extends JpaRepository<Environmenta
         "select environmentalAlert from EnvironmentalAlert environmentalAlert left join fetch environmentalAlert.room left join fetch environmentalAlert.sensor left join fetch environmentalAlert.batch where environmentalAlert.id =:id"
     )
     Optional<EnvironmentalAlert> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query(
+        "select environmentalAlert from EnvironmentalAlert environmentalAlert left join fetch environmentalAlert.room left join fetch environmentalAlert.sensor left join fetch environmentalAlert.batch where environmentalAlert.room.id =:roomId"
+    )
+    List<EnvironmentalAlert> findByRoomId(@Param("roomId") Long roomId);
 }

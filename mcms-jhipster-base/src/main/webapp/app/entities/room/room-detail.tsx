@@ -8,7 +8,7 @@ import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
-import { getEntity, getBatchesInRoom, getSensorsInRoom } from './room.reducer';
+import { getEntity, getBatchesInRoom, getSensorsInRoom, getAlertsInRoom } from './room.reducer';
 
 export const RoomDetail = () => {
   const dispatch = useAppDispatch();
@@ -19,11 +19,13 @@ export const RoomDetail = () => {
     dispatch(getEntity(id));
     dispatch(getBatchesInRoom(id));
     dispatch(getSensorsInRoom(id));
+    dispatch(getAlertsInRoom(id));
   }, []);
 
   const roomEntity = useAppSelector(state => state.room.entity);
   const batchesInRoom = useAppSelector(state => state.room.batchesInRoom);
   const sensorsInRoom = useAppSelector(state => state.room.sensorsInRoom);
+  const alertsInRoom = useAppSelector(state => state.room.alertsInRoom);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
 
   return (
@@ -168,6 +170,49 @@ export const RoomDetail = () => {
           </Table>
         ) : (
           <p className="text-muted">No sensors installed in this room.</p>
+        )}
+        <h3 className="mt-4">Environmental Alerts</h3>
+        {alertsInRoom && alertsInRoom.length > 0 ? (
+          <Table responsive striped>
+            <thead>
+              <tr>
+                <th>Alert Time</th>
+                <th>Severity</th>
+                <th>Parameter</th>
+                <th>Actual Value</th>
+                <th>Threshold</th>
+                <th>Message</th>
+                <th>Acknowledged</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {alertsInRoom.map(alert => (
+                <tr key={alert.id}>
+                  <td>{alert.alertTime ? <TextFormat value={alert.alertTime} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
+                  <td>
+                    <span
+                      className={`badge bg-${alert.severity === 'CRITICAL' ? 'danger' : alert.severity === 'WARNING' ? 'warning' : 'info'}`}
+                    >
+                      {alert.severity}
+                    </span>
+                  </td>
+                  <td>{alert.parameter}</td>
+                  <td>{alert.actualValue}</td>
+                  <td>{alert.thresholdValue}</td>
+                  <td>{alert.message}</td>
+                  <td>{alert.acknowledged ? 'Yes' : 'No'}</td>
+                  <td>
+                    <Button tag={Link} to={`/environmental-alert/${alert.id}`} color="info" size="sm">
+                      <FontAwesomeIcon icon="eye" /> View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <p className="text-muted">No alerts for this room.</p>
         )}
         <Button tag={Link} to="/room" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
