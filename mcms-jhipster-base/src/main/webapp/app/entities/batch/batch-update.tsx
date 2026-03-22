@@ -5,6 +5,7 @@ import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { FormErrorSummary } from 'app/shared/error/form-error-summary';
 
 import { getEntities as getStrains } from 'app/entities/strain/strain.reducer';
 import { getEntities as getSubstrateRecipes } from 'app/entities/substrate-recipe/substrate-recipe.reducer';
@@ -202,6 +203,7 @@ export const BatchUpdate = () => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity} onChange={handleFormChange}>
+              <FormErrorSummary />
               {!isNew ? <ValidatedField name="id" required readOnly id="batch-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Batch Code"

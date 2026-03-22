@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
+import { StatusBadge } from 'app/shared/badge/status-badge';
 
 import { getEntities } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
@@ -455,7 +456,9 @@ export const Batch = () => {
                   <td>{batch.batchCode}</td>
                   <td>{batch.startDate ? <TextFormat type="date" value={batch.startDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
                   <td>{batch.endDate ? <TextFormat type="date" value={batch.endDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  <td>{batch.currentPhase}</td>
+                  <td>
+                    <StatusBadge phase={batch.currentPhase} isContaminated={batch.isContaminated} />
+                  </td>
                   <td>{batch.numberOfBags}</td>
                   <td>{batch.substrateWeightKg}</td>
                   <td>{batch.spawnWeightKg}</td>

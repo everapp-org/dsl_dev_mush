@@ -5,6 +5,7 @@ import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { FormErrorSummary } from 'app/shared/error/form-error-summary';
 
 import { SupplierType } from 'app/shared/model/enumerations/supplier-type.model';
 import { createEntity, getEntity, reset, updateEntity } from './supplier.reducer';
@@ -84,6 +85,7 @@ export const SupplierUpdate = () => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+              <FormErrorSummary />
               {!isNew ? <ValidatedField name="id" required readOnly id="supplier-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Name"

@@ -5,6 +5,7 @@ import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { FormErrorSummary } from 'app/shared/error/form-error-summary';
 
 import { createEntity, getEntity, reset, updateEntity } from './strain.reducer';
 
@@ -105,6 +106,7 @@ export const StrainUpdate = () => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+              <FormErrorSummary />
               {!isNew ? <ValidatedField name="id" required readOnly id="strain-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Name"
