@@ -255,10 +255,12 @@ public class BatchResource {
         @RequestParam(name = "strainId", required = false) Long strainId,
         @RequestParam(name = "isActive", required = false) Boolean isActive,
         @RequestParam(name = "startDateFrom", required = false) LocalDate startDateFrom,
-        @RequestParam(name = "startDateTo", required = false) LocalDate startDateTo
+        @RequestParam(name = "startDateTo", required = false) LocalDate startDateTo,
+        @RequestParam(name = "numberOfBagsMin", required = false) Integer numberOfBagsMin,
+        @RequestParam(name = "numberOfBagsMax", required = false) Integer numberOfBagsMax
     ) {
-        LOG.debug("REST request to get a page of Batches with filters: search={}, phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}",
-            search, phase, strainId, isActive, startDateFrom, startDateTo);
+        LOG.debug("REST request to get a page of Batches with filters: search={}, phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}, numberOfBagsMin={}, numberOfBagsMax={}",
+            search, phase, strainId, isActive, startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax);
 
         // Feature #285: Validate search string length to prevent crashes
         if (search != null && search.length() > 1000) {
@@ -268,11 +270,11 @@ public class BatchResource {
         Page<Batch> page;
 
         // Check if any filters are applied
-        boolean hasFilters = search != null || phase != null || strainId != null || isActive != null || startDateFrom != null || startDateTo != null;
+        boolean hasFilters = search != null || phase != null || strainId != null || isActive != null || startDateFrom != null || startDateTo != null || numberOfBagsMin != null || numberOfBagsMax != null;
 
         if (hasFilters) {
             // Use filtered query
-            page = batchRepository.findAllWithFilters(search, phase, strainId, isActive, startDateFrom, startDateTo, pageable);
+            page = batchRepository.findAllWithFilters(search, phase, strainId, isActive, startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax, pageable);
         } else if (eagerload) {
             // Use eager loading without filters
             page = batchRepository.findAllWithEagerRelationships(pageable);

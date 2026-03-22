@@ -33,6 +33,8 @@ export const Batch = () => {
     isActive: '',
     startDateFrom: '',
     startDateTo: '',
+    numberOfBagsMin: '',
+    numberOfBagsMax: '',
   });
 
   // Track invalid page redirect
@@ -68,6 +70,8 @@ export const Batch = () => {
       isActive: params.get('isActive') || '',
       startDateFrom: params.get('startDateFrom') || '',
       startDateTo: params.get('startDateTo') || '',
+      numberOfBagsMin: params.get('numberOfBagsMin') || '',
+      numberOfBagsMax: params.get('numberOfBagsMax') || '',
     });
   }, []);
 
@@ -83,6 +87,8 @@ export const Batch = () => {
         isActive: filters.isActive ? filters.isActive === 'true' : undefined,
         startDateFrom: filters.startDateFrom || undefined,
         startDateTo: filters.startDateTo || undefined,
+        numberOfBagsMin: filters.numberOfBagsMin ? parseInt(filters.numberOfBagsMin, 10) : undefined,
+        numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
       }),
     );
   };
@@ -98,6 +104,8 @@ export const Batch = () => {
     if (filters.isActive) params.set('isActive', filters.isActive);
     if (filters.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
     if (filters.startDateTo) params.set('startDateTo', filters.startDateTo);
+    if (filters.numberOfBagsMin) params.set('numberOfBagsMin', filters.numberOfBagsMin);
+    if (filters.numberOfBagsMax) params.set('numberOfBagsMax', filters.numberOfBagsMax);
 
     return `?${params.toString()}`;
   };
@@ -194,6 +202,8 @@ export const Batch = () => {
       isActive: '',
       startDateFrom: '',
       startDateTo: '',
+      numberOfBagsMin: '',
+      numberOfBagsMax: '',
     });
     setPaginationState({
       ...paginationState,
@@ -202,7 +212,14 @@ export const Batch = () => {
   };
 
   const hasActiveFilters =
-    filters.search || filters.phase || filters.strainId || filters.isActive || filters.startDateFrom || filters.startDateTo;
+    filters.search ||
+    filters.phase ||
+    filters.strainId ||
+    filters.isActive ||
+    filters.startDateFrom ||
+    filters.startDateTo ||
+    filters.numberOfBagsMin ||
+    filters.numberOfBagsMax;
 
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = paginationState.sort;
@@ -313,6 +330,34 @@ export const Batch = () => {
               <FormGroup>
                 <Label for="start-date-to">Start Date To</Label>
                 <Input type="date" id="start-date-to" value={filters.startDateTo} onChange={handleFilterChange('startDateTo')} />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3">
+              <FormGroup>
+                <Label for="number-of-bags-min">Number of Bags (Min)</Label>
+                <Input
+                  type="number"
+                  id="number-of-bags-min"
+                  placeholder="e.g., 50"
+                  value={filters.numberOfBagsMin}
+                  onChange={handleFilterChange('numberOfBagsMin')}
+                  min="0"
+                />
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              <FormGroup>
+                <Label for="number-of-bags-max">Number of Bags (Max)</Label>
+                <Input
+                  type="number"
+                  id="number-of-bags-max"
+                  placeholder="e.g., 100"
+                  value={filters.numberOfBagsMax}
+                  onChange={handleFilterChange('numberOfBagsMax')}
+                  min="0"
+                />
               </FormGroup>
             </Col>
           </Row>

@@ -47,14 +47,18 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         "and (:strainId is null or batch.strain.id = :strainId) " +
         "and (:isActive is null or batch.isActive = :isActive) " +
         "and (:startDateFrom is null or batch.startDate >= :startDateFrom) " +
-        "and (:startDateTo is null or batch.startDate <= :startDateTo)",
+        "and (:startDateTo is null or batch.startDate <= :startDateTo) " +
+        "and (:numberOfBagsMin is null or batch.numberOfBags >= :numberOfBagsMin) " +
+        "and (:numberOfBagsMax is null or batch.numberOfBags <= :numberOfBagsMax)",
         countQuery = "select count(distinct batch) from Batch batch " +
         "where (:search is null or (lower(batch.batchCode) like lower(concat('%', :search, '%')) or lower(batch.note) like lower(concat('%', :search, '%')) or lower(batch.completionNote) like lower(concat('%', :search, '%')))) " +
         "and (:phase is null or batch.currentPhase = :phase) " +
         "and (:strainId is null or batch.strain.id = :strainId) " +
         "and (:isActive is null or batch.isActive = :isActive) " +
         "and (:startDateFrom is null or batch.startDate >= :startDateFrom) " +
-        "and (:startDateTo is null or batch.startDate <= :startDateTo)"
+        "and (:startDateTo is null or batch.startDate <= :startDateTo) " +
+        "and (:numberOfBagsMin is null or batch.numberOfBags >= :numberOfBagsMin) " +
+        "and (:numberOfBagsMax is null or batch.numberOfBags <= :numberOfBagsMax)"
     )
     Page<Batch> findAllWithFilters(
         @Param("search") String search,
@@ -63,6 +67,8 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         @Param("isActive") Boolean isActive,
         @Param("startDateFrom") java.time.LocalDate startDateFrom,
         @Param("startDateTo") java.time.LocalDate startDateTo,
+        @Param("numberOfBagsMin") Integer numberOfBagsMin,
+        @Param("numberOfBagsMax") Integer numberOfBagsMax,
         Pageable pageable
     );
 

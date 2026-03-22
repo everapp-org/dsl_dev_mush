@@ -34,11 +34,25 @@ export interface IQueryParamsWithFilters extends IQueryParams {
   isActive?: boolean;
   startDateFrom?: string;
   startDateTo?: string;
+  numberOfBagsMin?: number;
+  numberOfBagsMax?: number;
 }
 
 export const getEntities = createAsyncThunk(
   'batch/fetch_entity_list',
-  async ({ page, size, sort, search, phase, strainId, isActive, startDateFrom, startDateTo }: IQueryParamsWithFilters) => {
+  async ({
+    page,
+    size,
+    sort,
+    search,
+    phase,
+    strainId,
+    isActive,
+    startDateFrom,
+    startDateTo,
+    numberOfBagsMin,
+    numberOfBagsMax,
+  }: IQueryParamsWithFilters) => {
     const params = new URLSearchParams();
     if (sort) params.append('sort', sort);
     if (page !== undefined) params.append('page', page.toString());
@@ -49,6 +63,8 @@ export const getEntities = createAsyncThunk(
     if (isActive !== undefined) params.append('isActive', isActive.toString());
     if (startDateFrom) params.append('startDateFrom', startDateFrom);
     if (startDateTo) params.append('startDateTo', startDateTo);
+    if (numberOfBagsMin !== undefined) params.append('numberOfBagsMin', numberOfBagsMin.toString());
+    if (numberOfBagsMax !== undefined) params.append('numberOfBagsMax', numberOfBagsMax.toString());
     params.append('cacheBuster', new Date().getTime().toString());
 
     const requestUrl = `${apiUrl}?${params.toString()}`;
