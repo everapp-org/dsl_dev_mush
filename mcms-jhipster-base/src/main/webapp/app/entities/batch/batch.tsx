@@ -226,7 +226,13 @@ export const Batch = () => {
               <Button tag="a" href="/api/export/batches" className="me-2" color="success" data-cy="entityExportButton">
                 <FontAwesomeIcon icon="download" /> Export CSV
               </Button>
-              <Link to="/batch/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+              <Link
+                to="/batch/new"
+                state={{ referrerSearch: pageLocation.search }}
+                className="btn btn-primary jh-create-entity"
+                id="jh-create-entity"
+                data-cy="entityCreateButton"
+              >
                 <FontAwesomeIcon icon="plus" />
                 &nbsp; Create a new Batch
               </Link>
@@ -436,6 +442,7 @@ export const Batch = () => {
                           <Button
                             tag={Link}
                             to={`/batch/${batch.id}/edit`}
+                            state={{ referrerSearch: pageLocation.search }}
                             color="primary"
                             size="sm"
                             data-cy="entityEditButton"
@@ -488,7 +495,7 @@ export const Batch = () => {
                     <h4>No Batches Found</h4>
                     <p className="mb-3">There are no batches in the system yet. Get started by creating your first batch.</p>
                     {canModifyBatch && (
-                      <Link to="/batch/new" className="btn btn-primary btn-lg">
+                      <Link to="/batch/new" state={{ referrerSearch: pageLocation.search }} className="btn btn-primary btn-lg">
                         <FontAwesomeIcon icon="plus" />
                         &nbsp; Create Your First Batch
                       </Link>

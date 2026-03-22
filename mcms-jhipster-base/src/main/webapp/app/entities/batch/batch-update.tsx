@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +15,7 @@ export const BatchUpdate = () => {
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
@@ -33,10 +34,14 @@ export const BatchUpdate = () => {
   const [showAutosaveNotice, setShowAutosaveNotice] = useState(false);
   const AUTOSAVE_KEY = isNew ? 'batch-create-autosave' : `batch-edit-autosave-${id}`;
 
+  // Feature #290: Get referrer search params from navigation state
+  const referrerSearch = location.state?.referrerSearch || '';
+
   const handleClose = () => {
     // Clear autosave on intentional close
     localStorage.removeItem(AUTOSAVE_KEY);
-    navigate('/batch', { replace: true });
+    // Feature #290: Preserve filters when navigating back
+    navigate(`/batch${referrerSearch}`, { replace: true });
   };
 
   const clearAutosave = () => {
