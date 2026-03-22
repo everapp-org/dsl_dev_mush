@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Progress } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -220,11 +220,18 @@ export const MonthlyReport = () => {
                 onChange={e => setReportYear(parseInt(e.target.value, 10))}
                 min="2000"
                 max="2100"
+                disabled={updating}
               />
             </FormGroup>
             <FormGroup>
               <Label for="report-month">Month</Label>
-              <Input type="select" id="report-month" value={reportMonth} onChange={e => setReportMonth(parseInt(e.target.value, 10))}>
+              <Input
+                type="select"
+                id="report-month"
+                value={reportMonth}
+                onChange={e => setReportMonth(parseInt(e.target.value, 10))}
+                disabled={updating}
+              >
                 <option value="1">January</option>
                 <option value="2">February</option>
                 <option value="3">March</option>
@@ -239,14 +246,24 @@ export const MonthlyReport = () => {
                 <option value="12">December</option>
               </Input>
             </FormGroup>
+            {updating && (
+              <FormGroup>
+                <div className="mb-2 d-flex align-items-center">
+                  <FontAwesomeIcon icon="spinner" spin className="me-2" />
+                  <span>Generating report, please wait...</span>
+                </div>
+                <Progress animated color="success" value={100} aria-label="Report generation in progress" />
+              </FormGroup>
+            )}
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleGenerateModal}>
+          <Button color="secondary" onClick={toggleGenerateModal} disabled={updating}>
             Cancel
           </Button>
           <Button color="success" onClick={handleGenerateReport} disabled={updating} aria-disabled={updating}>
-            {updating ? 'Generating...' : 'Generate Report'}
+            <FontAwesomeIcon icon={updating ? 'spinner' : 'chart-line'} spin={updating} />
+            &nbsp; {updating ? 'Generating...' : 'Generate Report'}
           </Button>
         </ModalFooter>
       </Modal>
