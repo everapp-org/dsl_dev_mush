@@ -21,6 +21,7 @@ export const FlushCycleDeleteDialog = () => {
 
   const flushCycleEntity = useAppSelector(state => state.flushCycle.entity);
   const updateSuccess = useAppSelector(state => state.flushCycle.updateSuccess);
+  const updating = useAppSelector(state => state.flushCycle.updating);
 
   const handleClose = () => {
     navigate('/flush-cycle');
@@ -48,9 +49,16 @@ export const FlushCycleDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-flushCycle" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-flushCycle"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

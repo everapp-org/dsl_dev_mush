@@ -21,6 +21,7 @@ export const SalesOrderDeleteDialog = () => {
 
   const salesOrderEntity = useAppSelector(state => state.salesOrder.entity);
   const updateSuccess = useAppSelector(state => state.salesOrder.updateSuccess);
+  const updating = useAppSelector(state => state.salesOrder.updating);
 
   const handleClose = () => {
     navigate('/sales-order');
@@ -48,9 +49,16 @@ export const SalesOrderDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-salesOrder" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-salesOrder"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

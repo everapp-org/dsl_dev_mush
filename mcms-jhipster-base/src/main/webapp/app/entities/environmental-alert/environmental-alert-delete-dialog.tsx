@@ -21,6 +21,7 @@ export const EnvironmentalAlertDeleteDialog = () => {
 
   const environmentalAlertEntity = useAppSelector(state => state.environmentalAlert.entity);
   const updateSuccess = useAppSelector(state => state.environmentalAlert.updateSuccess);
+  const updating = useAppSelector(state => state.environmentalAlert.updating);
 
   const handleClose = () => {
     navigate('/environmental-alert');
@@ -50,9 +51,16 @@ export const EnvironmentalAlertDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-environmentalAlert" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-environmentalAlert"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

@@ -21,6 +21,7 @@ export const RoomDeleteDialog = () => {
 
   const roomEntity = useAppSelector(state => state.room.entity);
   const updateSuccess = useAppSelector(state => state.room.updateSuccess);
+  const updating = useAppSelector(state => state.room.updating);
 
   const handleClose = () => {
     navigate('/room');
@@ -48,9 +49,16 @@ export const RoomDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-room" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-room"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

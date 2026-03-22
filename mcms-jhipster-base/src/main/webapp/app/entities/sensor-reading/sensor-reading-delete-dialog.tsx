@@ -21,6 +21,7 @@ export const SensorReadingDeleteDialog = () => {
 
   const sensorReadingEntity = useAppSelector(state => state.sensorReading.entity);
   const updateSuccess = useAppSelector(state => state.sensorReading.updateSuccess);
+  const updating = useAppSelector(state => state.sensorReading.updating);
 
   const handleClose = () => {
     navigate('/sensor-reading');
@@ -50,9 +51,16 @@ export const SensorReadingDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-sensorReading" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-sensorReading"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

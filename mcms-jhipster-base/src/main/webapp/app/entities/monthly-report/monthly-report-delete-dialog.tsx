@@ -21,6 +21,7 @@ export const MonthlyReportDeleteDialog = () => {
 
   const monthlyReportEntity = useAppSelector(state => state.monthlyReport.entity);
   const updateSuccess = useAppSelector(state => state.monthlyReport.updateSuccess);
+  const updating = useAppSelector(state => state.monthlyReport.updating);
 
   const handleClose = () => {
     navigate('/monthly-report');
@@ -50,9 +51,16 @@ export const MonthlyReportDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-monthlyReport" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-monthlyReport"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

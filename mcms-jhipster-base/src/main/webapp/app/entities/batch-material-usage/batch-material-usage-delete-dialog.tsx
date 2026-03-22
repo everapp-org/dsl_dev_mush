@@ -21,6 +21,7 @@ export const BatchMaterialUsageDeleteDialog = () => {
 
   const batchMaterialUsageEntity = useAppSelector(state => state.batchMaterialUsage.entity);
   const updateSuccess = useAppSelector(state => state.batchMaterialUsage.updateSuccess);
+  const updating = useAppSelector(state => state.batchMaterialUsage.updating);
 
   const handleClose = () => {
     navigate('/batch-material-usage');
@@ -50,9 +51,16 @@ export const BatchMaterialUsageDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-batchMaterialUsage" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-batchMaterialUsage"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

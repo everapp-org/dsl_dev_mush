@@ -21,6 +21,7 @@ export const TaskDeleteDialog = () => {
 
   const taskEntity = useAppSelector(state => state.task.entity);
   const updateSuccess = useAppSelector(state => state.task.updateSuccess);
+  const updating = useAppSelector(state => state.task.updating);
 
   const handleClose = () => {
     navigate('/task');
@@ -48,9 +49,16 @@ export const TaskDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-task" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-task"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

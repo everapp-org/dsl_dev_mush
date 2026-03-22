@@ -21,6 +21,7 @@ export const CustomerDeleteDialog = () => {
 
   const customerEntity = useAppSelector(state => state.customer.entity);
   const updateSuccess = useAppSelector(state => state.customer.updateSuccess);
+  const updating = useAppSelector(state => state.customer.updating);
 
   const handleClose = () => {
     navigate('/customer');
@@ -48,9 +49,16 @@ export const CustomerDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-customer" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-customer"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

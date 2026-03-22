@@ -21,6 +21,7 @@ export const ContaminationEventDeleteDialog = () => {
 
   const contaminationEventEntity = useAppSelector(state => state.contaminationEvent.entity);
   const updateSuccess = useAppSelector(state => state.contaminationEvent.updateSuccess);
+  const updating = useAppSelector(state => state.contaminationEvent.updating);
 
   const handleClose = () => {
     navigate('/contamination-event');
@@ -50,9 +51,16 @@ export const ContaminationEventDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-contaminationEvent" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-contaminationEvent"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

@@ -22,6 +22,7 @@ export const StrainDeleteDialog = () => {
 
   const strainEntity = useAppSelector(state => state.strain.entity);
   const updateSuccess = useAppSelector(state => state.strain.updateSuccess);
+  const updating = useAppSelector(state => state.strain.updating);
 
   const handleClose = () => {
     navigate('/strain');
@@ -49,9 +50,16 @@ export const StrainDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-strain" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-strain"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </FocusTrapModal>

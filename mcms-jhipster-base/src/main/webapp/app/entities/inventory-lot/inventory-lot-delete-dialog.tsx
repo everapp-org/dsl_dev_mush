@@ -21,6 +21,7 @@ export const InventoryLotDeleteDialog = () => {
 
   const inventoryLotEntity = useAppSelector(state => state.inventoryLot.entity);
   const updateSuccess = useAppSelector(state => state.inventoryLot.updateSuccess);
+  const updating = useAppSelector(state => state.inventoryLot.updating);
 
   const handleClose = () => {
     navigate('/inventory-lot');
@@ -50,9 +51,16 @@ export const InventoryLotDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-inventoryLot" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-inventoryLot"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

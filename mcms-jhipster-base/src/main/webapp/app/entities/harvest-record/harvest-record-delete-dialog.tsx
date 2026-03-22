@@ -21,6 +21,7 @@ export const HarvestRecordDeleteDialog = () => {
 
   const harvestRecordEntity = useAppSelector(state => state.harvestRecord.entity);
   const updateSuccess = useAppSelector(state => state.harvestRecord.updateSuccess);
+  const updating = useAppSelector(state => state.harvestRecord.updating);
 
   const handleClose = () => {
     navigate('/harvest-record');
@@ -50,9 +51,16 @@ export const HarvestRecordDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-harvestRecord" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-harvestRecord"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

@@ -21,6 +21,7 @@ export const PhaseExecutionDeleteDialog = () => {
 
   const phaseExecutionEntity = useAppSelector(state => state.phaseExecution.entity);
   const updateSuccess = useAppSelector(state => state.phaseExecution.updateSuccess);
+  const updating = useAppSelector(state => state.phaseExecution.updating);
 
   const handleClose = () => {
     navigate('/phase-execution');
@@ -50,9 +51,16 @@ export const PhaseExecutionDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-phaseExecution" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-phaseExecution"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

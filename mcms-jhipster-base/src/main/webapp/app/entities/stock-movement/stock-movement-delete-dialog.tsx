@@ -21,6 +21,7 @@ export const StockMovementDeleteDialog = () => {
 
   const stockMovementEntity = useAppSelector(state => state.stockMovement.entity);
   const updateSuccess = useAppSelector(state => state.stockMovement.updateSuccess);
+  const updating = useAppSelector(state => state.stockMovement.updating);
 
   const handleClose = () => {
     navigate('/stock-movement');
@@ -50,9 +51,16 @@ export const StockMovementDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-stockMovement" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-stockMovement"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

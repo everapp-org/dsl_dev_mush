@@ -21,6 +21,7 @@ export const CostRecordDeleteDialog = () => {
 
   const costRecordEntity = useAppSelector(state => state.costRecord.entity);
   const updateSuccess = useAppSelector(state => state.costRecord.updateSuccess);
+  const updating = useAppSelector(state => state.costRecord.updating);
 
   const handleClose = () => {
     navigate('/cost-record');
@@ -48,9 +49,16 @@ export const CostRecordDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-costRecord" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-costRecord"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>

@@ -107,9 +107,10 @@ export const BatchDeleteDialog = () => {
             color="danger"
             onClick={() => confirmDelete(false)}
             disabled={isDeleting}
+            aria-disabled={isDeleting}
           >
-            <FontAwesomeIcon icon="trash" />
-            &nbsp; Delete
+            <FontAwesomeIcon icon={isDeleting ? 'spinner' : 'trash'} spin={isDeleting} />
+            &nbsp; {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         )}
       </ModalFooter>

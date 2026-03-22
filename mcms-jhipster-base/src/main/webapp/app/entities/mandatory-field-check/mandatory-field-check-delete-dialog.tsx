@@ -21,6 +21,7 @@ export const MandatoryFieldCheckDeleteDialog = () => {
 
   const mandatoryFieldCheckEntity = useAppSelector(state => state.mandatoryFieldCheck.entity);
   const updateSuccess = useAppSelector(state => state.mandatoryFieldCheck.updateSuccess);
+  const updating = useAppSelector(state => state.mandatoryFieldCheck.updating);
 
   const handleClose = () => {
     navigate('/mandatory-field-check');
@@ -50,9 +51,16 @@ export const MandatoryFieldCheckDeleteDialog = () => {
           <FontAwesomeIcon icon="ban" />
           &nbsp; Cancel
         </Button>
-        <Button id="jhi-confirm-delete-mandatoryFieldCheck" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
-          <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+        <Button
+          id="jhi-confirm-delete-mandatoryFieldCheck"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+          disabled={updating}
+          aria-disabled={updating}
+        >
+          <FontAwesomeIcon icon={updating ? 'spinner' : 'trash'} spin={updating} />
+          &nbsp; {updating ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>
     </Modal>
