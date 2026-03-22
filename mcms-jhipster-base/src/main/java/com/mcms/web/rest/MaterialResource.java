@@ -1,21 +1,31 @@
 package com.mcms.web.rest;
 
 import com.mcms.domain.Material;
+import com.mcms.domain.enumeration.MaterialCategory;
+import com.mcms.domain.enumeration.UnitOfMeasure;
 import com.mcms.repository.MaterialRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -195,5 +205,172 @@ public class MaterialResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code POST  /materials/import} : Import materials from CSV file.
+     *
+     * CSV format: code,name,category,defaultUnit (header row required)
+     * Example:
+     * code,name,category,defaultUnit
+     * "MAT-SPAWN-PO-01","Pleurotus ostreatus grain spawn","SPAWN","BAG"
+     * "MAT-SUB-STRAW","Wheat straw substrate","SUBSTRATE","KG"
+     *
+     * @param file the CSV file to import.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and count of imported materials.
+     */
+    @PostMapping("/import")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+    public ResponseEntity<Map<String, Object>> importMaterials(@RequestParam("file") MultipartFile file) {
+        LOG.debug("REST request to import Materials from CSV file: {}", file.getOriginalFilename());
+
+        if (file.isEmpty()) {
+            throw new BadRequestAlertException("File is empty", ENTITY_NAME, "fileempty");
+        }
+
+        List<Material> importedMaterials = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+        int lineNumber = 0;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            String[] headers = null;
+
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.trim();
+
+                // Skip empty lines
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                // Parse CSV line (handle quoted fields)
+                String[] fields = parseCsvLine(line);
+
+                // First non-empty line is the header
+                if (headers == null) {
+                    headers = fields;
+                    // Validate header
+                    if (
+                        fields.length < 4 ||
+                        !fields[0].toLowerCase().contains("code") ||
+                        !fields[1].toLowerCase().contains("name") ||
+                        !fields[2].toLowerCase().contains("category") ||
+                        !fields[3].toLowerCase().contains("unit")
+                    ) {
+                        throw new BadRequestAlertException(
+                            "Invalid CSV header. Expected: code,name,category,defaultUnit",
+                            ENTITY_NAME,
+                            "invalidheader"
+                        );
+                    }
+                    continue;
+                }
+
+                // Parse data rows
+                if (fields.length < 4) {
+                    errors.add("Line " + lineNumber + ": Missing required fields (code, name, category, defaultUnit)");
+                    continue;
+                }
+
+                try {
+                    Material material = new Material();
+                    material.setCode(fields[0].trim());
+                    material.setName(fields[1].trim());
+
+                    // Parse category enum
+                    try {
+                        material.setCategory(MaterialCategory.valueOf(fields[2].trim().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        errors.add("Line " + lineNumber + ": Invalid category '" + fields[2] + "'. Valid values: " + getEnumValues(MaterialCategory.class));
+                        continue;
+                    }
+
+                    // Parse unit enum
+                    try {
+                        material.setDefaultUnit(UnitOfMeasure.valueOf(fields[3].trim().toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        errors.add("Line " + lineNumber + ": Invalid unit '" + fields[3] + "'. Valid values: " + getEnumValues(UnitOfMeasure.class));
+                        continue;
+                    }
+
+                    material.setActive(true); // Default to active
+
+                    // Validate required fields
+                    if (material.getCode().isEmpty() || material.getName().isEmpty()) {
+                        errors.add("Line " + lineNumber + ": Code and name are required");
+                        continue;
+                    }
+
+                    // Check for duplicate code
+                    if (materialRepository.findAll().stream().anyMatch(m -> m.getCode().equals(material.getCode()))) {
+                        errors.add("Line " + lineNumber + ": Material code '" + material.getCode() + "' already exists");
+                        continue;
+                    }
+
+                    Material saved = materialRepository.save(material);
+                    importedMaterials.add(saved);
+                } catch (Exception e) {
+                    errors.add("Line " + lineNumber + ": " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error importing materials from CSV", e);
+            throw new BadRequestAlertException("Error reading CSV file: " + e.getMessage(), ENTITY_NAME, "importerror");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("imported", importedMaterials.size());
+        result.put("errors", errors);
+        result.put("totalLines", lineNumber);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    /**
+     * Parse a CSV line handling quoted fields.
+     *
+     * @param line the CSV line to parse
+     * @return array of field values
+     */
+    private String[] parseCsvLine(String line) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                fields.add(currentField.toString());
+                currentField = new StringBuilder();
+            } else {
+                currentField.append(c);
+            }
+        }
+
+        // Add the last field
+        fields.add(currentField.toString());
+
+        return fields.toArray(new String[0]);
+    }
+
+    /**
+     * Get all enum values as a comma-separated string.
+     *
+     * @param enumClass the enum class
+     * @return comma-separated enum values
+     */
+    private <E extends Enum<E>> String getEnumValues(Class<E> enumClass) {
+        E[] values = enumClass.getEnumConstants();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(values[i].name());
+        }
+        return sb.toString();
     }
 }

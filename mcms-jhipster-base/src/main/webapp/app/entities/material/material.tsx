@@ -17,6 +17,7 @@ export const Material = () => {
   const navigate = useNavigate();
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+  const [importing, setImporting] = useState(false);
 
   const materialList = useAppSelector(state => state.material.entities);
   const loading = useAppSelector(state => state.material.loading);
@@ -53,6 +54,49 @@ export const Material = () => {
     sortEntities();
   };
 
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setImporting(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/materials/import', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jhi-authenticationToken') || sessionStorage.getItem('jhi-authenticationToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Import failed');
+      }
+
+      const result = await response.json();
+
+      if (result.errors && result.errors.length > 0) {
+        alert(`Import completed with warnings:\n\nImported: ${result.imported} materials\nErrors:\n${result.errors.join('\n')}`);
+      } else {
+        alert(`Successfully imported ${result.imported} materials!`);
+      }
+
+      // Refresh the list
+      getAllEntities();
+    } catch (error) {
+      alert(`Error importing materials: ${error.message}`);
+    } finally {
+      setImporting(false);
+      // Reset file input
+      event.target.value = '';
+    }
+  };
+
   const getSortIconByFieldName = (fieldName: string) => {
     const sortFieldName = sortState.sort;
     const order = sortState.order;
@@ -70,6 +114,24 @@ export const Material = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
+          <Button
+            className="me-2"
+            color="success"
+            disabled={importing}
+            aria-disabled={importing}
+            onClick={() => document.getElementById('material-import-file')?.click()}
+            data-cy="entityImportButton"
+          >
+            <FontAwesomeIcon icon="upload" spin={importing} /> Import CSV
+          </Button>
+          <input
+            type="file"
+            id="material-import-file"
+            accept=".csv"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+            aria-label="Import materials from CSV file"
+          />
           <Link to="/material/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Material
