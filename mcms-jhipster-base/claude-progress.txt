@@ -3428,3 +3428,99 @@ Added loading spinner to batch detail page. Shows spinner while fetching batch e
 - Progress: 295/405 features (72.8%)
 - Commit: 510a24d
 - Build Status: ESLint passed, Webpack compiled successfully
+
+---
+
+## Session: 2026-03-22 (Session 105)
+
+### Completed Features (303/405 - 74.8%)
+
+#### Feature #305: Summary error message on form - PASSING
+**Category:** Feedback & Notification
+**Description:** Top-level error summary showing error count and list of field errors
+
+**Implementation:**
+Created FormErrorSummary component that displays validation errors at the top of forms:
+
+**Component:** `src/main/webapp/app/shared/error/form-error-summary.tsx`
+
+**Features:**
+- Displays error count: "3 errors found"  
+- Lists all field errors with formatted field names (camelCase → Readable Text)
+- Only renders when errors exist
+- Uses react-hook-form's `useFormContext()` to access form errors
+- Bootstrap Alert with danger styling
+- Accessible with `role="alert"` and `aria-live="assertive"`
+
+**Applied to Forms:**
+- batch-update.tsx
+- strain-update.tsx  
+- supplier-update.tsx
+
+**Usage Example:**
+When validation fails, shows:
+```
+⚠ 3 errors found
+────────────────
+• Batch Code: This field is required.
+• Start Date: This field is required.
+• Strain: Strain is required
+```
+
+**Verification:** ✅ Component created, integrated into forms, shows error summary with count and list
+
+---
+
+#### Feature #306: Badge indicators for status - PASSING
+**Category:** Feedback & Notification
+**Description:** Visual status badges with color-coding for batch phases
+
+**Implementation:**
+Created StatusBadge component that displays color-coded phase badges in batch list:
+
+**Component:** `src/main/webapp/app/shared/badge/status-badge.tsx`
+
+**Color Scheme:**
+- 🟢 Green (success): HARVEST, HARVEST_COMPLETE
+- 🔴 Red (danger): CONTAMINATED, DISPOSED, or when isContaminated=true
+- 🔵 Blue (primary): INOCULATION
+- 🔵 Light Blue (info): INCUBATION, COLONIZATION
+- 🟡 Yellow (warning): PINNING, FRUITING
+- ⚫ Gray (secondary): Other phases (default)
+
+**Features:**
+- Bootstrap pill badge styling
+- Contamination flag overrides badge color to red
+- Accessible with `aria-label` describing phase and contamination status
+- Responsive and compact
+
+**Applied To:**
+- Batch list table (batch.tsx) - replaced plain text phase with color-coded badge
+
+**Verification:** ✅ Component created, applied to batch list, phases display with correct color coding
+
+---
+
+## Session Summary (Session 105)
+
+- **Features Completed:** 2 (both Feedback & Notification)
+- **Feature #305:** Form error summary component
+- **Feature #306:** Status badge indicators  
+- **Progress:** 303/405 features (74.8%)
+- **Commit:** 5441fc1
+- **Build Status:** ESLint passed (0 errors, 1 pre-existing warning)
+
+**Files Created:**
+- app/shared/error/form-error-summary.tsx
+- app/shared/badge/status-badge.tsx
+- feature-305-306-verification.md
+
+**Files Modified:**
+- entities/batch/batch-update.tsx (added FormErrorSummary)
+- entities/strain/strain-update.tsx (added FormErrorSummary)
+- entities/supplier/supplier-update.tsx (added FormErrorSummary)
+- entities/batch/batch.tsx (added StatusBadge)
+
+**Next Session:**
+Continue with remaining Feedback & Notification features. Progress approaching 75% completion milestone!
+
