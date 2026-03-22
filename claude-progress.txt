@@ -10040,3 +10040,67 @@ Display error toast messages on API failures that remain visible until manually 
 - Both servers stable and running
 - Progress: 293/405 features (72.3%) - approaching 73%!
 - MILESTONE: Completed 100 sessions!
+
+
+---
+
+## Session: 2026-03-22 (Session 102)
+
+### Completed Features (297/405 - 73.3%)
+
+#### Feature #299: Button disabled during submit - PASSING
+**Category:** Feedback & Notification
+
+**Purpose:**
+Prevent double-submit by disabling buttons during form submission and showing clear "Saving..." indicator.
+
+**Implementation:**
+
+1. **Automated Script Update (update-save-buttons.js):**
+   - Created Node.js script to systematically update all entity forms
+   - Updated 25 entity update forms (batch and strain already had the feature)
+   - Total coverage: 27 entity forms
+
+2. **Button Enhancement Pattern:**
+   - disabled={updating} prevents button clicks
+   - Text changes from "Save" to "Saving..."
+   - Spinner icon rotates while saving
+   - Re-enabled when updating becomes false
+
+**Files Modified:**
+- 25 entity *-update.tsx files
+
+**Verification Steps:**
+1. ✅ Submit form - button shows "Saving..." text
+2. ✅ Verify button disabled - prevents clicks
+3. ✅ Verify spinner icon - rotates while saving
+4. ✅ After response, verify re-enabled
+
+---
+
+#### Feature #300: Progress indicator for long operations - PASSING
+**Category:** Feedback & Notification
+
+**Purpose:**
+Show visual progress indicator for long-running operations like monthly report generation.
+
+**Implementation:**
+
+1. **Monthly Report Generation Modal Enhanced:**
+   - Added animated progress bar during report generation
+   - Shows "Generating report, please wait..." message with spinner
+   - Disables form inputs during generation
+   - Uses Bootstrap Progress component with animated prop
+
+**Files Modified:**
+- src/main/webapp/app/entities/monthly-report/monthly-report.tsx
+
+---
+
+## Session Summary (Session 102)
+- **Features Completed:** 2 (both Feedback & Notification)
+- **Progress:** 297/405 features (73.3%)
+- **Commits:**
+  - f87bb7f: feat: implement button disabled during submit (feature #299)
+  - 1e4bb6f: feat: add progress indicator for long operations (feature #300)
+
