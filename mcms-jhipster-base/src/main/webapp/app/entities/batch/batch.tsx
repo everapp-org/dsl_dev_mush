@@ -42,6 +42,10 @@ export const Batch = () => {
   // Track invalid page redirect
   const [showInvalidPageMessage, setShowInvalidPageMessage] = useState(false);
 
+  // Feature #321: Track data changes during pagination
+  const [initialTotalCount, setInitialTotalCount] = useState<number | null>(null);
+  const [showDataChangeWarning, setShowDataChangeWarning] = useState(false);
+
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
   const totalItems = useAppSelector(state => state.batch.totalItems);
@@ -162,6 +166,21 @@ export const Batch = () => {
     }
   }, [totalItems, loading]);
 
+  // Feature #321: Detect data changes during pagination
+  // When items are added/removed while paginating, warn the user to refresh
+  useEffect(() => {
+    if (totalItems >= 0 && !loading) {
+      if (initialTotalCount === null) {
+        // First load - record the initial count
+        setInitialTotalCount(totalItems);
+        setShowDataChangeWarning(false);
+      } else if (initialTotalCount !== totalItems) {
+        // Total count changed - show warning
+        setShowDataChangeWarning(true);
+      }
+    }
+  }, [totalItems, loading]);
+
   const sort = p => () => {
     setPaginationState({
       ...paginationState,
@@ -218,6 +237,13 @@ export const Batch = () => {
     });
   };
 
+  // Feature #321: Handle refresh after data change detection
+  const handleDataChangeRefresh = () => {
+    setInitialTotalCount(null);
+    setShowDataChangeWarning(false);
+    handleSyncList();
+  };
+
   const hasActiveFilters =
     filters.search ||
     filters.phase ||
@@ -269,6 +295,17 @@ export const Batch = () => {
       {showInvalidPageMessage && (
         <Alert color="info" className="mb-3">
           <FontAwesomeIcon icon="info-circle" /> The requested page number was too high. Showing the last available page instead.
+        </Alert>
+      )}
+
+      {/* Feature #321: Data change warning during pagination */}
+      {showDataChangeWarning && (
+        <Alert color="warning" className="mb-3">
+          <FontAwesomeIcon icon="exclamation-triangle" /> Data has changed while you were browsing (items added or removed). Some items may
+          appear duplicated or missing.{' '}
+          <Button color="warning" size="sm" onClick={handleDataChangeRefresh}>
+            <FontAwesomeIcon icon="sync" /> Refresh to see latest results
+          </Button>
         </Alert>
       )}
 
