@@ -113,3 +113,37 @@ export const isRecentTimestamp = (timestamp: Date | string, daysThreshold = 7): 
   const then = dayjs(timestamp);
   return now.diff(then, 'day') <= daysThreshold;
 };
+
+/**
+ * Convert a local date string to UTC start of day (00:00:00 in local timezone)
+ * Feature #310: Date range filter timezone aware
+ *
+ * @param dateString - Local date string in YYYY-MM-DD format
+ * @returns ISO 8601 timestamp string for start of day in UTC
+ *
+ * Example:
+ *   Input: "2024-01-01" (user in EST, UTC-5)
+ *   Output: "2024-01-01T05:00:00.000Z" (00:00 EST = 05:00 UTC)
+ */
+export const localDateToUTCStart = (dateString: string): string => {
+  if (!dateString) return '';
+  // Parse as local date (user's timezone) at midnight
+  return dayjs(dateString).startOf('day').utc().format();
+};
+
+/**
+ * Convert a local date string to UTC end of day (23:59:59.999 in local timezone)
+ * Feature #310: Date range filter timezone aware
+ *
+ * @param dateString - Local date string in YYYY-MM-DD format
+ * @returns ISO 8601 timestamp string for end of day in UTC
+ *
+ * Example:
+ *   Input: "2024-01-01" (user in EST, UTC-5)
+ *   Output: "2024-01-02T04:59:59.999Z" (23:59:59 EST = 04:59:59 UTC next day)
+ */
+export const localDateToUTCEnd = (dateString: string): string => {
+  if (!dateString) return '';
+  // Parse as local date (user's timezone) at end of day
+  return dayjs(dateString).endOf('day').utc().format();
+};

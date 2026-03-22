@@ -12,6 +12,7 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 import { StatusBadge } from 'app/shared/badge/status-badge';
+import { localDateToUTCStart, localDateToUTCEnd } from 'app/config/locale-date-format';
 
 import { getEntities } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
@@ -77,6 +78,11 @@ export const Batch = () => {
   }, []);
 
   const getAllEntities = () => {
+    // Feature #310: Convert local date filters to UTC for timezone-aware filtering
+    // When user enters "2024-01-01", it should match all items from that day in their local timezone
+    const startDateFromUTC = filters.startDateFrom ? localDateToUTCStart(filters.startDateFrom) : undefined;
+    const startDateToUTC = filters.startDateTo ? localDateToUTCEnd(filters.startDateTo) : undefined;
+
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
@@ -86,8 +92,8 @@ export const Batch = () => {
         phase: filters.phase || undefined,
         strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
         isActive: filters.isActive ? filters.isActive === 'true' : undefined,
-        startDateFrom: filters.startDateFrom || undefined,
-        startDateTo: filters.startDateTo || undefined,
+        startDateFrom: startDateFromUTC,
+        startDateTo: startDateToUTC,
         numberOfBagsMin: filters.numberOfBagsMin ? parseInt(filters.numberOfBagsMin, 10) : undefined,
         numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
       }),
