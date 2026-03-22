@@ -3401,3 +3401,30 @@ Implementation:
 ---
 
 ## Session: 2026-03-22 (Session 98)
+
+---
+
+## Session: 2026-03-22 (Session 101)
+
+### Completed Features (295/405 - 72.8%)
+
+#### Feature #297: Loading spinner on list page - PASSING (Verification)
+**Category:** Feedback
+
+This feature was ALREADY IMPLEMENTED. The batch list page already displays a loading spinner while fetching data.
+
+#### Feature #298: Loading spinner on detail page - PASSING
+**Category:** Feedback
+
+Added loading spinner to batch detail page. Shows spinner while fetching batch entity, disappears when loaded.
+
+**Files Modified:**
+- src/main/webapp/app/entities/batch/batch-detail.tsx
+
+## Session Summary (Session 101)
+- Features Completed: 2 (both Feedback)
+- Feature #297: Already implemented (verified)
+- Feature #298: Implemented loading spinner
+- Progress: 295/405 features (72.8%)
+- Commit: 510a24d
+- Build Status: ESLint passed, Webpack compiled successfully
