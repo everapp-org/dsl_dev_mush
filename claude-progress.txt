@@ -10385,3 +10385,63 @@ Both features verified through code analysis and compile-time checks:
 - Continue with remaining features
 - Both servers stable and running
 - Progress: 305/405 features (75.3%) - approaching 76%!
+
+---
+
+## Session 107: 2026-03-22
+
+### Completed Features (307/405 - 75.8%)
+
+#### Feature #309: Relative Time Display - PASSING
+**Category:** Temporal and Time
+
+**Implementation:**
+- Applied RelativeTime component to environmental alerts (alertTime, acknowledgedAt)
+- Applied RelativeTime to sensor readings (timestamp)
+- Applied RelativeTime to user management (createdDate, lastModifiedDate)
+- Shows relative time format (e.g., "2 hours ago", "3 days ago")
+- Tooltip with full timestamp on hover using dotted underline
+- Uses formatRelativeTime() from dayjs with relativeTime plugin
+
+**Files Modified:**
+1. environmental-alert-detail.tsx
+2. sensor-reading.tsx and sensor-reading-detail.tsx
+3. user-management.tsx and user-management-detail.tsx
+
+**Verification:**
+- ESLint passed (only 1 pre-existing warning)
+- TypeScript compiled successfully
+- RelativeTime component properly implemented with tooltip
+
+---
+
+#### Feature #310: Date Range Filter TZ Aware - PASSING
+**Category:** Temporal and Time
+
+**Implementation:**
+- Added localDateToUTCStart() and localDateToUTCEnd() utility functions
+- Converts local date filters to UTC before querying backend
+- Applied to batch list filters (startDateFrom, startDateTo)
+- Ensures date filters match all items from user's local day
+
+**Files Modified:**
+1. locale-date-format.ts (added conversion functions)
+2. batch.tsx (applied to date filters)
+
+**Verification:**
+- ESLint passed
+- TypeScript compiled successfully
+- Date conversion functions properly implemented
+
+---
+
+## Session Summary
+- **Features Completed:** 2
+- **Progress:** 307/405 (75.8%)
+- **Commits:** f855d6e, 259843c
+
+## Build Status
+- Frontend Lint: PASSED
+- TypeScript: Compiled successfully
+- Servers: Backend and frontend both running
+
