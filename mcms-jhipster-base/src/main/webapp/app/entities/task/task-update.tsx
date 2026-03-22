@@ -180,8 +180,8 @@ export const TaskUpdate = () => {
                 disabled={updating}
                 aria-disabled={updating}
               >
-                <FontAwesomeIcon icon="save" />
-                &nbsp; Save
+                <FontAwesomeIcon icon={updating ? 'spinner' : 'save'} spin={updating} />
+                &nbsp; {updating ? 'Saving...' : 'Save'}
               </Button>
             </ValidatedForm>
           )}
