@@ -10459,3 +10459,125 @@ Both features verified as already correctly implemented. No code changes needed.
 See session-109-summary.md and feature-315-316-temporal-verification.md for details.
 
 **Progress:** 313/405 (77.3%) - MILESTONE: Crossed 77%!
+
+---
+
+## Session 110: 2026-03-22
+
+### Completed Features (315/405 - 77.8%)
+
+#### Feature #317: Daylight Saving Time Handled - PASSING (Verification Only)
+**Category:** Temporal & Timezone
+
+**Purpose:**
+Verify that DST transitions don't break date handling in the application.
+
+**Verification Summary:**
+- ✅ Backend uses `java.time.Instant` for timestamps (UTC, no DST)
+- ✅ Backend uses `java.time.LocalDate` for dates (no time component, DST irrelevant)
+- ✅ Frontend uses dayjs with UTC and timezone plugins (DST-aware)
+- ✅ Date filters use DST-aware conversion functions
+- ✅ No hardcoded timezone logic that could break during DST
+
+**Key Findings:**
+1. **UTC Storage:** All timestamps stored in UTC using Instant (no DST at storage layer)
+2. **Local Display:** Browser and dayjs automatically handle DST when displaying
+3. **Date-Only Fields:** LocalDate has no time component, so DST cannot affect it
+4. **Industry Standards:** Leverages standard library DST handling (no manual calculations)
+
+**Files Reviewed:**
+- AbstractAuditingEntity.java (Instant for timestamps)
+- Batch.java (LocalDate for dates)
+- locale-date-format.ts (dayjs timezone plugin)
+- date-utils.ts (conversion functions)
+
+**Conclusion:** No code changes needed. Application already handles DST correctly through UTC storage and browser/library timezone conversions.
+
+**Documentation:** feature-317-dst-handling-verification.md
+
+---
+
+#### Feature #318: Timestamp Precision - PASSING
+**Category:** Temporal & Timezone
+
+**Purpose:**
+Ensure timestamps are stored and displayed with second precision (HH:mm:ss), not just HH:mm.
+
+**Implementation:**
+
+1. **Backend (Already Correct):**
+   - Uses `java.time.Instant` (nanosecond precision!)
+   - PostgreSQL stores microsecond precision
+   - H2 stores millisecond precision
+   - All exceed second precision requirement
+
+2. **Frontend (Enhanced):**
+   - Updated `RelativeTime` component with `showSeconds` prop
+   - Added `APP_TIMESTAMP_FORMAT` constant (HH:mm:ss)
+   - Sensor readings now show seconds in timestamp tooltips
+
+**Files Modified:**
+1. **relative-time.tsx:**
+   - Added `showSeconds?: boolean` prop
+   - Uses `APP_TIMESTAMP_FORMAT` when showSeconds=true
+   - Uses `APP_DATE_FORMAT` when showSeconds=false (backward compatible)
+
+2. **sensor-reading.tsx:**
+   - Added `showSeconds` prop to RelativeTime component
+   - Tooltips now show "03/22/26 14:30:45" instead of "03/22/26 14:30"
+
+3. **sensor-reading-detail.tsx:**
+   - Added `showSeconds` prop to RelativeTime component
+   - Detail view shows full timestamp precision
+
+**Display Formats:**
+- Without seconds (default): "MM/DD/YY HH:mm" → "03/22/26 14:30"
+- With seconds (sensor readings): "MM/DD/YY HH:mm:ss" → "03/22/26 14:30:45"
+
+**Precision Achieved:**
+- Backend: Nanosecond (Instant)
+- Database: Microsecond (PostgreSQL) / Millisecond (H2)
+- JSON API: Millisecond (ISO 8601)
+- UI Display: Second (HH:mm:ss)
+
+**Verification (YOLO Mode):**
+- ✅ ESLint passed (1 pre-existing warning)
+- ✅ TypeScript compiled successfully
+- ✅ Prettier formatting applied
+- ✅ Backward compatible (other entities still show HH:mm)
+
+**Documentation:** feature-318-timestamp-precision-verification.md
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (1 verification, 1 implementation)
+- **Progress:** 315/405 (77.8%)
+- **Commits:** e2b666b
+- **Session Type:** YOLO mode
+
+## Build Status
+- Frontend Lint: PASSED (1 pre-existing warning)
+- TypeScript: Compiled successfully
+- Servers: Backend and frontend both running
+
+## Technical Highlights
+
+### DST Handling Architecture
+- **Storage Layer:** UTC timestamps (Instant) + date-only fields (LocalDate)
+- **Display Layer:** Browser timezone database + dayjs timezone plugin
+- **Filter Layer:** DST-aware local-to-UTC conversion
+- **Result:** DST transitions cannot break dates
+
+### Timestamp Precision Levels
+- **Backend:** Nanosecond (java.time.Instant)
+- **PostgreSQL:** Microsecond (6 decimal places)
+- **H2:** Millisecond (3 decimal places)
+- **JSON:** Millisecond (ISO 8601)
+- **UI:** Second (configurable via showSeconds prop)
+
+## Next Session Recommendations
+- Continue with remaining features
+- Both servers stable and running
+- Progress: 315/405 features (77.8%) - approaching 78%!
+- Temporal & Timezone category nearly complete
