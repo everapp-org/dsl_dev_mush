@@ -3589,3 +3589,115 @@ Ensure date sorting works chronologically and handles null dates gracefully.
 - **Commits:** 1 commit (a7c3752)
 
 
+
+---
+
+## Session 111: 2026-03-22
+
+### Completed Features (317/405 - 78.3%)
+
+#### Feature #319: Concurrent Batch Edits Conflict Detection - PASSING (Verification Only)
+**Category:** Concurrency & Race Conditions
+
+**Implementation:**
+This feature was **already fully implemented** using JPA's optimistic locking mechanism. No code changes were needed for functionality - only documentation.
+
+**Backend (Already Implemented):**
+- Batch entity has `@Version` annotation for optimistic locking
+- JPA automatically detects concurrent modifications
+- ExceptionTranslator catches `ConcurrencyFailureException` and returns HTTP 409 CONFLICT
+
+**Frontend (Already Implemented):**
+- Notification middleware handles 409 status codes
+- Shows user-friendly error: "Batch was modified by another user"
+- Error toast stays visible until manually dismissed
+
+**Enhancement:**
+- Added explicit `version?: number` field to Batch TypeScript model for clarity
+
+**Files Modified:**
+- mcms-jhipster-base/src/main/webapp/app/shared/model/batch.model.ts
+
+**Documentation:**
+- feature-319-concurrent-edit-conflict-detection.md
+
+---
+
+#### Feature #320: Viewing Deleted Record Handled - PASSING
+**Category:** Concurrency & Race Conditions
+
+**Purpose:**
+Handle the race condition where a user views a batch detail page, another user deletes that batch, and the first user tries to edit or refresh.
+
+**Implementation:**
+
+1. **Batch Detail Page:**
+   - Added useEffect hook to detect when entity is not found (404)
+   - Checks: `!loading && !batchEntity.id && id`
+   - Shows "Not found" error toast (already handled by notification middleware)
+   - Waits 1.5 seconds to allow user to read the error
+   - Auto-redirects to `/batch` list page
+
+2. **Batch Edit Page:**
+   - Added similar 404 detection logic
+   - Additional check: `!isNew` to avoid interfering with new batch creation
+   - Same redirect behavior as detail page
+
+**User Experience:**
+1. User A views batch #42
+2. User B deletes batch #42
+3. User A clicks "Edit" or refreshes
+4. System shows "Not found" toast
+5. After 1.5 seconds, auto-redirect to batch list
+6. User is not stuck on a broken page
+
+**Files Modified:**
+1. mcms-jhipster-base/src/main/webapp/app/entities/batch/batch-detail.tsx
+   - Added `useNavigate` import
+   - Added 404 detection and redirect logic
+
+2. mcms-jhipster-base/src/main/webapp/app/entities/batch/batch-update.tsx
+   - Added 404 detection and redirect logic
+
+**Documentation:**
+- feature-320-viewing-deleted-record-handled.md
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both Concurrency & Race Conditions)
+- **Progress:** 317/405 (78.3%)
+- **Commits:**
+  - d36a915: feat: document and verify concurrent edit conflict detection (feature #319)
+  - d3f410e: feat: handle viewing deleted batch with auto-redirect (feature #320)
+
+## Build Status
+- Frontend Lint: PASSED (1 pre-existing warning)
+- TypeScript: Compiled successfully
+- Webpack Build: Compiled with 1 warning in 45106ms
+- Servers: Backend and frontend both running
+
+## Technical Highlights
+
+### Optimistic Locking Architecture
+- **Storage Layer:** JPA @Version annotation on all entities
+- **Conflict Detection:** Automatic version mismatch detection
+- **Error Handling:** ConcurrencyFailureException → HTTP 409
+- **User Feedback:** "Entity was modified by another user" toast
+
+### 404 Handling Pattern
+- **Detection:** Check `!loading && !entityObject.id && id`
+- **Feedback:** "Not found" error toast
+- **Redirect:** Auto-redirect to list page after 1.5 seconds
+- **UX:** Delay allows user to read error message
+
+### Race Condition Prevention
+Both features protect against common multi-user race conditions:
+1. **Feature #319:** Prevent silent data overwrites when two users edit simultaneously
+2. **Feature #320:** Prevent broken pages when viewing deleted records
+
+## Next Session Recommendations
+- Continue with remaining features
+- Both servers stable and running
+- Progress: 317/405 features (78.3%) - approaching 79%!
+- Concurrency & Race Conditions category complete
