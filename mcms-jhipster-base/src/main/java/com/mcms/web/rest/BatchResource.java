@@ -116,8 +116,11 @@ public class BatchResource {
             throw new BadRequestAlertException("A new batch cannot already have an ID", ENTITY_NAME, "idexists");
         }
         batch = batchRepository.save(batch);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-" + applicationName + "-alert", "Batch created successfully");
+        headers.add("X-" + applicationName + "-params", batch.getId().toString());
         return ResponseEntity.created(new URI("/api/batches/" + batch.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
+            .headers(headers)
             .body(batch);
     }
 
@@ -148,8 +151,11 @@ public class BatchResource {
         }
 
         batch = batchRepository.save(batch);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-" + applicationName + "-alert", "Batch updated successfully");
+        headers.add("X-" + applicationName + "-params", batch.getId().toString());
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, batch.getId().toString()))
+            .headers(headers)
             .body(batch);
     }
 
