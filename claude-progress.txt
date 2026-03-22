@@ -10814,3 +10814,119 @@ Both export endpoints use simple CSV generation with proper escaping:
 - Progress: 327/405 features (80.7%) - approaching 81%!
 - Export/Import category now has 2 features complete
 
+
+
+---
+
+## Session 117: 2026-03-22
+
+### Completed Features (329/405 - 81.2%)
+
+#### Feature #331: Export financial report to CSV - PASSING (Verification Only)
+**Category:** Export/Import
+
+**Purpose:**
+Download comprehensive financial data with cost/revenue breakdown.
+
+**Implementation (Already Complete):**
+- **Backend:** `/api/dashboard/financial/export` in DashboardResource.java (lines 117-182)
+- **Frontend:** Export CSV button in financial-dashboard.tsx (line 82-85)
+- **Security:** ADMIN and MANAGER roles only
+
+**CSV Structure:**
+1. Financial Summary (Total Revenue, Total Costs, Net Profit)
+2. Cost Breakdown (Date, Category, Description, Batch, Amount)
+3. Revenue Breakdown (Order Code, Order Date, Customer, Weight, Revenue, Status)
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles (BUILD SUCCESS - 2:40 min)
+- ✅ Frontend builds (webpack compiled - 79.7 sec)
+- ✅ All required repositories injected
+- ✅ CSV escaping implemented correctly
+- ✅ Proper role-based access control
+
+---
+
+#### Feature #332: Export traceability report - PASSING (Verification Only)
+**Category:** Export/Import
+
+**Purpose:**
+Generate full supplier-to-customer traceability chain for a specific batch.
+
+**Implementation (Already Complete):**
+- **Backend:** `/api/batches/{id}/export-traceability` in BatchResource.java
+- **Frontend:** Export button in batch-detail.tsx (line 183-191)
+- **Security:** ADMIN role only
+
+**CSV Structure:**
+1. Batch Header (Batch Code, Start Date, Current Phase)
+2. Materials Used From Suppliers (Material, Supplier, Supply Order, Lot Number, Quantity, Unit, Date)
+3. Sales To Customers (Customer, Sales Order, Product, Quantity, Unit, Order Date, Delivery Date)
+
+**Traceability Chain:**
+```
+SUPPLIER → Supply Order → Inventory Lot → Material Usage → BATCH → Sales Order Line → Sales Order → CUSTOMER
+```
+
+**Verification (YOLO Mode):**
+- ✅ Backend compiles successfully
+- ✅ Frontend builds successfully
+- ✅ All required repositories present (BatchMaterialUsageRepository, SalesOrderLineRepository)
+- ✅ Full traceability chain implemented
+- ✅ Proper 404 handling for missing batches
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both verification only - already implemented)
+- **Progress:** 329/405 (81.2%)
+- **Milestone:** 🎉 CROSSED 81% COMPLETION! 🎉
+- **Session Type:** YOLO mode
+- **Code Changes:** None needed (both features already fully implemented)
+
+## Build Status
+- Backend: BUILD SUCCESS (mvn compile)
+- Frontend: Compiled successfully (npm run webapp:build:dev)
+- ESLint: 1 pre-existing warning (unrelated)
+- No errors
+
+## Technical Highlights
+
+### Export/Import Pattern
+All 4 export features (#329, #330, #331, #332) follow consistent pattern:
+1. Backend endpoint with CSV generation
+2. Frontend button with download icon
+3. Proper role-based security
+4. CSV escaping to prevent injection
+
+### Security Levels
+- **Batches/Harvests Export:** ADMIN, MANAGER, OPERATOR
+- **Financial Export:** ADMIN, MANAGER (sensitive business data)
+- **Traceability Export:** ADMIN only (confidential supplier/customer relationships)
+
+### CSV Safety
+All exports use proper escaping:
+- Comma injection prevention ✓
+- Quote injection prevention ✓
+- Newline injection prevention ✓
+- Formula injection prevention ✓
+
+## Progress Tracking
+- **Starting:** 327/405 (80.7%)
+- **Ending:** 329/405 (81.2%)
+- **Remaining:** 76 features
+- **Completion Rate:** 0.5% increase per session average
+
+## Documentation
+Created comprehensive verification document:
+- feature-331-332-export-verification.md
+- Includes CSV structure details
+- Traceability flow diagrams
+- Security analysis
+- Build verification results
+
+## Next Session Recommendations
+- Continue with remaining features (76 left)
+- Both servers running and stable
+- Progress: 329/405 features (81.2%) - approaching 82%!
+- Export/Import category: 4/4 features complete ✅
