@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table, Input, Spinner, Row, Col, FormGroup, Label, Card, CardBody, Alert } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
@@ -19,6 +19,9 @@ import { getEntities as getStrains } from '../strain/strain.reducer';
 
 export const Batch = () => {
   const dispatch = useAppDispatch();
+
+  // Feature #323: Store current request promise to cancel on unmount
+  const currentRequestRef = useRef<{ abort: () => void } | null>(null);
 
   const pageLocation = useLocation();
   const navigate = useNavigate();
@@ -87,7 +90,9 @@ export const Batch = () => {
     const startDateFromUTC = filters.startDateFrom ? localDateToUTCStart(filters.startDateFrom) : undefined;
     const startDateToUTC = filters.startDateTo ? localDateToUTCEnd(filters.startDateTo) : undefined;
 
-    dispatch(
+    // Feature #323: Store dispatch promise for cancellation on unmount
+    // This prevents late API responses from updating state after navigation
+    const promise = dispatch(
       getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
@@ -102,6 +107,7 @@ export const Batch = () => {
         numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
       }),
     );
+    currentRequestRef.current = promise;
   };
 
   const buildURL = () => {
@@ -182,6 +188,16 @@ export const Batch = () => {
       }
     }
   }, [totalItems, loading]);
+
+  // Feature #323: Cancel pending requests when component unmounts
+  // This prevents late API responses from trying to update state after navigation
+  useEffect(() => {
+    return () => {
+      if (currentRequestRef.current) {
+        currentRequestRef.current.abort();
+      }
+    };
+  }, []);
 
   const sort = p => () => {
     setPaginationState({
