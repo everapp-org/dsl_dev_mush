@@ -112,7 +112,7 @@ export const SensorReading = () => {
                   </td>
                   <td>
                     {sensorReading.timestamp ? (
-                      <RelativeTime value={sensorReading.timestamp} id={`reading-time-${sensorReading.id}`} />
+                      <RelativeTime value={sensorReading.timestamp} id={`reading-time-${sensorReading.id}`} showSeconds />
                     ) : null}
                   </td>
                   <td>{sensorReading.value}</td>

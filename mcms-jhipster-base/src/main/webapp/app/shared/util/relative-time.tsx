@@ -7,7 +7,7 @@ import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { formatRelativeTime } from 'app/config/locale-date-format';
-import { APP_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_TIMESTAMP_FORMAT } from 'app/config/constants';
 
 interface RelativeTimeProps {
   /**
@@ -24,6 +24,12 @@ interface RelativeTimeProps {
    * Optional: Show only relative time without tooltip (default: false)
    */
   noTooltip?: boolean;
+
+  /**
+   * Optional: Use timestamp format with seconds (default: false)
+   * When true, tooltip shows HH:mm:ss instead of HH:mm
+   */
+  showSeconds?: boolean;
 }
 
 /**
@@ -31,16 +37,19 @@ interface RelativeTimeProps {
  *
  * Usage:
  *   <RelativeTime value={alert.alertTime} id="alert-time-1" />
+ *   <RelativeTime value={reading.timestamp} id="reading-time-1" showSeconds />
  *
  * Renders:
- *   "2 hours ago" with tooltip showing "03/22/26 14:30:00"
+ *   "2 hours ago" with tooltip showing "03/22/26 14:30" (default)
+ *   "2 hours ago" with tooltip showing "03/22/26 14:30:45" (with showSeconds)
  */
-export const RelativeTime: React.FC<RelativeTimeProps> = ({ value, id, noTooltip = false }) => {
+export const RelativeTime: React.FC<RelativeTimeProps> = ({ value, id, noTooltip = false, showSeconds = false }) => {
   if (!value) {
     return null;
   }
 
   const relativeTimeStr = formatRelativeTime(value);
+  const format = showSeconds ? APP_TIMESTAMP_FORMAT : APP_DATE_FORMAT;
 
   if (noTooltip) {
     return <span>{relativeTimeStr}</span>;
@@ -52,7 +61,7 @@ export const RelativeTime: React.FC<RelativeTimeProps> = ({ value, id, noTooltip
         {relativeTimeStr}
       </span>
       <UncontrolledTooltip placement="top" target={id}>
-        <TextFormat type="date" value={value} format={APP_DATE_FORMAT} />
+        <TextFormat type="date" value={value} format={format} />
       </UncontrolledTooltip>
     </>
   );

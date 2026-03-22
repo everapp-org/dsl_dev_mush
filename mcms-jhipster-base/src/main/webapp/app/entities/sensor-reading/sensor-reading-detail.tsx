@@ -33,7 +33,11 @@ export const SensorReadingDetail = () => {
             <span id="timestamp">Timestamp</span>
             <UncontrolledTooltip target="timestamp">Reading timestamp (UTC)</UncontrolledTooltip>
           </dt>
-          <dd>{sensorReadingEntity.timestamp ? <RelativeTime value={sensorReadingEntity.timestamp} id="reading-time-detail" /> : null}</dd>
+          <dd>
+            {sensorReadingEntity.timestamp ? (
+              <RelativeTime value={sensorReadingEntity.timestamp} id="reading-time-detail" showSeconds />
+            ) : null}
+          </dd>
           <dt>
             <span id="value">Value</span>
             <UncontrolledTooltip target="value">Measured value</UncontrolledTooltip>
