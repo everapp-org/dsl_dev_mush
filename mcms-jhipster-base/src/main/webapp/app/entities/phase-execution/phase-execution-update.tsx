@@ -151,8 +151,12 @@ export const PhaseExecutionUpdate = () => {
                 name="actualDurationDays"
                 data-cy="actualDurationDays"
                 type="text"
+                readOnly
               />
-              <UncontrolledTooltip target="actualDurationDaysLabel">Actual duration in days</UncontrolledTooltip>
+              <FormText>Auto-calculated from Start Date and End Date</FormText>
+              <UncontrolledTooltip target="actualDurationDaysLabel">
+                Automatically calculated from start and end dates (days between)
+              </UncontrolledTooltip>
               <ValidatedField
                 label="Responsible Person"
                 id="phase-execution-responsiblePerson"

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,6 +42,22 @@ public class PhaseExecutionResource {
     }
 
     /**
+     * Calculate actual duration in days based on start and end dates.
+     * If endDate is null, actualDurationDays will also be null (phase is ongoing).
+     *
+     * @param phaseExecution the phase execution to calculate duration for
+     */
+    private void calculateActualDuration(PhaseExecution phaseExecution) {
+        if (phaseExecution.getStartDate() != null && phaseExecution.getEndDate() != null) {
+            long days = ChronoUnit.DAYS.between(phaseExecution.getStartDate(), phaseExecution.getEndDate());
+            phaseExecution.setActualDurationDays((int) days);
+        } else {
+            // Phase is ongoing or start date is missing
+            phaseExecution.setActualDurationDays(null);
+        }
+    }
+
+    /**
      * {@code POST  /phase-executions} : Create a new phaseExecution.
      *
      * @param phaseExecution the phaseExecution to create.
@@ -54,6 +71,8 @@ public class PhaseExecutionResource {
         if (phaseExecution.getId() != null) {
             throw new BadRequestAlertException("A new phaseExecution cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        // Calculate actual duration before saving
+        calculateActualDuration(phaseExecution);
         phaseExecution = phaseExecutionRepository.save(phaseExecution);
         return ResponseEntity.created(new URI("/api/phase-executions/" + phaseExecution.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, phaseExecution.getId().toString()))
@@ -87,6 +106,8 @@ public class PhaseExecutionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
+        // Calculate actual duration before saving
+        calculateActualDuration(phaseExecution);
         phaseExecution = phaseExecutionRepository.save(phaseExecution);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, phaseExecution.getId().toString()))
@@ -148,6 +169,9 @@ public class PhaseExecutionResource {
                 if (phaseExecution.getNote() != null) {
                     existingPhaseExecution.setNote(phaseExecution.getNote());
                 }
+
+                // Recalculate duration after updating dates
+                calculateActualDuration(existingPhaseExecution);
 
                 return existingPhaseExecution;
             })
