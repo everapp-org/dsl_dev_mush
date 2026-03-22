@@ -36,6 +36,10 @@ public class InventoryLot implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     /**
      * Internal lot identifier, e.g. \"LOT-2025-0042\"
      */
@@ -136,6 +140,19 @@ public class InventoryLot implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
+    public InventoryLot version(Long version) {
+        this.setVersion(version);
+        return this;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getLotCode() {
