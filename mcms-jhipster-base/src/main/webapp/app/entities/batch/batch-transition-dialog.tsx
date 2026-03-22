@@ -122,7 +122,8 @@ export const BatchTransitionDialog = () => {
             data-cy="entityConfirmTransitionButton"
             color="primary"
             onClick={confirmTransition}
-            disabled={loading || !targetPhase} aria-disabled={loading || !targetPhase}
+            disabled={loading || !targetPhase}
+            aria-disabled={loading || !targetPhase}
           >
             <FontAwesomeIcon icon="arrow-right" />
             &nbsp; {loading ? 'Transitioning...' : 'Transition'}

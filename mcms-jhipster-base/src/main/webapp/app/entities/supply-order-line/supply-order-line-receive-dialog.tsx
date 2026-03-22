@@ -71,7 +71,13 @@ export const SupplyOrderLineReceiveDialog = () => {
         <Button color="secondary" onClick={handleClose}>
           Cancel
         </Button>
-        <Button color="success" onClick={confirmReceive} disabled={updating || quantityReceived <= 0} aria-disabled={updating || quantityReceived <= 0} data-cy="entityConfirmReceiveButton">
+        <Button
+          color="success"
+          onClick={confirmReceive}
+          disabled={updating || quantityReceived <= 0}
+          aria-disabled={updating || quantityReceived <= 0}
+          data-cy="entityConfirmReceiveButton"
+        >
           Receive
         </Button>
       </ModalFooter>

@@ -44,7 +44,12 @@ export const HealthPage = () => {
         Health Checks
       </h1>
       <p>
-        <Button onClick={fetchSystemHealth} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching} aria-disabled={isFetching}>
+        <Button
+          onClick={fetchSystemHealth}
+          color={isFetching ? 'btn btn-danger' : 'btn btn-primary'}
+          disabled={isFetching}
+          aria-disabled={isFetching}
+        >
           <FontAwesomeIcon icon="sync" />
           &nbsp; Refresh
         </Button>

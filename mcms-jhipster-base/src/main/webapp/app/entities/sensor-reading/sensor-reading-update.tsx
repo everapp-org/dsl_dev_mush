@@ -186,7 +186,14 @@ export const SensorReadingUpdate = () => {
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} aria-disabled={updating}>
+              <Button
+                color="primary"
+                id="save-entity"
+                data-cy="entityCreateSaveButton"
+                type="submit"
+                disabled={updating}
+                aria-disabled={updating}
+              >
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

@@ -40,7 +40,12 @@ export const MetricsPage = () => {
         Application Metrics
       </h1>
       <p>
-        <Button onClick={getMetrics} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching} aria-disabled={isFetching}>
+        <Button
+          onClick={getMetrics}
+          color={isFetching ? 'btn btn-danger' : 'btn btn-primary'}
+          disabled={isFetching}
+          aria-disabled={isFetching}
+        >
           <FontAwesomeIcon icon="sync" />
           &nbsp; Refresh
         </Button>

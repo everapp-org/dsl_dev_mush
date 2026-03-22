@@ -141,7 +141,8 @@ export const BatchForceTransitionDialog = () => {
           data-cy="entityConfirmForceTransitionButton"
           color="warning"
           onClick={confirmTransition}
-          disabled={loading} aria-disabled={loading}
+          disabled={loading}
+          aria-disabled={loading}
         >
           <FontAwesomeIcon icon="exchange-alt" />
           &nbsp; {loading ? 'Processing...' : 'Force Transition'}

@@ -94,7 +94,8 @@ export const BatchDeleteDialog = () => {
             data-cy="entityConfirmDeleteButton"
             color="danger"
             onClick={handleForceDelete}
-            disabled={isDeleting} aria-disabled={isDeleting}
+            disabled={isDeleting}
+            aria-disabled={isDeleting}
           >
             <FontAwesomeIcon icon="trash" />
             &nbsp; Force Delete

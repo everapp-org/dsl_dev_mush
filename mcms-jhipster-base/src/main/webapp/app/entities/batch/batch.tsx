@@ -77,7 +77,7 @@ export const Batch = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
-        search: filters.search || undefined,
+        search: filters.search?.trim() || undefined,
         phase: filters.phase || undefined,
         strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
         isActive: filters.isActive ? filters.isActive === 'true' : undefined,
@@ -424,7 +424,8 @@ export const Batch = () => {
                         color="info"
                         size="sm"
                         data-cy="entityDetailsButton"
-                        disabled={batch._isOptimistic} aria-disabled={batch._isOptimistic}
+                        disabled={batch._isOptimistic}
+                        aria-disabled={batch._isOptimistic}
                         aria-label="View"
                       >
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
