@@ -6,12 +6,17 @@ import com.mcms.repository.BatchRepository;
 import com.mcms.repository.HarvestRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,16 +41,72 @@ public class ExportResource {
 
     /**
      * GET /api/export/batches : Export batch data to CSV.
+     * Supports filtering and pagination (features #333, #334).
      * Only accessible to ADMIN, MANAGER, and OPERATOR roles.
      *
+     * @param search search query
+     * @param phase filter by phase
+     * @param strainId filter by strain ID
+     * @param isActive filter by active status
+     * @param startDateFrom filter by start date from
+     * @param startDateTo filter by start date to
+     * @param numberOfBagsMin filter by minimum number of bags
+     * @param numberOfBagsMax filter by maximum number of bags
+     * @param pageOnly if true, export only current page; if false, export all matching records
+     * @param page page number (0-indexed, only used if pageOnly=true)
+     * @param size page size (only used if pageOnly=true, default 20)
      * @return CSV file containing batch data
      */
     @GetMapping("/batches")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
-    public ResponseEntity<String> exportBatches() {
-        LOG.debug("REST request to export batches to CSV");
+    public ResponseEntity<String> exportBatches(
+        @RequestParam(name = "search", required = false) String search,
+        @RequestParam(name = "phase", required = false) String phase,
+        @RequestParam(name = "strainId", required = false) Long strainId,
+        @RequestParam(name = "isActive", required = false) Boolean isActive,
+        @RequestParam(name = "startDateFrom", required = false) LocalDate startDateFrom,
+        @RequestParam(name = "startDateTo", required = false) LocalDate startDateTo,
+        @RequestParam(name = "numberOfBagsMin", required = false) Integer numberOfBagsMin,
+        @RequestParam(name = "numberOfBagsMax", required = false) Integer numberOfBagsMax,
+        @RequestParam(name = "pageOnly", required = false, defaultValue = "false") Boolean pageOnly,
+        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+        @RequestParam(name = "size", required = false, defaultValue = "20") Integer size
+    ) {
+        LOG.debug("REST request to export batches to CSV: search={}, phase={}, pageOnly={}, page={}, size={}",
+            search, phase, pageOnly, page, size);
 
-        List<Batch> batches = batchRepository.findAll();
+        List<Batch> batches;
+
+        // Check if any filters are applied
+        boolean hasFilters = search != null || phase != null || strainId != null || isActive != null ||
+            startDateFrom != null || startDateTo != null || numberOfBagsMin != null || numberOfBagsMax != null;
+
+        if (pageOnly != null && pageOnly) {
+            // Export only current page
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+            Page<Batch> batchPage;
+
+            if (hasFilters) {
+                batchPage = batchRepository.findAllWithFilters(search, phase, strainId, isActive,
+                    startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax, pageable);
+            } else {
+                batchPage = batchRepository.findAllWithEagerRelationships(pageable);
+            }
+
+            batches = batchPage.getContent();
+        } else {
+            // Export all matching records
+            if (hasFilters) {
+                // Use unpaged query with filters
+                Pageable unpaged = Pageable.unpaged();
+                Page<Batch> batchPage = batchRepository.findAllWithFilters(search, phase, strainId, isActive,
+                    startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax, unpaged);
+                batches = batchPage.getContent();
+            } else {
+                // Export all records without filters
+                batches = batchRepository.findAllWithEagerRelationships();
+            }
+        }
 
         StringBuilder csv = new StringBuilder();
         csv.append("ID,Batch Code,Strain,Current Phase,Start Date,End Date,Active\n");
@@ -71,16 +132,35 @@ public class ExportResource {
 
     /**
      * GET /api/export/harvests : Export harvest records to CSV.
+     * Supports pagination (feature #334).
      * Only accessible to ADMIN, MANAGER, and OPERATOR roles.
      *
+     * @param pageOnly if true, export only current page; if false, export all records
+     * @param page page number (0-indexed, only used if pageOnly=true)
+     * @param size page size (only used if pageOnly=true, default 20)
      * @return CSV file containing harvest data
      */
     @GetMapping("/harvests")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_OPERATOR')")
-    public ResponseEntity<String> exportHarvests() {
-        LOG.debug("REST request to export harvests to CSV");
+    public ResponseEntity<String> exportHarvests(
+        @RequestParam(name = "pageOnly", required = false, defaultValue = "false") Boolean pageOnly,
+        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+        @RequestParam(name = "size", required = false, defaultValue = "20") Integer size
+    ) {
+        LOG.debug("REST request to export harvests to CSV: pageOnly={}, page={}, size={}",
+            pageOnly, page, size);
 
-        List<HarvestRecord> harvests = harvestRecordRepository.findAll();
+        List<HarvestRecord> harvests;
+
+        if (pageOnly != null && pageOnly) {
+            // Export only current page
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "harvestDate"));
+            Page<HarvestRecord> harvestPage = harvestRecordRepository.findAll(pageable);
+            harvests = harvestPage.getContent();
+        } else {
+            // Export all records
+            harvests = harvestRecordRepository.findAll(Sort.by(Sort.Direction.DESC, "harvestDate"));
+        }
 
         StringBuilder csv = new StringBuilder();
         csv.append("ID,Batch Code,Harvest Date,Flush Number,Weight (kg),Quality Grade\n");

@@ -127,6 +127,30 @@ export const Batch = () => {
     return `?${params.toString()}`;
   };
 
+  // Feature #333, #334: Build export URL with filters and pagination options
+  const buildExportURL = (pageOnly: boolean) => {
+    const params = new URLSearchParams();
+
+    // Add filters (Feature #333)
+    if (filters.search) params.set('search', filters.search);
+    if (filters.phase) params.set('phase', filters.phase);
+    if (filters.strainId) params.set('strainId', filters.strainId);
+    if (filters.isActive) params.set('isActive', filters.isActive);
+    if (filters.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
+    if (filters.startDateTo) params.set('startDateTo', filters.startDateTo);
+    if (filters.numberOfBagsMin) params.set('numberOfBagsMin', filters.numberOfBagsMin);
+    if (filters.numberOfBagsMax) params.set('numberOfBagsMax', filters.numberOfBagsMax);
+
+    // Add pagination (Feature #334)
+    if (pageOnly) {
+      params.set('pageOnly', 'true');
+      params.set('page', (paginationState.activePage - 1).toString());
+      params.set('size', paginationState.itemsPerPage.toString());
+    }
+
+    return `/api/export/batches?${params.toString()}`;
+  };
+
   const sortEntities = () => {
     // Feature #322: getAllEntities uses AbortController to cancel previous requests
     // Redux Toolkit automatically aborts pending requests when a new one is dispatched
@@ -291,8 +315,11 @@ export const Batch = () => {
           </Button>
           {canModifyBatch && (
             <>
-              <Button tag="a" href="/api/export/batches" className="me-2" color="success" data-cy="entityExportButton">
-                <FontAwesomeIcon icon="download" /> Export CSV
+              <Button tag="a" href={buildExportURL(false)} className="me-2" color="success" data-cy="entityExportAllButton">
+                <FontAwesomeIcon icon="download" /> Export All {hasActiveFilters && '(Filtered)'}
+              </Button>
+              <Button tag="a" href={buildExportURL(true)} className="me-2" color="success" data-cy="entityExportPageButton">
+                <FontAwesomeIcon icon="download" /> Export Page
               </Button>
               <Link
                 to="/batch/new"
