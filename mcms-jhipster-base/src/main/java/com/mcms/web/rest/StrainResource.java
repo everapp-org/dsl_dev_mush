@@ -7,9 +7,15 @@ import com.mcms.repository.StrainRepository;
 import com.mcms.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -20,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -286,5 +293,128 @@ public class StrainResource {
     public List<Batch> getBatchesByStrain(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Batches by Strain : {}", id);
         return batchRepository.findAllWithFilters(null, null, id, null, null, null, null, null, Pageable.unpaged()).getContent();
+    }
+
+    /**
+     * {@code POST  /strains/import} : Import strains from CSV file.
+     *
+     * CSV format: name,species,variety (header row required)
+     * Example:
+     * name,species,variety
+     * "Pleurotus ostreatus - Grey Dove","Pleurotus ostreatus","Grey Dove"
+     * "Shiitake - 3782","Lentinula edodes","3782"
+     *
+     * @param file the CSV file to import.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and count of imported strains.
+     */
+    @PostMapping("/import")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
+    public ResponseEntity<Map<String, Object>> importStrains(@RequestParam("file") MultipartFile file) {
+        LOG.debug("REST request to import Strains from CSV file: {}", file.getOriginalFilename());
+
+        if (file.isEmpty()) {
+            throw new BadRequestAlertException("File is empty", ENTITY_NAME, "fileempty");
+        }
+
+        List<Strain> importedStrains = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+        int lineNumber = 0;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            String[] headers = null;
+
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.trim();
+
+                // Skip empty lines
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                // Parse CSV line (handle quoted fields)
+                String[] fields = parseCsvLine(line);
+
+                // First non-empty line is the header
+                if (headers == null) {
+                    headers = fields;
+                    // Validate header
+                    if (fields.length < 2 || !fields[0].toLowerCase().contains("name") || !fields[1].toLowerCase().contains("species")) {
+                        throw new BadRequestAlertException(
+                            "Invalid CSV header. Expected: name,species,variety",
+                            ENTITY_NAME,
+                            "invalidheader"
+                        );
+                    }
+                    continue;
+                }
+
+                // Parse data rows
+                if (fields.length < 2) {
+                    errors.add("Line " + lineNumber + ": Missing required fields (name, species)");
+                    continue;
+                }
+
+                try {
+                    Strain strain = new Strain();
+                    strain.setName(fields[0].trim());
+                    strain.setSpecies(fields[1].trim());
+                    strain.setVariety(fields.length > 2 && !fields[2].trim().isEmpty() ? fields[2].trim() : null);
+                    strain.setActive(true); // Default to active
+
+                    // Validate required fields
+                    if (strain.getName().isEmpty() || strain.getSpecies().isEmpty()) {
+                        errors.add("Line " + lineNumber + ": Name and species are required");
+                        continue;
+                    }
+
+                    Strain saved = strainRepository.save(strain);
+                    importedStrains.add(saved);
+                } catch (Exception e) {
+                    errors.add("Line " + lineNumber + ": " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error importing strains from CSV", e);
+            throw new BadRequestAlertException("Error reading CSV file: " + e.getMessage(), ENTITY_NAME, "importerror");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("imported", importedStrains.size());
+        result.put("errors", errors);
+        result.put("totalLines", lineNumber);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    /**
+     * Parse a CSV line handling quoted fields.
+     *
+     * @param line the CSV line to parse
+     * @return array of field values
+     */
+    private String[] parseCsvLine(String line) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                fields.add(currentField.toString());
+                currentField = new StringBuilder();
+            } else {
+                currentField.append(c);
+            }
+        }
+
+        // Add the last field
+        fields.add(currentField.toString());
+
+        return fields.toArray(new String[0]);
     }
 }

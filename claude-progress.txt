@@ -10930,3 +10930,85 @@ Created comprehensive verification document:
 - Both servers running and stable
 - Progress: 329/405 features (81.2%) - approaching 82%!
 - Export/Import category: 4/4 features complete ✅
+
+
+---
+
+## Session 118: 2026-03-22
+
+### Completed Features (331/405 - 81.7%)
+
+#### Feature #333: Export Filtered Data - PASSING
+**Category:** Export/Import
+
+**Purpose:**
+Export should respect current filters - when user filters batches by phase=HARVEST, export should only include HARVEST batches.
+
+**Implementation:**
+
+1. **Backend (ExportResource.java):**
+   - Added filter parameters to /api/export/batches endpoint
+   - Parameters: search, phase, strainId, isActive, startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax
+   - Uses batchRepository.findAllWithFilters() when filters are present
+   - Falls back to findAllWithEagerRelationships() when no filters
+
+2. **Frontend (batch.tsx):**
+   - Created buildExportURL(pageOnly) helper function
+   - Passes all current filter state to export endpoint
+   - Button shows "Export All (Filtered)" when filters are active
+
+**How It Works:**
+1. User applies filters (e.g., phase=HARVEST, startDate=2024-01-01)
+2. User clicks "Export All (Filtered)" button
+3. Frontend builds URL: /api/export/batches?phase=HARVEST&startDateFrom=2024-01-01
+4. Backend queries: batchRepository.findAllWithFilters(...filters..., Pageable.unpaged())
+5. CSV contains only batches matching filters
+
+**Files Modified:**
+- ExportResource.java - Added filter parameters and query logic
+- batch.tsx - Added buildExportURL() function and updated buttons
+
+---
+
+#### Feature #334: Export All vs Current Page - PASSING
+**Category:** Export/Import
+
+**Purpose:**
+User should have option to export ALL data (matching filters) or just the CURRENT PAGE.
+
+**Implementation:**
+
+1. **Backend (ExportResource.java):**
+   - Added pageOnly parameter (boolean, default false)
+   - Added page and size parameters for pagination
+   - When pageOnly=true: Creates PageRequest.of(page, size) and exports page content
+   - When pageOnly=false: Uses Pageable.unpaged() to export all matching records
+
+2. **Frontend (batch.tsx):**
+   - Replaced single "Export CSV" button with TWO buttons
+   - "Export All (Filtered)" - exports all data matching filters (pageOnly=false)
+   - "Export Page" - exports only current page items (pageOnly=true&page=X&size=Y)
+
+**Files Modified:**
+- ExportResource.java - Added pageOnly/page/size logic
+- batch.tsx - Added two separate export buttons
+
+---
+
+## Session Summary
+- Features Completed: 2 (both Export/Import category)
+- Progress: 331/405 (81.7%)
+- Commit: af8b16d
+- Session Type: YOLO mode
+
+## Build Status
+- ESLint: PASSED (1 pre-existing warning)
+- TypeScript: Compiled successfully
+- Backend: Compiled successfully (jhipster-base module)
+- No mock data patterns found
+
+## Progress Tracking
+- Starting: 329/405 (81.2%)
+- Ending: 331/405 (81.7%)
+- Remaining: 74 features
+
