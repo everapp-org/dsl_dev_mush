@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntity } from './sensor-reading.reducer';
 
@@ -32,11 +33,7 @@ export const SensorReadingDetail = () => {
             <span id="timestamp">Timestamp</span>
             <UncontrolledTooltip target="timestamp">Reading timestamp (UTC)</UncontrolledTooltip>
           </dt>
-          <dd>
-            {sensorReadingEntity.timestamp ? (
-              <TextFormat value={sensorReadingEntity.timestamp} type="date" format={APP_DATE_FORMAT} />
-            ) : null}
-          </dd>
+          <dd>{sensorReadingEntity.timestamp ? <RelativeTime value={sensorReadingEntity.timestamp} id="reading-time-detail" /> : null}</dd>
           <dt>
             <span id="value">Value</span>
             <UncontrolledTooltip target="value">Measured value</UncontrolledTooltip>

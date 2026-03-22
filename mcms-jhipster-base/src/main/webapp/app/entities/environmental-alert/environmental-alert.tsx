@@ -8,6 +8,7 @@ import { APP_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntities } from './environmental-alert.reducer';
 
@@ -142,7 +143,7 @@ export const EnvironmentalAlert = () => {
                   </td>
                   <td>
                     {environmentalAlert.alertTime ? (
-                      <TextFormat type="date" value={environmentalAlert.alertTime} format={APP_DATE_FORMAT} />
+                      <RelativeTime value={environmentalAlert.alertTime} id={`alert-time-${environmentalAlert.id}`} />
                     ) : null}
                   </td>
                   <td>{environmentalAlert.severity}</td>
@@ -154,7 +155,7 @@ export const EnvironmentalAlert = () => {
                   <td>{environmentalAlert.acknowledgedBy}</td>
                   <td>
                     {environmentalAlert.acknowledgedAt ? (
-                      <TextFormat type="date" value={environmentalAlert.acknowledgedAt} format={APP_DATE_FORMAT} />
+                      <RelativeTime value={environmentalAlert.acknowledgedAt} id={`ack-time-${environmentalAlert.id}`} />
                     ) : null}
                   </td>
                   <td>{environmentalAlert.resolutionNote}</td>

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { APP_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntity } from './environmental-alert.reducer';
 
@@ -37,9 +38,7 @@ export const EnvironmentalAlertDetail = () => {
             <UncontrolledTooltip target="alertTime">When the alert was triggered</UncontrolledTooltip>
           </dt>
           <dd>
-            {environmentalAlertEntity.alertTime ? (
-              <TextFormat value={environmentalAlertEntity.alertTime} type="date" format={APP_DATE_FORMAT} />
-            ) : null}
+            {environmentalAlertEntity.alertTime ? <RelativeTime value={environmentalAlertEntity.alertTime} id="alert-time-detail" /> : null}
           </dd>
           <dt>
             <span id="severity">Severity</span>
@@ -82,7 +81,7 @@ export const EnvironmentalAlertDetail = () => {
           </dt>
           <dd>
             {environmentalAlertEntity.acknowledgedAt ? (
-              <TextFormat value={environmentalAlertEntity.acknowledgedAt} type="date" format={APP_DATE_FORMAT} />
+              <RelativeTime value={environmentalAlertEntity.acknowledgedAt} id="ack-time-detail" />
             ) : null}
           </dd>
           <dt>

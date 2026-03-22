@@ -1,10 +1,21 @@
 /**
  * Locale-aware date formatting utility
  *
- * Features #307 and #308: Timezone and Locale Support
+ * Features #307, #308, and #309: Timezone, Locale, and Relative Time Support
  * - Timestamps are stored in UTC and displayed in user's local timezone
  * - Date formats respect user's browser locale (MM/DD/YYYY for US, DD/MM/YYYY for others)
+ * - Relative time display for recent timestamps (e.g., "2 hours ago")
  */
+
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// Initialize dayjs plugins
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Get the user's locale from browser
@@ -77,4 +88,28 @@ export const formatTimestampToLocale = (timestamp: Date | string): string => {
     second: '2-digit',
     hour12: false,
   }).format(dateObj);
+};
+
+/**
+ * Format a timestamp as relative time (e.g., "2 hours ago", "3 days ago")
+ * Feature #309: Relative time display
+ *
+ * @param timestamp - ISO 8601 timestamp string or Date object
+ * @returns Relative time string (e.g., "2 hours ago", "in 3 days")
+ */
+export const formatRelativeTime = (timestamp: Date | string): string => {
+  return dayjs(timestamp).fromNow();
+};
+
+/**
+ * Check if a timestamp is recent (within the last 7 days)
+ * Used to determine whether to show relative time vs absolute time
+ *
+ * @param timestamp - ISO 8601 timestamp string or Date object
+ * @returns true if within 7 days, false otherwise
+ */
+export const isRecentTimestamp = (timestamp: Date | string, daysThreshold = 7): boolean => {
+  const now = dayjs();
+  const then = dayjs(timestamp);
+  return now.diff(then, 'day') <= daysThreshold;
 };

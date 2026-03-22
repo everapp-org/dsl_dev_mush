@@ -10,6 +10,7 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
+import { RelativeTime } from 'app/shared/util/relative-time';
 import { getUsersAsAdmin, updateUser } from './user-management.reducer';
 
 export const UserManagement = () => {
@@ -172,15 +173,9 @@ export const UserManagement = () => {
                     ))
                   : null}
               </td>
-              <td>
-                {user.createdDate ? <TextFormat value={user.createdDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid /> : null}
-              </td>
+              <td>{user.createdDate ? <RelativeTime value={user.createdDate} id={`user-created-${i}`} /> : null}</td>
               <td>{user.lastModifiedBy}</td>
-              <td>
-                {user.lastModifiedDate ? (
-                  <TextFormat value={user.lastModifiedDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />
-                ) : null}
-              </td>
+              <td>{user.lastModifiedDate ? <RelativeTime value={user.lastModifiedDate} id={`user-modified-${i}`} /> : null}</td>
               <td className="text-end">
                 <div className="btn-group flex-btn-group-container">
                   <Button tag={Link} to={user.login} color="info" size="sm">

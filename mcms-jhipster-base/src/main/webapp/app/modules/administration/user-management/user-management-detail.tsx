@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { APP_DATE_FORMAT } from 'app/config/constants';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { RelativeTime } from 'app/shared/util/relative-time';
 import { getUser } from './user-management.reducer';
 
 export const UserManagementDetail = () => {
@@ -41,15 +42,11 @@ export const UserManagementDetail = () => {
           <dt>Created by</dt>
           <dd>{user.createdBy}</dd>
           <dt>Created date</dt>
-          <dd>{user.createdDate ? <TextFormat value={user.createdDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid /> : null}</dd>
+          <dd>{user.createdDate ? <RelativeTime value={user.createdDate} id="user-created-detail" /> : null}</dd>
           <dt>Modified by</dt>
           <dd>{user.lastModifiedBy}</dd>
           <dt>Modified date</dt>
-          <dd>
-            {user.lastModifiedDate ? (
-              <TextFormat value={user.lastModifiedDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />
-            ) : null}
-          </dd>
+          <dd>{user.lastModifiedDate ? <RelativeTime value={user.lastModifiedDate} id="user-modified-detail" /> : null}</dd>
           <dt>Profiles</dt>
           <dd>
             <ul className="list-unstyled">

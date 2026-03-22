@@ -9,6 +9,7 @@ import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntities } from './sensor-reading.reducer';
 
@@ -110,7 +111,9 @@ export const SensorReading = () => {
                     </Button>
                   </td>
                   <td>
-                    {sensorReading.timestamp ? <TextFormat type="date" value={sensorReading.timestamp} format={APP_DATE_FORMAT} /> : null}
+                    {sensorReading.timestamp ? (
+                      <RelativeTime value={sensorReading.timestamp} id={`reading-time-${sensorReading.id}`} />
+                    ) : null}
                   </td>
                   <td>{sensorReading.value}</td>
                   <td>{sensorReading.unit}</td>
