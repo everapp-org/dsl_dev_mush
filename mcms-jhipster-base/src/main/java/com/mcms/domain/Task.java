@@ -28,6 +28,10 @@ public class Task implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     /**
      * Task title
      */
@@ -108,6 +112,19 @@ public class Task implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
+    public Task version(Long version) {
+        this.setVersion(version);
+        return this;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getTitle() {
