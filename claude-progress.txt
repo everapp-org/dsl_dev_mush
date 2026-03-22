@@ -9942,3 +9942,101 @@ Display a success toast notification when a batch is updated, with the message "
 - Continue with remaining Feedback & Notification features
 - Both servers stable and running
 - Progress: 291/405 features (71.9%) - approaching 72%!
+
+
+---
+
+## Session: 2026-03-22 (Session 100)
+
+### Completed Features (293/405 - 72.3%)
+
+#### Feature #295: Success toast on delete - PASSING
+**Category:** Feedback and UI Response
+
+**Purpose:**
+Display a success toast message when a batch is deleted, with the message "Batch deleted successfully".
+
+**Implementation:**
+
+1. **Backend Changes (BatchResource.java):**
+   - Modified deleteBatch method to send custom success message
+   - Custom message: "Batch deleted successfully"
+   - Replaced JHipster default verbose messages
+   - Pattern consistent with create/update methods (features #293, #294)
+
+**Files Modified:**
+- src/main/java/com/mcms/web/rest/BatchResource.java
+
+---
+
+#### Feature #296: Error toast on API failure - PASSING
+**Category:** Feedback and UI Response
+
+**Purpose:**
+Display error toast messages on API failures that remain visible until manually dismissed (no auto-close).
+
+**Implementation:**
+
+1. **Frontend Changes (notification-middleware.ts):**
+   - Modified addErrorAlert function to disable auto-close for errors
+   - Added autoClose: false to all error toast calls
+   - Ensured success toasts still auto-close after 3 seconds
+
+2. **Frontend Changes (app.tsx):**
+   - Removed global autoClose from ToastContainer
+   - Per-toast configuration now controls auto-close behavior
+
+**Error Types Covered:**
+- 401 Unauthorized (Session expired)
+- 403 Forbidden (Permission denied)
+- 404 Not Found
+- 409 Conflict (Optimistic locking)
+- Network errors (connection refused, timeout)
+- Field validation errors
+- Generic API errors
+
+**Files Modified:**
+- src/main/webapp/app/config/notification-middleware.ts
+- src/main/webapp/app/app.tsx
+
+---
+
+## Session Summary (Session 100)
+- **Features Completed:** 2 (both Feedback)
+- **Feature #295:** Success toast on delete (PASSED)
+- **Feature #296:** Error toast on API failure (PASSED)
+- **Code Changes:**
+  - Modified BatchResource.java for custom delete success message
+  - Updated notification-middleware.ts to disable auto-close for errors
+  - Updated app.tsx to remove global autoClose
+  - Applied prettier formatting fixes
+- **Progress:** 293/405 features (72.3%) - MILESTONE: Session 100, crossed 72%!
+- **Session Type:** YOLO mode verification
+- **Commit:** 17a3402
+
+## Technical Notes
+
+### Toast Architecture
+
+**Success Toasts (Auto-dismiss after 3 seconds):**
+- User-friendly messages: "Batch created/updated/deleted successfully"
+- Configured with autoClose: 3000 in notification middleware
+- Green toast (react-toastify default for success)
+
+**Error Toasts (Stay until manually dismissed):**
+- Configured with autoClose: false in notification middleware
+- Red toast (react-toastify default for error)
+- Requires user to click X button to dismiss
+- Ensures critical errors are not missed
+
+### Build Verification
+- Frontend Lint: Passed (exit code 0)
+- Backend Compile: SUCCESS (Maven 01:28 min)
+- Prettier: Auto-fixed formatting issues
+- Servers: Backend and frontend both running
+
+### Next Session Recommendations
+- Continue with remaining Feedback features
+- Both servers stable and running
+- Progress: 293/405 features (72.3%) - approaching 73%!
+- MILESTONE: Completed 100 sessions!
