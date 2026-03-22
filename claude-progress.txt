@@ -10737,3 +10737,80 @@ Now used in 3 entities:
 - Progress: 325/405 features (80.2%) - approaching 81%!
 - Concurrency & Race Conditions category nearly complete
 
+
+---
+
+## Session 116: 2026-03-22
+
+### Completed Features (327/405 - 80.7%)
+
+#### Feature #329: Export batches to CSV - PASSING
+**Category:** Export/Import
+
+**Implementation:**
+- Backend endpoint `/api/export/batches` already existed in ExportResource.java
+- Returns CSV with columns: ID, Batch Code, Strain, Current Phase, Start Date, End Date, Active
+- Frontend Export CSV button already existed in batch.tsx (line 294-296)
+- Secured with @PreAuthorize (ADMIN, MANAGER, OPERATOR roles only)
+
+**Verification (YOLO Mode):**
+- ✅ Backend endpoint implemented
+- ✅ Frontend button present
+- ✅ ESLint passed
+- ✅ No compile errors
+
+---
+
+#### Feature #330: Export harvests to CSV - PASSING
+**Category:** Export/Import
+
+**Implementation:**
+- Backend endpoint `/api/export/harvests` already existed in ExportResource.java
+- Returns CSV with columns: ID, Batch Code, Harvest Date, Flush Number, Weight (kg), Quality Grade
+- **Added Export CSV button to harvest-record.tsx** (between Refresh and Create buttons)
+- Button follows same pattern as batch export
+- Secured with @PreAuthorize (ADMIN, MANAGER, OPERATOR roles only)
+
+**Verification (YOLO Mode):**
+- ✅ Backend endpoint implemented
+- ✅ Frontend button added successfully
+- ✅ ESLint passed (only 1 pre-existing warning)
+- ✅ No compile errors
+- ✅ Consistent UI pattern with batch export
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both Export/Import category)
+- **Progress:** 327/405 (80.7%)
+- **Commit:** 32fbd5d
+- **Session Type:** YOLO mode
+
+## Implementation Details
+
+### Frontend Change
+Added Export CSV button to harvest-record.tsx:
+```tsx
+<Button tag="a" href="/api/export/harvests" className="me-2" color="success" data-cy="entityExportButton">
+  <FontAwesomeIcon icon="download" /> Export CSV
+</Button>
+```
+
+### Backend (Already Implemented)
+Both export endpoints use simple CSV generation with proper escaping:
+- ExportResource.java handles both `/api/export/batches` and `/api/export/harvests`
+- CSV headers set correctly with Content-Disposition
+- Proper MediaType: text/csv
+- CSV escaping function prevents injection attacks
+
+## Build Status
+- ESLint: PASSED (1 pre-existing warning unrelated to changes)
+- Frontend: Running
+- Backend: Running
+
+## Next Session Recommendations
+- Continue with remaining features (78 left)
+- Both servers stable and running
+- Progress: 327/405 features (80.7%) - approaching 81%!
+- Export/Import category now has 2 features complete
+
