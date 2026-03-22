@@ -40,19 +40,22 @@ export interface IQueryParamsWithFilters extends IQueryParams {
 
 export const getEntities = createAsyncThunk(
   'batch/fetch_entity_list',
-  async ({
-    page,
-    size,
-    sort,
-    search,
-    phase,
-    strainId,
-    isActive,
-    startDateFrom,
-    startDateTo,
-    numberOfBagsMin,
-    numberOfBagsMax,
-  }: IQueryParamsWithFilters) => {
+  async (
+    {
+      page,
+      size,
+      sort,
+      search,
+      phase,
+      strainId,
+      isActive,
+      startDateFrom,
+      startDateTo,
+      numberOfBagsMin,
+      numberOfBagsMax,
+    }: IQueryParamsWithFilters,
+    { signal }, // Feature #322: AbortController signal for request cancellation
+  ) => {
     const params = new URLSearchParams();
     if (sort) params.append('sort', sort);
     if (page !== undefined) params.append('page', page.toString());
@@ -68,7 +71,8 @@ export const getEntities = createAsyncThunk(
     params.append('cacheBuster', new Date().getTime().toString());
 
     const requestUrl = `${apiUrl}?${params.toString()}`;
-    return axios.get<IBatch[]>(requestUrl);
+    // Feature #322: Pass AbortController signal to axios for request cancellation
+    return axios.get<IBatch[]>(requestUrl, { signal });
   },
   { serializeError: serializeAxiosError },
 );

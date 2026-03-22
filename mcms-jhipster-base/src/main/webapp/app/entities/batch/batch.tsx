@@ -122,6 +122,8 @@ export const Batch = () => {
   };
 
   const sortEntities = () => {
+    // Feature #322: getAllEntities uses AbortController to cancel previous requests
+    // Redux Toolkit automatically aborts pending requests when a new one is dispatched
     getAllEntities();
     const endURL = buildURL();
     if (pageLocation.search !== endURL) {
