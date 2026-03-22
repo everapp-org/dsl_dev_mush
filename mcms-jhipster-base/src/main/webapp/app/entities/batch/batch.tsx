@@ -255,6 +255,7 @@ export const Batch = () => {
                   placeholder="Search by batch code, note, or completion note..."
                   value={filters.search}
                   onChange={handleFilterChange('search')}
+                  maxLength={1000}
                 />
               </FormGroup>
             </Col>

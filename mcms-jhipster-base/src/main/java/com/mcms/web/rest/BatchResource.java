@@ -260,6 +260,11 @@ public class BatchResource {
         LOG.debug("REST request to get a page of Batches with filters: search={}, phase={}, strainId={}, isActive={}, startDateFrom={}, startDateTo={}",
             search, phase, strainId, isActive, startDateFrom, startDateTo);
 
+        // Feature #285: Validate search string length to prevent crashes
+        if (search != null && search.length() > 1000) {
+            throw new IllegalArgumentException("Search query is too long (max 1000 characters)");
+        }
+
         Page<Batch> page;
 
         // Check if any filters are applied
