@@ -3701,3 +3701,7 @@ Both features protect against common multi-user race conditions:
 - Both servers stable and running
 - Progress: 317/405 features (78.3%) - approaching 79%!
 - Concurrency & Race Conditions category complete
+
+## Session 113 (2026-03-22): Features #323, #324 - Progress: 321/405 (79.3%)
+See session-113-summary.md for details.
+
