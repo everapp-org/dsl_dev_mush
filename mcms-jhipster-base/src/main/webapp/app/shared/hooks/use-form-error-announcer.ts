@@ -37,7 +37,8 @@ export const useFormErrorAnnouncer = (errors: FieldErrors): void => {
           errorMessages[fieldName] = error.message as string;
         } else if (error?.type) {
           // Fallback to error type if no message
-          errorMessages[fieldName] = `${fieldName} is ${error.type}`;
+          const errorType = typeof error.type === 'string' ? error.type : 'invalid';
+          errorMessages[fieldName] = `${fieldName} is ${errorType}`;
         }
       });
 

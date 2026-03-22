@@ -72,7 +72,7 @@ export const useLoadingAnnouncer = (options: UseLoadingAnnouncerOptions): void =
   } = options;
 
   const previousLoading = useRef<boolean | null>(null);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Clear any pending debounce timers
