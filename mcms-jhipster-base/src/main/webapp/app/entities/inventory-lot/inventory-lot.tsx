@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Badge, Button, Table } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +8,7 @@ import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import dayjs from 'dayjs';
 
 import { getEntities } from './inventory-lot.reducer';
 
@@ -61,6 +62,17 @@ export const InventoryLot = () => {
       return faSort;
     }
     return order === ASC ? faSortUp : faSortDown;
+  };
+
+  /**
+   * Check if inventory lot is expiring soon (within 7 days)
+   */
+  const isExpiringSoon = (expiryDate: string | null | undefined): boolean => {
+    if (!expiryDate) return false;
+    const expiry = dayjs(expiryDate);
+    const now = dayjs();
+    const daysUntilExpiry = expiry.diff(now, 'day');
+    return daysUntilExpiry >= 0 && daysUntilExpiry <= 7;
   };
 
   return (
@@ -125,76 +137,94 @@ export const InventoryLot = () => {
               </tr>
             </thead>
             <tbody>
-              {inventoryLotList.map((inventoryLot, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/inventory-lot/${inventoryLot.id}`} color="link" size="sm">
-                      {inventoryLot.id}
-                    </Button>
-                  </td>
-                  <td>{inventoryLot.lotCode}</td>
-                  <td>
-                    {inventoryLot.receivedDate ? (
-                      <TextFormat type="date" value={inventoryLot.receivedDate} format={APP_LOCAL_DATE_FORMAT} />
-                    ) : null}
-                  </td>
-                  <td>{inventoryLot.quantityReceived}</td>
-                  <td>{inventoryLot.quantityOnHand}</td>
-                  <td>{inventoryLot.unit}</td>
-                  <td>
-                    {inventoryLot.expiryDate ? (
-                      <TextFormat type="date" value={inventoryLot.expiryDate} format={APP_LOCAL_DATE_FORMAT} />
-                    ) : null}
-                  </td>
-                  <td>{inventoryLot.storageLocation}</td>
-                  <td>{inventoryLot.supplierLotNumber}</td>
-                  <td>{inventoryLot.isExhausted ? 'true' : 'false'}</td>
-                  <td>{inventoryLot.note}</td>
-                  <td>
-                    {inventoryLot.material ? <Link to={`/material/${inventoryLot.material.id}`}>{inventoryLot.material.name}</Link> : ''}
-                  </td>
-                  <td>
-                    {inventoryLot.supplyOrderLine ? (
-                      <Link to={`/supply-order-line/${inventoryLot.supplyOrderLine.id}`}>{inventoryLot.supplyOrderLine.id}</Link>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button
-                        tag={Link}
-                        to={`/inventory-lot/${inventoryLot.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        aria-label="View"
-                      >
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+              {inventoryLotList.map((inventoryLot, i) => {
+                const expiringSoon = isExpiringSoon(inventoryLot.expiryDate);
+                return (
+                  <tr
+                    key={`entity-${i}`}
+                    data-cy="entityTable"
+                    className={expiringSoon ? 'table-warning' : ''}
+                    style={expiringSoon ? { backgroundColor: '#fff3cd' } : {}}
+                  >
+                    <td>
+                      <Button tag={Link} to={`/inventory-lot/${inventoryLot.id}`} color="link" size="sm">
+                        {inventoryLot.id}
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/inventory-lot/${inventoryLot.id}/edit`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                        aria-label="Edit"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        onClick={() => (window.location.href = `/inventory-lot/${inventoryLot.id}/delete`)}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                        aria-label="Delete"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>{inventoryLot.lotCode}</td>
+                    <td>
+                      {inventoryLot.receivedDate ? (
+                        <TextFormat type="date" value={inventoryLot.receivedDate} format={APP_LOCAL_DATE_FORMAT} />
+                      ) : null}
+                    </td>
+                    <td>{inventoryLot.quantityReceived}</td>
+                    <td>{inventoryLot.quantityOnHand}</td>
+                    <td>{inventoryLot.unit}</td>
+                    <td>
+                      {inventoryLot.expiryDate ? (
+                        <>
+                          <TextFormat type="date" value={inventoryLot.expiryDate} format={APP_LOCAL_DATE_FORMAT} />
+                          {expiringSoon && (
+                            <>
+                              {' '}
+                              <Badge color="warning" pill>
+                                <FontAwesomeIcon icon="exclamation-triangle" /> Expiring Soon
+                              </Badge>
+                            </>
+                          )}
+                        </>
+                      ) : null}
+                    </td>
+                    <td>{inventoryLot.storageLocation}</td>
+                    <td>{inventoryLot.supplierLotNumber}</td>
+                    <td>{inventoryLot.isExhausted ? 'true' : 'false'}</td>
+                    <td>{inventoryLot.note}</td>
+                    <td>
+                      {inventoryLot.material ? <Link to={`/material/${inventoryLot.material.id}`}>{inventoryLot.material.name}</Link> : ''}
+                    </td>
+                    <td>
+                      {inventoryLot.supplyOrderLine ? (
+                        <Link to={`/supply-order-line/${inventoryLot.supplyOrderLine.id}`}>{inventoryLot.supplyOrderLine.id}</Link>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="text-end">
+                      <div className="btn-group flex-btn-group-container">
+                        <Button
+                          tag={Link}
+                          to={`/inventory-lot/${inventoryLot.id}`}
+                          color="info"
+                          size="sm"
+                          data-cy="entityDetailsButton"
+                          aria-label="View"
+                        >
+                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                        </Button>
+                        <Button
+                          tag={Link}
+                          to={`/inventory-lot/${inventoryLot.id}/edit`}
+                          color="primary"
+                          size="sm"
+                          data-cy="entityEditButton"
+                          aria-label="Edit"
+                        >
+                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                        </Button>
+                        <Button
+                          onClick={() => (window.location.href = `/inventory-lot/${inventoryLot.id}/delete`)}
+                          color="danger"
+                          size="sm"
+                          data-cy="entityDeleteButton"
+                          aria-label="Delete"
+                        >
+                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         ) : (

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
+import { Badge, Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -25,6 +26,17 @@ export const InventoryLotDetail = () => {
   }, []);
 
   const inventoryLotEntity = useAppSelector(state => state.inventoryLot.entity);
+
+  /**
+   * Check if inventory lot is expiring soon (within 7 days)
+   */
+  const isExpiringSoon = (expiryDate: string | null | undefined): boolean => {
+    if (!expiryDate) return false;
+    const expiry = dayjs(expiryDate);
+    const now = dayjs();
+    const daysUntilExpiry = expiry.diff(now, 'day');
+    return daysUntilExpiry >= 0 && daysUntilExpiry <= 7;
+  };
   return (
     <Row>
       <Col md="8">
@@ -69,7 +81,17 @@ export const InventoryLotDetail = () => {
           </dt>
           <dd>
             {inventoryLotEntity.expiryDate ? (
-              <TextFormat value={inventoryLotEntity.expiryDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+              <>
+                <TextFormat value={inventoryLotEntity.expiryDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                {isExpiringSoon(inventoryLotEntity.expiryDate) && (
+                  <>
+                    {' '}
+                    <Badge color="warning" pill>
+                      <FontAwesomeIcon icon="exclamation-triangle" /> Expiring Soon
+                    </Badge>
+                  </>
+                )}
+              </>
             ) : null}
           </dd>
           <dt>
