@@ -9,7 +9,9 @@ type ToastMessage = {
 };
 
 const addErrorAlert = (message: ToastMessage) => {
-  toast.error(message.message);
+  toast.error(message.message, {
+    autoClose: false, // Error toasts stay until manually dismissed (Feature #296)
+  });
 };
 
 const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
@@ -33,7 +35,9 @@ export default () => next => action => {
   if (isFulfilledAction(action) && payload?.headers) {
     const { alert } = getMessageFromHeaders(payload.headers);
     if (alert) {
-      toast.success(alert);
+      toast.success(alert, {
+        autoClose: 3000, // Success toasts auto-dismiss after 3 seconds (Feature #293, #294, #295)
+      });
     }
   }
 
@@ -81,7 +85,9 @@ export default () => next => action => {
           } else if (typeof data === 'string' && data !== '') {
             addErrorAlert({ message: data });
           } else {
-            toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!');
+            toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!', {
+              autoClose: false, // Error toasts stay until manually dismissed (Feature #296)
+            });
           }
         }
       }

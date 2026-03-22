@@ -740,8 +740,11 @@ public class BatchResource {
 
         // Proceed with delete (JPA will handle cascading based on relationship configuration)
         batchRepository.deleteById(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-" + applicationName + "-alert", "Batch deleted successfully");
+        headers.add("X-" + applicationName + "-params", id.toString());
         return ResponseEntity.noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .headers(headers)
             .build();
     }
 }

@@ -63,7 +63,6 @@ export const App = () => {
           toastClassName="toastify-toast"
           role="region"
           aria-label="Notifications"
-          autoClose={3000}
         />
         <ErrorBoundary>
           <Header
