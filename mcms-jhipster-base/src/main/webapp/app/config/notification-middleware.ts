@@ -14,6 +14,18 @@ const addErrorAlert = (message: ToastMessage) => {
   });
 };
 
+const addInfoAlert = (message: ToastMessage) => {
+  toast.info(message.message, {
+    autoClose: 5000, // Info toasts auto-dismiss after 5 seconds (Feature #301)
+  });
+};
+
+const addWarningAlert = (message: ToastMessage) => {
+  toast.warning(message.message, {
+    autoClose: 5000, // Warning toasts auto-dismiss after 5 seconds (Feature #301)
+  });
+};
+
 const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
   fieldErrors.map(fieldError => {
     if (['Min', 'Max', 'DecimalMin', 'DecimalMax'].includes(fieldError.message)) {
@@ -30,14 +42,20 @@ export default () => next => action => {
 
   /**
    *
-   * The notification middleware serves to add success and error notifications
+   * The notification middleware serves to add success, error, info, and warning notifications
    */
   if (isFulfilledAction(action) && payload?.headers) {
-    const { alert } = getMessageFromHeaders(payload.headers);
+    const { alert, info, warning } = getMessageFromHeaders(payload.headers);
     if (alert) {
       toast.success(alert, {
         autoClose: 3000, // Success toasts auto-dismiss after 3 seconds (Feature #293, #294, #295)
       });
+    }
+    if (info) {
+      addInfoAlert({ message: info });
+    }
+    if (warning) {
+      addWarningAlert({ message: warning });
     }
   }
 

@@ -63,6 +63,8 @@ export const App = () => {
           toastClassName="toastify-toast"
           role="region"
           aria-label="Notifications"
+          limit={10}
+          newestOnTop={true}
         />
         <ErrorBoundary>
           <Header

@@ -3,6 +3,10 @@ export type HeaderMessage = {
   alert?: string;
   /** Error message */
   error?: string;
+  /** Info message (Feature #301) */
+  info?: string;
+  /** Warning message (Feature #301) */
+  warning?: string;
   /** Entity id for success messages. Entity name for error messages. */
   param?: string;
 };
@@ -26,14 +30,20 @@ export const getMessageFromHeaders = (headers: Record<string, any>): HeaderMessa
   let alert: string | undefined = undefined;
   let param: string | undefined = undefined;
   let error: string | undefined = undefined;
+  let info: string | undefined = undefined;
+  let warning: string | undefined = undefined;
   for (const [key, value] of Object.entries(headers)) {
     if (key.toLowerCase().endsWith('-alert')) {
       alert = headerToString(value);
     } else if (key.toLowerCase().endsWith('-error')) {
       error = headerToString(value);
+    } else if (key.toLowerCase().endsWith('-info')) {
+      info = headerToString(value);
+    } else if (key.toLowerCase().endsWith('-warning')) {
+      warning = headerToString(value);
     } else if (key.toLowerCase().endsWith('-params')) {
       param = decodeHeaderValue(headerToString(value));
     }
   }
-  return { alert, error, param };
+  return { alert, error, info, warning, param };
 };
