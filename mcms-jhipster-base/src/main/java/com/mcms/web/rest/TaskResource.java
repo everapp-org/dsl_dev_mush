@@ -172,13 +172,21 @@ public class TaskResource {
      */
     @GetMapping("")
     @PreAuthorize("isAuthenticated()")
-    public List<Task> getAllTasks(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        LOG.debug("REST request to get all Tasks");
+    public List<Task> getAllTasks(
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload,
+        @org.springdoc.core.annotations.ParameterObject org.springframework.data.domain.Sort sort
+    ) {
+        LOG.debug("REST request to get all Tasks with sort: {}", sort);
         List<Task> tasks;
         if (eagerload) {
             tasks = taskRepository.findAllWithEagerRelationships();
         } else {
             tasks = taskRepository.findAll();
+        }
+
+        // Apply sorting in memory if sort parameter is provided
+        if (sort != null && sort.isSorted()) {
+            tasks = applySorting(tasks, sort);
         }
 
         // Filter tasks for ROLE_OPERATOR - they can only see tasks assigned to them
@@ -196,6 +204,51 @@ public class TaskResource {
         }
 
         return tasks;
+    }
+
+    /**
+     * Apply sorting to a list of tasks in memory.
+     * Handles null values by placing them at the end for both ASC and DESC.
+     */
+    private List<Task> applySorting(List<Task> tasks, org.springframework.data.domain.Sort sort) {
+        return tasks.stream()
+            .sorted((t1, t2) -> {
+                for (org.springframework.data.domain.Sort.Order order : sort) {
+                    int comparison = compareByField(t1, t2, order.getProperty());
+                    if (comparison != 0) {
+                        return order.isAscending() ? comparison : -comparison;
+                    }
+                }
+                return 0;
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Compare two tasks by a specific field.
+     * Null values are always sorted to the end (return 1 if t1 is null, -1 if t2 is null).
+     */
+    private int compareByField(Task t1, Task t2, String field) {
+        return switch (field) {
+            case "id" -> compareNullSafe(t1.getId(), t2.getId());
+            case "title" -> compareNullSafe(t1.getTitle(), t2.getTitle());
+            case "dueDate" -> compareNullSafe(t1.getDueDate(), t2.getDueDate());
+            case "completedDate" -> compareNullSafe(t1.getCompletedDate(), t2.getCompletedDate());
+            case "completed" -> compareNullSafe(t1.getCompleted(), t2.getCompleted());
+            case "priority" -> compareNullSafe(t1.getPriority(), t2.getPriority());
+            case "assignedTo" -> compareNullSafe(t1.getAssignedTo(), t2.getAssignedTo());
+            default -> 0;
+        };
+    }
+
+    /**
+     * Null-safe comparator that puts null values at the end.
+     */
+    private <T extends Comparable<T>> int compareNullSafe(T v1, T v2) {
+        if (v1 == null && v2 == null) return 0;
+        if (v1 == null) return 1; // null at end
+        if (v2 == null) return -1; // null at end
+        return v1.compareTo(v2);
     }
 
     /**

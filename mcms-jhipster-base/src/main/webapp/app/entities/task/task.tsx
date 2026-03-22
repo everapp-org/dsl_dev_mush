@@ -91,6 +91,16 @@ export const Task = () => {
     return !task.completed && (isAdminOrManager || (isOperator && task.assignedTo === account.login));
   };
 
+  const isTaskOverdue = (task: any) => {
+    if (task.completed || !task.dueDate) {
+      return false;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for date-only comparison
+    const dueDate = new Date(task.dueDate);
+    return dueDate < today;
+  };
+
   return (
     <div>
       <h1 id="task-heading" data-cy="TaskHeading">
@@ -149,67 +159,81 @@ export const Task = () => {
               </tr>
             </thead>
             <tbody>
-              {taskList.map((task, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/task/${task.id}`} color="link" size="sm">
-                      {task.id}
-                    </Button>
-                  </td>
-                  <td>{task.title}</td>
-                  <td>{task.description}</td>
-                  <td>{task.dueDate ? <TextFormat type="date" value={task.dueDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  <td>{task.completed ? 'true' : 'false'}</td>
-                  <td>
-                    {task.completedDate ? <TextFormat type="date" value={task.completedDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
-                  </td>
-                  <td>{task.priority}</td>
-                  <td>{task.assignedTo}</td>
-                  <td>{task.note}</td>
-                  <td>{task.batch ? <Link to={`/batch/${task.batch.id}`}>{task.batch.batchCode}</Link> : ''}</td>
-                  <td>{task.room ? <Link to={`/room/${task.room.id}`}>{task.room.name}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/task/${task.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+              {taskList.map((task, i) => {
+                const overdue = isTaskOverdue(task);
+                return (
+                  <tr key={`entity-${i}`} data-cy="entityTable" className={overdue ? 'table-danger' : ''}>
+                    <td>
+                      <Button tag={Link} to={`/task/${task.id}`} color="link" size="sm">
+                        {task.id}
                       </Button>
-                      {canCompleteTask(task) && (
-                        <Button
-                          onClick={() => handleCompleteTask(task.id)}
-                          color="success"
-                          size="sm"
-                          disabled={completingTaskId === task.id}
-                        >
-                          <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Complete</span>
-                        </Button>
-                      )}
-                      {isAdminOrManager && (
+                    </td>
+                    <td>{task.title}</td>
+                    <td>{task.description}</td>
+                    <td>
+                      {task.dueDate ? (
                         <>
-                          <Button
-                            tag={Link}
-                            to={`/task/${task.id}/edit`}
-                            color="primary"
-                            size="sm"
-                            data-cy="entityEditButton"
-                            aria-label="Edit"
-                          >
-                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                          </Button>
-                          <Button
-                            onClick={() => (window.location.href = `/task/${task.id}/delete`)}
-                            color="danger"
-                            size="sm"
-                            data-cy="entityDeleteButton"
-                            aria-label="Delete"
-                          >
-                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                          </Button>
+                          <TextFormat type="date" value={task.dueDate} format={APP_LOCAL_DATE_FORMAT} />
+                          {overdue && (
+                            <span className="badge bg-danger ms-2" style={{ fontSize: '0.75rem' }}>
+                              Overdue
+                            </span>
+                          )}
                         </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      ) : null}
+                    </td>
+                    <td>{task.completed ? 'true' : 'false'}</td>
+                    <td>
+                      {task.completedDate ? <TextFormat type="date" value={task.completedDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
+                    </td>
+                    <td>{task.priority}</td>
+                    <td>{task.assignedTo}</td>
+                    <td>{task.note}</td>
+                    <td>{task.batch ? <Link to={`/batch/${task.batch.id}`}>{task.batch.batchCode}</Link> : ''}</td>
+                    <td>{task.room ? <Link to={`/room/${task.room.id}`}>{task.room.name}</Link> : ''}</td>
+                    <td className="text-end">
+                      <div className="btn-group flex-btn-group-container">
+                        <Button tag={Link} to={`/task/${task.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                        </Button>
+                        {canCompleteTask(task) && (
+                          <Button
+                            onClick={() => handleCompleteTask(task.id)}
+                            color="success"
+                            size="sm"
+                            disabled={completingTaskId === task.id}
+                          >
+                            <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Complete</span>
+                          </Button>
+                        )}
+                        {isAdminOrManager && (
+                          <>
+                            <Button
+                              tag={Link}
+                              to={`/task/${task.id}/edit`}
+                              color="primary"
+                              size="sm"
+                              data-cy="entityEditButton"
+                              aria-label="Edit"
+                            >
+                              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                            </Button>
+                            <Button
+                              onClick={() => (window.location.href = `/task/${task.id}/delete`)}
+                              color="danger"
+                              size="sm"
+                              data-cy="entityDeleteButton"
+                              aria-label="Delete"
+                            >
+                              <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         ) : (
