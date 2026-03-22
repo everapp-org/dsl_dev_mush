@@ -5,6 +5,7 @@ import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
 
 export interface IBatch {
   id?: number;
+  version?: number; // Optimistic locking version for concurrency control
   batchCode?: string;
   startDate?: dayjs.Dayjs;
   endDate?: dayjs.Dayjs | null;
