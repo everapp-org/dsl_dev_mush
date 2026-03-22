@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane, Table, Alert, Spinner } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +14,7 @@ import { getEntity } from './batch.reducer';
 
 export const BatchDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [phaseExecutions, setPhaseExecutions] = useState([]);
@@ -90,6 +91,18 @@ export const BatchDetail = () => {
   const canModifyBatch = useAppSelector(state =>
     hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
   );
+
+  // Feature #320: Redirect to list if batch is deleted (404 error)
+  useEffect(() => {
+    // If loading finished and there's no entity ID, it means the batch was not found (404)
+    if (!loading && !batchEntity.id && id) {
+      // Small delay to allow the error toast to be displayed
+      const redirectTimer = setTimeout(() => {
+        navigate('/batch', { replace: true });
+      }, 1500);
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [loading, batchEntity.id, id, navigate]);
 
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) {

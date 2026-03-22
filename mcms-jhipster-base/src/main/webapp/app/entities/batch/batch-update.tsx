@@ -84,6 +84,18 @@ export const BatchUpdate = () => {
     }
   }, [updateSuccess]);
 
+  // Feature #320: Redirect to list if batch is deleted (404 error)
+  useEffect(() => {
+    // If editing existing batch and loading finished with no entity ID, batch was deleted
+    if (!isNew && !loading && !batchEntity.id && id) {
+      // Small delay to allow the error toast to be displayed
+      const redirectTimer = setTimeout(() => {
+        navigate('/batch', { replace: true });
+      }, 1500);
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [isNew, loading, batchEntity.id, id, navigate]);
+
   // Warn user before leaving page with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
