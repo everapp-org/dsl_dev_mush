@@ -71,6 +71,9 @@ export const HarvestRecord = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
+          <Button tag="a" href="/api/export/harvests" className="me-2" color="success" data-cy="entityExportButton">
+            <FontAwesomeIcon icon="download" /> Export CSV
+          </Button>
           <Link to="/harvest-record/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Harvest Record
