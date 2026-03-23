@@ -4200,3 +4200,169 @@ Found 8 files with console statements - all are legitimate error logging in catc
 
 See session-133-summary.md for detailed session notes
 Features #363, #364 completed - 361/405 (89.1%)
+
+---
+
+## Session: 2026-03-23 (Session 143)
+
+### Completed Features (380/405 - 93.8%)
+
+#### Feature #382: Loading spinner styling consistent - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Ensure all loading spinners across the application have consistent styling, size, and appearance.
+
+**Implementation:**
+
+1. **Created LoadingSpinner Component** (`app/shared/components/LoadingSpinner.tsx`)
+   - Three size variants: large (3rem), medium (2rem), small (1rem)
+   - Consistent Bootstrap primary color
+   - Centered or inline layout options
+   - Customizable messages and minimum heights
+   - Full TypeScript types and documentation
+
+2. **Updated batch.tsx and batch-detail.tsx**
+   - Replaced inline `<Spinner>` with LoadingSpinner component
+   - Main loading: size="large" with contextual messages
+   - Infinite scroll loading: size="medium"
+
+3. **Updated All 27 Entity Update Forms**
+   - Replaced `<p>Loading...</p>` with LoadingSpinner component
+   - Created automation script (update-loading-spinners.js)
+   - Consistent form loading experience across all entities
+
+**Files Modified:**
+- 1 new component created
+- 2 entity pages updated (batch.tsx, batch-detail.tsx)
+- 27 entity update forms updated
+- Total: 32 files changed, 439 insertions(+), 47 deletions(-)
+
+**Verification:**
+✅ ESLint passed (0 errors)
+✅ Prettier auto-fixed
+✅ TypeScript compiled successfully
+✅ Webpack dev server running cleanly
+
+---
+
+#### Feature #383: Empty state styling consistent - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Ensure all empty states across entity list pages have uniform styling with consistent icons, messages, and call-to-action buttons.
+
+**Problem:**
+- 2 entity pages had rich empty states (heading + message + button)
+- 9 entity pages had simple alert warnings only
+- Inconsistent user guidance and visual appearance
+
+**Implementation:**
+
+1. **Created EmptyState Component** (`app/shared/components/EmptyState.tsx`)
+   - Centered layout with flexbox (300px min height)
+   - Icon display (default: folder-open, 3x size)
+   - Structured: heading + message + CTA button
+   - Configurable entity name, plural, create link
+   - Full TypeScript types and documentation
+
+2. **Updated All 11 Entity List Pages**
+   - batch.tsx, strain.tsx (rich → EmptyState)
+   - product.tsx, customer.tsx, supplier.tsx, room.tsx, material.tsx, task.tsx, sales-order.tsx, harvest-record.tsx, substrate-recipe.tsx (simple alert → EmptyState)
+   - Created automation script (update-empty-states.js)
+
+**Pattern Applied:**
+```tsx
+<EmptyState
+  entityName="Product"
+  entityNamePlural="products"
+  showCreateButton={true}
+  createLink="/product/new"
+/>
+```
+
+**Files Modified:**
+- 1 new component created
+- 11 entity list pages updated
+- Total: 14 files changed, 522 insertions(+), 27 deletions(-)
+
+**Verification:**
+✅ ESLint passed (0 errors)
+✅ Prettier auto-fixed
+✅ TypeScript compiled successfully
+✅ Webpack dev server running cleanly
+✅ Improved from 18% consistency (2/11) to 100% (11/11)
+
+---
+
+## Session Summary (Session 143)
+- **Features Completed:** 2 (both Style category)
+- **Feature #382:** Loading spinner styling consistent ✅
+- **Feature #383:** Empty state styling consistent ✅
+- **Components Created:** 2 new shared components (LoadingSpinner, EmptyState)
+- **Total Code Changes:**
+  - 46 files modified
+  - 961 insertions(+)
+  - 74 deletions(-)
+- **Progress:** 378 → 380 / 405 (93.3% → 93.8%)
+- **Commits:**
+  - 57e26d2 - feat: consistent loading spinner component (feature #382)
+  - 310b72a - feat: consistent empty state component (feature #383)
+- **Build Status:** ESLint passed, TypeScript compiled, servers running cleanly
+
+---
+
+## Technical Notes - Session 143
+
+### LoadingSpinner Component
+**Key Features:**
+- Size variants map: `{ large: '3rem', medium: '2rem', small: '1rem' }`
+- Centered prop for full-page loading
+- Message prop for contextual loading text
+- Accessibility: Screen reader compatible
+
+**Usage Patterns:**
+- Page/section loading: `size="large"` centered
+- Infinite scroll: `size="medium"` inline
+- Button/compact: `size="small"`
+
+### EmptyState Component
+**Key Features:**
+- Icon + Heading + Message + CTA button
+- Default icon: `folder-open` (3x size)
+- Max width: 500px for optimal readability
+- Min height: 300px for visual presence
+
+**Layout:**
+- Flexbox: column direction, centered alignment
+- Text-muted colors for icon and message
+- Primary large button for CTA
+
+### Automation Scripts
+Created two Node.js scripts for bulk updates:
+1. `update-loading-spinners.js` - Updated 27 entity update forms
+2. `update-empty-states.js` - Updated 11 entity list pages
+
+Both scripts:
+- Add component import
+- Replace old patterns with new component
+- Maintain entity-specific configurations
+- Provide clear progress output
+
+### Build Verification
+- **Frontend Lint:** Passed (exit code 0)
+- **Prettier:** Auto-fixed all formatting
+- **TypeScript:** No type errors
+- **Webpack:** Dev server healthy on port 9060
+- **Backend:** Running cleanly on port 8080
+
+### Next Session Recommendations
+- Continue with remaining features (25 left)
+- **Milestone achieved:** 93.8% completion! 🎉
+- Approaching final stretch toward 100%
+- Both servers stable and running
+- Style category: Excellent consistency improvements
+- No outstanding issues or technical debt
+
