@@ -33,6 +33,11 @@ const FinancialDashboard = Loadable({
   loading: () => loading,
 });
 
+const EnvironmentalDashboard = Loadable({
+  loader: () => import(/* webpackChunkName: "environmental-dashboard" */ 'app/modules/dashboard/environmental-dashboard'),
+  loading: () => loading,
+});
+
 const AppRoutes = () => {
   return (
     <div className="view-routes">
@@ -69,6 +74,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]}>
               <FinancialDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="environmental/dashboard"
+          element={
+            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+              <EnvironmentalDashboard />
             </PrivateRoute>
           }
         />

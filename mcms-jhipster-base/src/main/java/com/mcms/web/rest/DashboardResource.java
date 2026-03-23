@@ -4,8 +4,10 @@ import com.mcms.domain.CostRecord;
 import com.mcms.domain.SalesOrder;
 import com.mcms.repository.BatchRepository;
 import com.mcms.repository.CostRecordRepository;
+import com.mcms.repository.EnvironmentalAlertRepository;
 import com.mcms.repository.RoomRepository;
 import com.mcms.repository.SalesOrderRepository;
+import com.mcms.repository.SensorRepository;
 import com.mcms.repository.StrainRepository;
 import com.mcms.repository.TaskRepository;
 import com.mcms.security.AuthoritiesConstants;
@@ -39,6 +41,8 @@ public class DashboardResource {
     private final StrainRepository strainRepository;
     private final RoomRepository roomRepository;
     private final TaskRepository taskRepository;
+    private final SensorRepository sensorRepository;
+    private final EnvironmentalAlertRepository environmentalAlertRepository;
 
     public DashboardResource(
         CostRecordRepository costRecordRepository,
@@ -46,7 +50,9 @@ public class DashboardResource {
         BatchRepository batchRepository,
         StrainRepository strainRepository,
         RoomRepository roomRepository,
-        TaskRepository taskRepository
+        TaskRepository taskRepository,
+        SensorRepository sensorRepository,
+        EnvironmentalAlertRepository environmentalAlertRepository
     ) {
         this.costRecordRepository = costRecordRepository;
         this.salesOrderRepository = salesOrderRepository;
@@ -54,6 +60,8 @@ public class DashboardResource {
         this.strainRepository = strainRepository;
         this.roomRepository = roomRepository;
         this.taskRepository = taskRepository;
+        this.sensorRepository = sensorRepository;
+        this.environmentalAlertRepository = environmentalAlertRepository;
     }
 
     /**
@@ -239,6 +247,87 @@ public class DashboardResource {
         // Build response
         dashboard.put("activeBatchCount", activeBatchCount);
         dashboard.put("batchesByPhase", batchesByPhase);
+
+        return ResponseEntity.ok().body(dashboard);
+    }
+
+    /**
+     * GET /api/dashboard/environmental : Get environmental monitoring dashboard with room and sensor status.
+     *
+     * @return the ResponseEntity with status 200 (OK) and body containing environmental monitoring data.
+     */
+    @GetMapping("/environmental")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> getEnvironmentalDashboard() {
+        LOG.debug("REST request to get environmental monitoring dashboard");
+
+        Map<String, Object> dashboard = new HashMap<>();
+
+        // Get all rooms with their associated data
+        List<Map<String, Object>> roomsData = roomRepository.findAll().stream()
+            .map(room -> {
+                Map<String, Object> roomData = new HashMap<>();
+                roomData.put("id", room.getId());
+                roomData.put("name", room.getName());
+                roomData.put("code", room.getCode());
+                roomData.put("roomType", room.getRoomType());
+                roomData.put("status", room.getStatus());
+                roomData.put("capacityBags", room.getCapacityBags());
+                roomData.put("currentOccupancy", room.getCurrentOccupancy());
+                roomData.put("areaSqM", room.getAreaSqM());
+                roomData.put("hasHVAC", room.getHasHVAC());
+                roomData.put("hasMisting", room.getHasMisting());
+
+                // Count sensors in this room
+                long sensorCount = sensorRepository.findByRoomId(room.getId()).size();
+                long activeSensorCount = sensorRepository.findByRoomId(room.getId()).stream()
+                    .filter(sensor -> "ACTIVE".equals(sensor.getStatus()))
+                    .count();
+                roomData.put("sensorCount", sensorCount);
+                roomData.put("activeSensorCount", activeSensorCount);
+
+                // Count alerts for this room
+                List<com.mcms.domain.EnvironmentalAlert> alerts = environmentalAlertRepository.findByRoomId(room.getId());
+                long totalAlerts = alerts.size();
+                long unacknowledgedAlerts = alerts.stream()
+                    .filter(alert -> !alert.getAcknowledged())
+                    .count();
+                long criticalAlerts = alerts.stream()
+                    .filter(alert -> !alert.getAcknowledged() && "CRITICAL".equals(alert.getSeverity()))
+                    .count();
+                roomData.put("totalAlerts", totalAlerts);
+                roomData.put("unacknowledgedAlerts", unacknowledgedAlerts);
+                roomData.put("criticalAlerts", criticalAlerts);
+
+                return roomData;
+            })
+            .toList();
+
+        // Summary statistics
+        long totalRooms = roomRepository.count();
+        long activeRooms = roomRepository.findAll().stream()
+            .filter(room -> "ACTIVE".equals(room.getStatus()))
+            .count();
+        long totalSensors = sensorRepository.count();
+        long activeSensors = sensorRepository.findAll().stream()
+            .filter(sensor -> "ACTIVE".equals(sensor.getStatus()))
+            .count();
+        long totalAlerts = environmentalAlertRepository.count();
+        long unacknowledgedAlerts = environmentalAlertRepository.findAll().stream()
+            .filter(alert -> !alert.getAcknowledged())
+            .count();
+        long criticalAlerts = environmentalAlertRepository.findAll().stream()
+            .filter(alert -> !alert.getAcknowledged() && "CRITICAL".equals(alert.getSeverity()))
+            .count();
+
+        dashboard.put("rooms", roomsData);
+        dashboard.put("totalRooms", totalRooms);
+        dashboard.put("activeRooms", activeRooms);
+        dashboard.put("totalSensors", totalSensors);
+        dashboard.put("activeSensors", activeSensors);
+        dashboard.put("totalAlerts", totalAlerts);
+        dashboard.put("unacknowledgedAlerts", unacknowledgedAlerts);
+        dashboard.put("criticalAlerts", criticalAlerts);
 
         return ResponseEntity.ok().body(dashboard);
     }

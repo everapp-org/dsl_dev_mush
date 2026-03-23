@@ -13,6 +13,7 @@ import PageNotFound from 'app/shared/error/page-not-found';
 import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 
 import { getEntity } from './batch.reducer';
+import { BatchTimeline } from './batch-timeline';
 
 export const BatchDetail = () => {
   const dispatch = useAppDispatch();
@@ -351,42 +352,45 @@ export const BatchDetail = () => {
               </TabPane>
 
               <TabPane tabId="phaseHistory">
-                <h3>Phase Execution History</h3>
                 {loadingRelated ? (
-                  <p>Loading...</p>
-                ) : phaseExecutions.length > 0 ? (
-                  <Table striped responsive>
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Phase</th>
-                        <th scope="col">Start Date</th>
-                        <th scope="col">End Date</th>
-                        <th scope="col">Duration (days)</th>
-                        <th scope="col">Room</th>
-                        <th scope="col">Responsible</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {phaseExecutions.map((phase: any, idx) => (
-                        <tr key={phase.id}>
-                          <td>{phase.sequenceOrder}</td>
-                          <td>{phase.phase}</td>
-                          <td>
-                            <TextFormat value={phase.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
-                          </td>
-                          <td>{phase.endDate ? <TextFormat value={phase.endDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}</td>
-                          <td>{phase.actualDurationDays || '-'}</td>
-                          <td>{phase.room ? phase.room.name : '-'}</td>
-                          <td>{phase.responsiblePerson || '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                  <p>Loading phase history...</p>
                 ) : (
-                  <Alert color="info">
-                    <FontAwesomeIcon icon="info-circle" /> No phase execution records found for this batch.
-                  </Alert>
+                  <BatchTimeline phaseExecutions={phaseExecutions} currentPhase={batchEntity.currentPhase} />
+                )}
+
+                {/* Detailed table below timeline */}
+                {!loadingRelated && phaseExecutions.length > 0 && (
+                  <div className="mt-4">
+                    <h4>Detailed Phase History</h4>
+                    <Table striped responsive>
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Phase</th>
+                          <th scope="col">Start Date</th>
+                          <th scope="col">End Date</th>
+                          <th scope="col">Duration (days)</th>
+                          <th scope="col">Room</th>
+                          <th scope="col">Responsible</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {phaseExecutions.map((phase: any, idx) => (
+                          <tr key={phase.id}>
+                            <td>{phase.sequenceOrder}</td>
+                            <td>{phase.phase}</td>
+                            <td>
+                              <TextFormat value={phase.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
+                            </td>
+                            <td>{phase.endDate ? <TextFormat value={phase.endDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : '-'}</td>
+                            <td>{phase.actualDurationDays || '-'}</td>
+                            <td>{phase.room ? phase.room.name : '-'}</td>
+                            <td>{phase.responsiblePerson || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
                 )}
               </TabPane>
 

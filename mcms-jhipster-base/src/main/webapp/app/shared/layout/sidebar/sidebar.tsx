@@ -191,6 +191,10 @@ const Sidebar = (props: ISidebarProps) => {
                     <FontAwesomeIcon icon="bell" className="item-icon" />
                     <span>Environmental Alerts</span>
                   </Link>
+                  <Link to="/environmental/dashboard" className="sidebar-item" title="Environmental Dashboard">
+                    <FontAwesomeIcon icon="thermometer-half" className="item-icon" />
+                    <span>Environmental Dashboard</span>
+                  </Link>
                 </div>
               </Collapse>
             </div>
