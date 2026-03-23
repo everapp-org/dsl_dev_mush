@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
+import { FormErrorSummary } from 'app/shared/error/form-error-summary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -109,6 +110,7 @@ export const FlushCycleUpdate = () => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
+              <FormErrorSummary />
               {!isNew ? <ValidatedField name="id" required readOnly id="flush-cycle-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Flush Number"
