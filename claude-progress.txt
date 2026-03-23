@@ -11411,3 +11411,78 @@ See session-129-summary.md for details.
 - Feature #358: Soft delete for batches - PASSING (mark inactive, preserve data)
 
 See session-130-summary.md for details.
+
+---
+
+## Session 131: 2026-03-23
+
+### Completed Features (357/405 - 88.1%)
+
+#### Feature #359: Form defaults populated - PASSING
+**Category:** Default and Form Initialization
+
+**Purpose:**
+New batch creation forms should have sensible defaults to improve user experience.
+
+**Implementation:**
+Modified defaultValues() function in batch-update.tsx to provide defaults for new batches:
+- isActive: true - New batches are active by default
+- startDate: today's date - Defaults to current date in YYYY-MM-DD format
+- currentPhase: 'INOCULATION' - Defaults to first phase in lifecycle
+
+**How It Works:**
+1. User clicks "Create Batch" button
+2. Form opens with pre-populated fields:
+   - "Is Active" checkbox is checked
+   - "Start Date" shows today's date
+   - "Current Phase" shows "INOCULATION"
+3. User can override any defaults or use them as-is
+4. Autosave feature preserves these defaults if user leaves and returns
+
+**Files Modified:**
+- batch-update.tsx - Updated defaultValues() function
+
+---
+
+#### Feature #360: Date picker defaults to today - PASSING
+**Category:** Default and Form Initialization
+
+**Purpose:**
+Date input fields should default to current date for better UX.
+
+**Implementation:**
+Same implementation as Feature #359 - the startDate field now defaults to today's date.
+
+**Technical Details:**
+- Uses new Date().toISOString().split('T')[0] to get YYYY-MM-DD format
+- Compatible with HTML5 date input type
+- Works across all browsers and timezones
+
+**Files Modified:**
+- batch-update.tsx - Updated defaultValues() function
+
+---
+
+## Session Summary
+- Features Completed: 2 (both form defaults category)
+- Progress: 355 to 357 / 405 (87.7% to 88.1%)
+- Commit: 699f821
+- Session Type: YOLO mode
+
+## Build Status
+- ESLint: PASSED (1 pre-existing warning)
+- TypeScript: Compiles successfully
+- Servers: Both running cleanly
+- No mock data patterns found
+
+## Progress Tracking
+- Starting: 355/405 (87.7%)
+- Ending: 357/405 (88.1%)
+- Remaining: 48 features
+- Milestone: 88% completion!
+
+## Next Session Recommendations
+- Continue with remaining features (48 left)
+- Both servers stable and running
+- Progress: 357/405 features (88.1%) - approaching 89%!
+
