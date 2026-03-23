@@ -83,7 +83,7 @@ export const BatchDiscardDialog = () => {
           &nbsp; Cancel
         </Button>
         <Button id="jhi-confirm-discard-batch" data-cy="entityConfirmDiscardButton" color="danger" onClick={confirmDiscard}>
-          <FontAwesomeIcon icon="trash-alt" />
+          <FontAwesomeIcon icon="trash" />
           &nbsp; Discard Batch
         </Button>
       </ModalFooter>

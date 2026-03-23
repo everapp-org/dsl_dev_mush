@@ -190,8 +190,8 @@ export const FlushCycleUpdate = () => {
               <UncontrolledTooltip target="noteLabel">Flush-specific observations</UncontrolledTooltip>
               <ValidatedField id="flush-cycle-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

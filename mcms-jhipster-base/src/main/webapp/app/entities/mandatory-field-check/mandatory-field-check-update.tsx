@@ -136,8 +136,8 @@ export const MandatoryFieldCheckUpdate = () => {
                 type="select"
               >
                 <option value="" key="0">
-                Select phaseExecution...
-              </option>
+                  Select phaseExecution...
+                </option>
                 {phaseExecutions
                   ? phaseExecutions.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

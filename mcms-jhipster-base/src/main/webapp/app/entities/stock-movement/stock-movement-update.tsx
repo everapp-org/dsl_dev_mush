@@ -178,8 +178,8 @@ export const StockMovementUpdate = () => {
                 required
               >
                 <option value="" key="0">
-                Select inventoryLot...
-              </option>
+                  Select inventoryLot...
+                </option>
                 {inventoryLots
                   ? inventoryLots.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -191,8 +191,8 @@ export const StockMovementUpdate = () => {
               <FormText>This field is required.</FormText>
               <ValidatedField id="stock-movement-batch" name="batch" data-cy="batch" label="Batch" type="select">
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

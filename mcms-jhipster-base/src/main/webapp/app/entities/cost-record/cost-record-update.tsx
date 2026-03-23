@@ -157,8 +157,8 @@ export const CostRecordUpdate = () => {
               <ValidatedField label="Note" id="cost-record-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="cost-record-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

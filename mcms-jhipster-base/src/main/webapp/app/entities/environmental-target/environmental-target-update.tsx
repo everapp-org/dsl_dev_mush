@@ -217,8 +217,8 @@ export const EnvironmentalTargetUpdate = () => {
               <UncontrolledTooltip target="freshAirExchangesPerHourLabel">FAE target</UncontrolledTooltip>
               <ValidatedField id="environmental-target-room" name="room" data-cy="room" label="Room" type="select" required>
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

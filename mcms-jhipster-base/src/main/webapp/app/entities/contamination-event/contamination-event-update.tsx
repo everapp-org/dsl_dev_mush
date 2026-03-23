@@ -225,8 +225,8 @@ export const ContaminationEventUpdate = () => {
               <ValidatedField label="Note" id="contamination-event-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="contamination-event-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -244,8 +244,8 @@ export const ContaminationEventUpdate = () => {
                 type="select"
               >
                 <option value="" key="0">
-                Select phaseExecution...
-              </option>
+                  Select phaseExecution...
+                </option>
                 {phaseExecutions
                   ? phaseExecutions.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -256,8 +256,8 @@ export const ContaminationEventUpdate = () => {
               </ValidatedField>
               <ValidatedField id="contamination-event-room" name="room" data-cy="room" label="Room" type="select">
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

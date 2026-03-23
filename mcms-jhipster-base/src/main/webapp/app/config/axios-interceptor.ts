@@ -60,15 +60,14 @@ axios.get = function (url: string, config?: any) {
 
   // If an identical GET request is already in flight, return the cached promise
   if (pendingRequests.has(requestKey)) {
-    return pendingRequests.get(requestKey)!;
+    return pendingRequests.get(requestKey);
   }
 
   // Make the request and cache the promise
-  const requestPromise = originalGet.call(this, url, config)
-    .finally(() => {
-      // Clean up after request completes (success or error)
-      pendingRequests.delete(requestKey);
-    });
+  const requestPromise = originalGet.call(this, url, config).finally(() => {
+    // Clean up after request completes (success or error)
+    pendingRequests.delete(requestKey);
+  });
 
   pendingRequests.set(requestKey, requestPromise);
   return requestPromise;

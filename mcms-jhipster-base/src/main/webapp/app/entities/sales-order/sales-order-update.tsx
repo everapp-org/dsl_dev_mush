@@ -241,8 +241,8 @@ export const SalesOrderUpdate = () => {
               <ValidatedField label="Note" id="sales-order-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="sales-order-customer" name="customer" data-cy="customer" label="Customer" type="select" required>
                 <option value="" key="0">
-                Select customer...
-              </option>
+                  Select customer...
+                </option>
                 {customers
                   ? customers.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

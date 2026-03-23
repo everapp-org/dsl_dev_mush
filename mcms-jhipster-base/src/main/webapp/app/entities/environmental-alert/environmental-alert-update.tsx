@@ -226,8 +226,8 @@ export const EnvironmentalAlertUpdate = () => {
               <UncontrolledTooltip target="resolutionNoteLabel">What was done about it</UncontrolledTooltip>
               <ValidatedField id="environmental-alert-room" name="room" data-cy="room" label="Room" type="select" required>
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -239,8 +239,8 @@ export const EnvironmentalAlertUpdate = () => {
               <FormText>This field is required.</FormText>
               <ValidatedField id="environmental-alert-sensor" name="sensor" data-cy="sensor" label="Sensor" type="select">
                 <option value="" key="0">
-                Select sensor...
-              </option>
+                  Select sensor...
+                </option>
                 {sensors
                   ? sensors.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -251,8 +251,8 @@ export const EnvironmentalAlertUpdate = () => {
               </ValidatedField>
               <ValidatedField id="environmental-alert-batch" name="batch" data-cy="batch" label="Batch" type="select">
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

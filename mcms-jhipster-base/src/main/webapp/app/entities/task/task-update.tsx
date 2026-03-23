@@ -158,8 +158,8 @@ export const TaskUpdate = () => {
               <ValidatedField label="Note" id="task-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="task-batch" name="batch" data-cy="batch" label="Batch" type="select">
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -170,8 +170,8 @@ export const TaskUpdate = () => {
               </ValidatedField>
               <ValidatedField id="task-room" name="room" data-cy="room" label="Room" type="select">
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

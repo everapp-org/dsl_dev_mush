@@ -238,8 +238,8 @@ export const SupplyOrderLineUpdate = () => {
                 required
               >
                 <option value="" key="0">
-                Select supplyOrder...
-              </option>
+                  Select supplyOrder...
+                </option>
                 {supplyOrders
                   ? supplyOrders.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -251,8 +251,8 @@ export const SupplyOrderLineUpdate = () => {
               <FormText>This field is required.</FormText>
               <ValidatedField id="supply-order-line-material" name="material" data-cy="material" label="Material" type="select" required>
                 <option value="" key="0">
-                Select material...
-              </option>
+                  Select material...
+                </option>
                 {materials
                   ? materials.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -264,8 +264,8 @@ export const SupplyOrderLineUpdate = () => {
               <FormText>This field is required.</FormText>
               <ValidatedField id="supply-order-line-batch" name="batch" data-cy="batch" label="Batch" type="select">
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

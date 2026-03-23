@@ -199,8 +199,8 @@ export const InventoryLotUpdate = () => {
               <ValidatedField label="Note" id="inventory-lot-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="inventory-lot-material" name="material" data-cy="material" label="Material" type="select" required>
                 <option value="" key="0">
-                Select material...
-              </option>
+                  Select material...
+                </option>
                 {materials
                   ? materials.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -219,8 +219,8 @@ export const InventoryLotUpdate = () => {
                 required
               >
                 <option value="" key="0">
-                Select supplyOrderLine...
-              </option>
+                  Select supplyOrderLine...
+                </option>
                 {supplyOrderLines
                   ? supplyOrderLines.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

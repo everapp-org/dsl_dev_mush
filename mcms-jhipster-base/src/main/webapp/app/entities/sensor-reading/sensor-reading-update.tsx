@@ -181,8 +181,8 @@ export const SensorReadingUpdate = () => {
               <UncontrolledTooltip target="unitLabel">Unit of measurement</UncontrolledTooltip>
               <ValidatedField id="sensor-reading-sensor" name="sensor" data-cy="sensor" label="Sensor" type="select" required>
                 <option value="" key="0">
-                Select sensor...
-              </option>
+                  Select sensor...
+                </option>
                 {sensors
                   ? sensors.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

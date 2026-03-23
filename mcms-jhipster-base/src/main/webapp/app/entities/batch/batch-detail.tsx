@@ -158,7 +158,7 @@ export const BatchDetail = () => {
                       size="sm"
                       data-cy="entityDiscardButton"
                     >
-                      <FontAwesomeIcon icon="trash-alt" /> <span className="d-none d-md-inline">Discard</span>
+                      <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Discard</span>
                     </Button>
                   </>
                 )}

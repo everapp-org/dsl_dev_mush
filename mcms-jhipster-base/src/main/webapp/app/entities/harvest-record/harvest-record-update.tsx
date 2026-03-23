@@ -146,8 +146,8 @@ export const HarvestRecordUpdate = () => {
                 required
               >
                 <option value="" key="0">
-                Select flushCycle...
-              </option>
+                  Select flushCycle...
+                </option>
                 {flushCycles
                   ? flushCycles.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

@@ -145,8 +145,8 @@ export const SensorUpdate = () => {
               <ValidatedField label="Note" id="sensor-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="sensor-room" name="room" data-cy="room" label="Room" type="select" required>
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

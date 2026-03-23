@@ -210,8 +210,8 @@ export const MonthlyReportUpdate = () => {
               <UncontrolledTooltip target="summaryLabel">Executive summary text</UncontrolledTooltip>
               <ValidatedField id="monthly-report-batch" name="batch" data-cy="batch" label="Batch" type="select">
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>

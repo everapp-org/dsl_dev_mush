@@ -179,8 +179,8 @@ export const PhaseExecutionUpdate = () => {
               <UncontrolledTooltip target="noteLabel">Phase observations &amp; notes</UncontrolledTooltip>
               <ValidatedField id="phase-execution-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
                 <option value="" key="0">
-                Select batch...
-              </option>
+                  Select batch...
+                </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -192,8 +192,8 @@ export const PhaseExecutionUpdate = () => {
               <FormText>This field is required.</FormText>
               <ValidatedField id="phase-execution-room" name="room" data-cy="room" label="Room" type="select">
                 <option value="" key="0">
-                Select room...
-              </option>
+                  Select room...
+                </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
