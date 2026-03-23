@@ -208,6 +208,17 @@ public class InventoryLotResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInventoryLot(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete InventoryLot : {}", id);
+
+        // Check if there are any stock movements for this inventory lot
+        List<StockMovement> movements = stockMovementRepository.findByInventoryLotIdOrderByMovementDateDesc(id);
+        if (!movements.isEmpty()) {
+            throw new BadRequestAlertException(
+                "Cannot delete inventory lot with existing stock movements. Found " + movements.size() + " movement(s).",
+                ENTITY_NAME,
+                "hasmovements"
+            );
+        }
+
         inventoryLotRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
