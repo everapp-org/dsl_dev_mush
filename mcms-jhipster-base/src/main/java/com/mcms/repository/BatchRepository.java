@@ -88,4 +88,8 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
     // Performance: Get batch count grouped by phase (for active batches only)
     @Query("select b.currentPhase as phase, count(b) as count from Batch b where b.isActive = true group by b.currentPhase")
     List<Object[]> countActiveBatchesByPhase();
+
+    // Count batches using a specific strain
+    @Query("select count(b) from Batch b where b.strain.id = :strainId")
+    long countByStrainId(@Param("strainId") Long strainId);
 }

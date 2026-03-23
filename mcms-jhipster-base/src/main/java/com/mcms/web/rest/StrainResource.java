@@ -232,6 +232,17 @@ public class StrainResource {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
     public ResponseEntity<Void> deleteStrain(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Strain : {}", id);
+
+        // Check if strain is used by any batches
+        long batchCount = batchRepository.countByStrainId(id);
+        if (batchCount > 0) {
+            throw new BadRequestAlertException(
+                "Strain is used by " + batchCount + " batches",
+                ENTITY_NAME,
+                "straininuse"
+            );
+        }
+
         strainRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))

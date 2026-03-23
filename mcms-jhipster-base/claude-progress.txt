@@ -4189,3 +4189,11 @@ Found 8 files with console statements - all are legitimate error logging in catc
 - Both servers stable and running
 - Progress: 343/405 features (84.7%) - approaching 85%!
 
+
+## Session 126: 2026-03-23 - Features 349-350 Complete
+- Completed: 2 features (Data Cleanup & Cascade)
+- Progress: 345 -> 347 / 405 (85.2% -> 85.7%)
+- Feature 349: CASCADE DELETE for batch relationships
+- Feature 350: SET NULL for room deletions
+- Details: See session-126-summary.md
+
