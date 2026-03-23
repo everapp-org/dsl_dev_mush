@@ -369,6 +369,12 @@ public class StrainResource {
                         continue;
                     }
 
+                    // Check for duplicate name+species combination
+                    if (strainRepository.findOneByNameAndSpecies(strain.getName(), strain.getSpecies()).isPresent()) {
+                        errors.add("Line " + lineNumber + ": Strain '" + strain.getName() + " - " + strain.getSpecies() + "' already exists (skipped)");
+                        continue;
+                    }
+
                     Strain saved = strainRepository.save(strain);
                     importedStrains.add(saved);
                 } catch (Exception e) {

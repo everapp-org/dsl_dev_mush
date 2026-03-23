@@ -303,9 +303,9 @@ public class MaterialResource {
                         continue;
                     }
 
-                    // Check for duplicate code
-                    if (materialRepository.findAll().stream().anyMatch(m -> m.getCode().equals(material.getCode()))) {
-                        errors.add("Line " + lineNumber + ": Material code '" + material.getCode() + "' already exists");
+                    // Check for duplicate code (efficient query)
+                    if (materialRepository.findOneByCode(material.getCode()).isPresent()) {
+                        errors.add("Line " + lineNumber + ": Material code '" + material.getCode() + "' already exists (skipped)");
                         continue;
                     }
 

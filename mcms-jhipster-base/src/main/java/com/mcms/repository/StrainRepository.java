@@ -2,6 +2,7 @@ package com.mcms.repository;
 
 import com.mcms.domain.Strain;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,14 @@ public interface StrainRepository extends JpaRepository<Strain, Long> {
         "LOWER(s.variety) LIKE LOWER(CONCAT('%', :searchTerm, '%'))"
     )
     List<Strain> searchStrains(@Param("searchTerm") String searchTerm);
+
+    /**
+     * Find a strain by exact name and species match (case-sensitive).
+     * Used for duplicate detection during CSV import.
+     *
+     * @param name the strain name
+     * @param species the species name
+     * @return Optional containing the strain if found, empty otherwise
+     */
+    Optional<Strain> findOneByNameAndSpecies(String name, String species);
 }
