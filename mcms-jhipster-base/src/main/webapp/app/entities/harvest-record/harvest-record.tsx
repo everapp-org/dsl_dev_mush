@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Badge } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -64,6 +64,21 @@ export const HarvestRecord = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const getGradeBadgeColor = (grade: string): string => {
+    switch (grade) {
+      case 'A_PREMIUM':
+        return 'warning'; // Gold/yellow for premium grade
+      case 'B_STANDARD':
+        return 'secondary'; // Gray/silver for standard grade
+      case 'C_INDUSTRIAL':
+        return 'info'; // Blue for industrial grade (bronze approximation)
+      case 'WASTE':
+        return 'dark'; // Dark gray for waste
+      default:
+        return 'secondary';
+    }
+  };
+
   return (
     <div>
       <h1 id="harvest-record-heading" data-cy="HarvestRecordHeading">
@@ -124,7 +139,9 @@ export const HarvestRecord = () => {
                     ) : null}
                   </td>
                   <td>{harvestRecord.weightKg}</td>
-                  <td>{harvestRecord.grade}</td>
+                  <td>
+                    <Badge color={getGradeBadgeColor(harvestRecord.grade)}>{harvestRecord.grade}</Badge>
+                  </td>
                   <td>{harvestRecord.pickerName}</td>
                   <td>{harvestRecord.note}</td>
                   <td>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input, Row, Col, FormGroup, Label, Card, CardBody, Alert } from 'reactstrap';
+import { Button, Table, Input, Row, Col, FormGroup, Label, Card, CardBody, Alert, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -694,7 +694,18 @@ export const Batch = () => {
                   <td>{batch.targetYieldKg}</td>
                   <td>{batch.actualTotalYieldKg}</td>
                   <td>{batch.biologicalEfficiencyPercent}</td>
-                  <td>{batch.isContaminated ? 'true' : 'false'}</td>
+                  <td>
+                    {batch.isContaminated ? (
+                      <>
+                        <FontAwesomeIcon icon="flag" className="text-danger" id={`contaminated-${batch.id}`} />
+                        <UncontrolledTooltip target={`contaminated-${batch.id}`}>
+                          Contaminated - This batch has been marked as contaminated and may require special handling
+                        </UncontrolledTooltip>
+                      </>
+                    ) : (
+                      <span className="text-muted">-</span>
+                    )}
+                  </td>
                   <td>{batch.isActive ? 'true' : 'false'}</td>
                   <td>{batch.completionNote}</td>
                   <td>{batch.note}</td>

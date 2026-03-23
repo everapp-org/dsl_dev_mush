@@ -315,7 +315,19 @@ export const BatchDetail = () => {
                     <span id="isContaminated">Is Contaminated</span>
                     <UncontrolledTooltip target="isContaminated">Flag: any contamination detected?</UncontrolledTooltip>
                   </dt>
-                  <dd>{batchEntity.isContaminated ? 'true' : 'false'}</dd>
+                  <dd>
+                    {batchEntity.isContaminated ? (
+                      <>
+                        <FontAwesomeIcon icon="flag" className="text-danger me-2" id="contaminated-flag-detail" />
+                        <span className="text-danger fw-bold">Yes - Contaminated</span>
+                        <UncontrolledTooltip target="contaminated-flag-detail">
+                          Contaminated - This batch has been marked as contaminated and may require special handling
+                        </UncontrolledTooltip>
+                      </>
+                    ) : (
+                      <span className="text-muted">No</span>
+                    )}
+                  </dd>
                   <dt>
                     <span id="isActive">Is Active</span>
                     <UncontrolledTooltip target="isActive">Batch still in production?</UncontrolledTooltip>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Badge } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -17,6 +17,21 @@ export const HarvestRecordDetail = () => {
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
+
+  const getGradeBadgeColor = (grade: string): string => {
+    switch (grade) {
+      case 'A_PREMIUM':
+        return 'warning'; // Gold/yellow for premium grade
+      case 'B_STANDARD':
+        return 'secondary'; // Gray/silver for standard grade
+      case 'C_INDUSTRIAL':
+        return 'info'; // Blue for industrial grade (bronze approximation)
+      case 'WASTE':
+        return 'dark'; // Dark gray for waste
+      default:
+        return 'secondary';
+    }
+  };
 
   const harvestRecordEntity = useAppSelector(state => state.harvestRecord.entity);
   return (
@@ -46,7 +61,9 @@ export const HarvestRecordDetail = () => {
             <span id="grade">Grade</span>
             <UncontrolledTooltip target="grade">Quality classification</UncontrolledTooltip>
           </dt>
-          <dd>{harvestRecordEntity.grade}</dd>
+          <dd>
+            <Badge color={getGradeBadgeColor(harvestRecordEntity.grade)}>{harvestRecordEntity.grade}</Badge>
+          </dd>
           <dt>
             <span id="pickerName">Picker Name</span>
             <UncontrolledTooltip target="pickerName">Who harvested</UncontrolledTooltip>
