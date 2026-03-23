@@ -11769,3 +11769,67 @@ search, phase, strainId, isActive, startDateFrom, startDateTo, numberOfBagsMin, 
 - Remaining: 40 features
 
 ---
+
+
+---
+
+## Session 136: 2026-03-23
+
+### Completed Features (366/405 - 90.4%)
+
+#### Feature #369: Protected route direct access blocked - PASSING
+**Category:** URL & Direct Access
+
+**Purpose:**
+Verify that unauthenticated users cannot directly access protected routes and are redirected to the login page.
+
+**Verification Steps:**
+1. Logout (clears JWT token)
+2. Navigate directly to /admin/users
+3. Verify redirect to /login
+
+**Implementation Analysis:**
+
+The feature was already fully implemented and working correctly. Verification confirmed:
+
+1. **PrivateRoute Component** (private-route.tsx):
+   - Lines 23-25: Shows empty div while session is being fetched
+   - Lines 27-36: If authenticated, checks authorization and renders content or error
+   - Lines 39-48: If not authenticated, redirects to /login with original location preserved
+
+2. **Login Component** (login.tsx):
+   - Lines 29-32: After successful authentication, redirects back to original requested page
+   - Falls back to '/' if no original location
+
+3. **App Initialization** (app.tsx):
+   - Lines 27-30: Dispatches getSession() on mount to check authentication status
+
+4. **Authentication Flow**:
+   - Backend API /api/account returns 401 when not authenticated (verified with curl)
+   - Triggers getAccount.rejected action
+   - Sets isAuthenticated: false, sessionHasBeenFetched: true
+   - PrivateRoute sees unauthenticated state and redirects to /login
+
+5. **Tests** (private-route.spec.tsx):
+   - Lines 71-94: Test confirms redirect to login when not authenticated
+
+**Complete Flow:**
+User navigates to /admin/users while logged out → App loads → getSession() called → API returns 401 → isAuthenticated=false → PrivateRoute redirects to /login → After login, redirects back to /admin/users
+
+**Verification (YOLO Mode):**
+- TypeScript: Compiles successfully
+- Backend: Returns 401 for /api/account when not authenticated
+- Code logic: All components correctly implement redirect flow
+- Tests: Verify redirect behavior
+- Servers: Running cleanly
+
+**Result:** Feature verified and confirmed working correctly. No code changes needed.
+
+---
+
+## Session Summary
+- Features Completed: 1 (URL & Direct Access category)
+- Progress: 365 to 366 / 405 (90.1% to 90.4%)
+- Session Type: YOLO mode verification
+- Remaining: 39 features
+
