@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Badge, Button, Table } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,21 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './sensor.reducer';
+
+const getStatusBadgeColor = (status: string): string => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success'; // green
+    case 'INACTIVE':
+      return 'secondary'; // gray
+    case 'ERROR':
+      return 'danger'; // red
+    case 'CALIBRATING':
+      return 'warning'; // yellow
+    default:
+      return 'secondary';
+  }
+};
 
 export const Sensor = () => {
   const dispatch = useAppDispatch();
@@ -131,7 +146,9 @@ export const Sensor = () => {
                   </td>
                   <td>{sensor.sensorCode}</td>
                   <td>{sensor.sensorType}</td>
-                  <td>{sensor.status}</td>
+                  <td>
+                    <Badge color={getStatusBadgeColor(sensor.status)}>{sensor.status}</Badge>
+                  </td>
                   <td>
                     {sensor.installedDate ? <TextFormat type="date" value={sensor.installedDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
                   </td>

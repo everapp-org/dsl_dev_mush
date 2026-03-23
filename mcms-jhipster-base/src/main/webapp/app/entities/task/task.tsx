@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Badge, Button, Table } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,23 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './task.reducer';
 import { EmptyState } from 'app/shared/components/EmptyState';
+
+const getPriorityBadgeColor = (priority: number): string => {
+  switch (priority) {
+    case 5:
+      return 'danger'; // red - highest priority
+    case 4:
+      return 'warning'; // orange/yellow - high priority
+    case 3:
+      return 'info'; // light blue - medium priority
+    case 2:
+      return 'light'; // light gray - low priority
+    case 1:
+      return 'secondary'; // gray - lowest priority
+    default:
+      return 'secondary';
+  }
+};
 
 export const Task = () => {
   const dispatch = useAppDispatch();
@@ -52,7 +69,7 @@ export const Task = () => {
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
     const allowedParams = ['sort'];
-    const hasIrrelevantParams = Array.from(params.keys()).some(key => !allowedParams.includes(key));
+    const hasIrrelevantParams = Array.from(params.keys()).some((key: string) => !allowedParams.includes(key));
 
     if (hasIrrelevantParams) {
       // Clean URL by keeping only the sort parameter
@@ -201,7 +218,9 @@ export const Task = () => {
                     <td>
                       {task.completedDate ? <TextFormat type="date" value={task.completedDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
                     </td>
-                    <td>{task.priority}</td>
+                    <td>
+                      <Badge color={getPriorityBadgeColor(task.priority)}>{task.priority}</Badge>
+                    </td>
                     <td>{task.assignedTo}</td>
                     <td>{task.note}</td>
                     <td>{task.batch ? <Link to={`/batch/${task.batch.id}`}>{task.batch.batchCode}</Link> : ''}</td>

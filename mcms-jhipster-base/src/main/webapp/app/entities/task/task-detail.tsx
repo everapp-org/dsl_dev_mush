@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Badge, Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -11,6 +11,23 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { AUTHORITIES } from 'app/config/constants';
 
 import { getEntity } from './task.reducer';
+
+const getPriorityBadgeColor = (priority: number): string => {
+  switch (priority) {
+    case 5:
+      return 'danger'; // red - highest priority
+    case 4:
+      return 'warning'; // orange/yellow - high priority
+    case 3:
+      return 'info'; // light blue - medium priority
+    case 2:
+      return 'light'; // light gray - low priority
+    case 1:
+      return 'secondary'; // gray - lowest priority
+    default:
+      return 'secondary';
+  }
+};
 
 export const TaskDetail = () => {
   const dispatch = useAppDispatch();
@@ -85,9 +102,9 @@ export const TaskDetail = () => {
           </dd>
           <dt>
             <span id="priority">Priority</span>
-            <UncontrolledTooltip target="priority">Priority: 1=highest, 5=lowest</UncontrolledTooltip>
+            <UncontrolledTooltip target="priority">Priority: 5=highest, 1=lowest</UncontrolledTooltip>
           </dt>
-          <dd>{taskEntity.priority}</dd>
+          <dd>{taskEntity.priority && <Badge color={getPriorityBadgeColor(taskEntity.priority)}>{taskEntity.priority}</Badge>}</dd>
           <dt>
             <span id="assignedTo">Assigned To</span>
             <UncontrolledTooltip target="assignedTo">Display name of assignee</UncontrolledTooltip>

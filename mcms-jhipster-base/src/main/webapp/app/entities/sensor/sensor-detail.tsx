@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Badge, Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
@@ -10,6 +10,21 @@ import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './sensor.reducer';
+
+const getStatusBadgeColor = (status: string): string => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success'; // green
+    case 'INACTIVE':
+      return 'secondary'; // gray
+    case 'ERROR':
+      return 'danger'; // red
+    case 'CALIBRATING':
+      return 'warning'; // yellow
+    default:
+      return 'secondary';
+  }
+};
 
 export const SensorDetail = () => {
   const dispatch = useAppDispatch();
@@ -47,7 +62,7 @@ export const SensorDetail = () => {
             <span id="status">Status</span>
             <UncontrolledTooltip target="status">Current operational status</UncontrolledTooltip>
           </dt>
-          <dd>{sensorEntity.status}</dd>
+          <dd>{sensorEntity.status && <Badge color={getStatusBadgeColor(sensorEntity.status)}>{sensorEntity.status}</Badge>}</dd>
           <dt>
             <span id="installedDate">Installed Date</span>
             <UncontrolledTooltip target="installedDate">Installation date</UncontrolledTooltip>
