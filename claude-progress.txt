@@ -13822,3 +13822,62 @@ BatchTimeline
 - No outstanding issues or technical debt from this session
 - Continue with remaining features to complete the project
 
+
+
+---
+
+## Session: 2026-03-23 (Session 154)
+
+### Completed Features (404/405 - 99.75%)
+
+**Features completed this session:** 2 (both Security and Access Control category)
+
+#### Feature #12: ROLE_USER has read-only dashboard access - PASSING
+**Category:** Security and Access Control
+**Date:** 2026-03-23
+
+**Purpose:**
+Verify that users with ROLE_USER can view the dashboard with read-only access but cannot perform edit/delete operations.
+
+**Verification:**
+The feature was already correctly implemented. Code review confirmed:
+
+1. Dashboard Access: Home page renders Dashboard for authenticated users, calls /api/dashboard/overview and /api/dashboard/production with isAuthenticated() authorization
+2. Read-Only UI: Dashboard shows only KPI cards and charts, no edit/delete buttons
+3. API Protection: DELETE /api/batches/{id} requires ROLE_ADMIN or ROLE_MANAGER, ROLE_USER gets 403
+4. Test User: user_id 2, login=user, has only ROLE_USER authority
+
+**Conclusion:** No code changes needed. Feature already passing.
+
+---
+
+#### Feature #14: JWT token expiry after 24 hours - PASSING  
+**Category:** Security and Access Control
+**Date:** 2026-03-23
+
+**Purpose:**
+Verify JWT tokens expire after 24 hours with proper handling and user messaging.
+
+**Verification:**
+The feature was already correctly implemented. Code review confirmed:
+
+1. Token Config: token-validity-in-seconds: 86400 (24 hours) in application-dev.yml and application-prod.yml
+2. Backend Validation: Spring Security OAuth2 validates JWT, expired tokens return 401
+3. Frontend Interceptor: axios catches 401, calls clearAuthentication('Session expired')
+4. Login Message: login-modal.tsx displays yellow Alert with 'Session expired' message
+
+**Conclusion:** No code changes needed. Feature already passing.
+
+---
+
+## Session Summary (Session 154)
+- Features Completed: 2 (both Security and Access Control)
+- Feature #12: ROLE_USER has read-only dashboard access
+- Feature #14: JWT token expiry after 24 hours
+- Code Changes: None required (verification-only session)
+- Progress: 402 to 404 / 405 (99.3% to 99.75%)
+- Build Status: Backend healthy, frontend running
+- Notes: Both features were already correctly implemented
+
+---
+
