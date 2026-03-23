@@ -11389,3 +11389,14 @@ Both features optimize frontend performance:
 - Feature #354: Deleted batch removed from search results - PASSING (already implemented)
 
 See session-128-summary.md for details.
+
+---
+
+## Session 129: 2026-03-23
+
+### Completed Features (353/405 - 87.2%)
+
+- Feature #355: Deleted batch removed from lists - PASSING (optimistic Redux delete)
+- Feature #356: Deleted batch removed from dropdowns - PASSING (shared Redux state)
+
+See session-129-summary.md for details.
