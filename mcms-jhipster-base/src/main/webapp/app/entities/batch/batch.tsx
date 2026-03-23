@@ -43,6 +43,9 @@ export const Batch = () => {
     numberOfBagsMax: '',
   });
 
+  // Feature #348: Separate state for search input (immediate) vs debounced search (API call)
+  const [searchInput, setSearchInput] = useState('');
+
   // Track invalid page redirect
   const [showInvalidPageMessage, setShowInvalidPageMessage] = useState(false);
 
@@ -81,8 +84,9 @@ export const Batch = () => {
   // Initialize filters from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
+    const searchParam = params.get('search') || '';
     setFilters({
-      search: params.get('search') || '',
+      search: searchParam,
       phase: params.get('phase') || '',
       strainId: params.get('strainId') || '',
       isActive: params.get('isActive') || '',
@@ -91,7 +95,27 @@ export const Batch = () => {
       numberOfBagsMin: params.get('numberOfBagsMin') || '',
       numberOfBagsMax: params.get('numberOfBagsMax') || '',
     });
+    setSearchInput(searchParam);
   }, []);
+
+  // Feature #348: Debounce search input (500ms delay)
+  // Updates filters.search only after user stops typing for 500ms
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        search: searchInput,
+      }));
+      // Reset to first page when search changes
+      setPaginationState(prev => ({
+        ...prev,
+        activePage: 1,
+      }));
+    }, 500);
+
+    // Cleanup timer on every searchInput change
+    return () => clearTimeout(debounceTimer);
+  }, [searchInput]);
 
   const getAllEntities = () => {
     // Feature #310: Convert local date filters to UTC for timezone-aware filtering
@@ -315,6 +339,13 @@ export const Batch = () => {
   };
 
   const handleFilterChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Feature #348: Handle search separately with debouncing
+    if (field === 'search') {
+      setSearchInput(event.target.value);
+      return;
+    }
+
+    // Other filters: immediate update (no debouncing needed)
     setFilters({
       ...filters,
       [field]: event.target.value,
@@ -327,6 +358,7 @@ export const Batch = () => {
   };
 
   const handleClearFilters = () => {
+    setSearchInput(''); // Feature #348: Clear search input
     setFilters({
       search: '',
       phase: '',
@@ -442,7 +474,7 @@ export const Batch = () => {
                   type="text"
                   id="search-filter"
                   placeholder="Search by batch code, note, or completion note..."
-                  value={filters.search}
+                  value={searchInput}
                   onChange={handleFilterChange('search')}
                   maxLength={1000}
                 />
