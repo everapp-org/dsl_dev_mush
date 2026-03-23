@@ -38,6 +38,20 @@ export const Material = () => {
     }
   };
 
+  // Feature #363: Clean URL params when navigating from other entities
+  // Only keep 'sort' parameter, remove any filters from other entity lists
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const allowedParams = ['sort'];
+    const hasIrrelevantParams = Array.from(params.keys()).some(key => !allowedParams.includes(key));
+
+    if (hasIrrelevantParams) {
+      // Clean URL by keeping only the sort parameter
+      const cleanURL = params.has('sort') ? `?sort=${params.get('sort')}` : `?sort=${sortState.sort},${sortState.order}`;
+      navigate(`${pageLocation.pathname}${cleanURL}`, { replace: true });
+    }
+  }, []); // Run once on mount
+
   useEffect(() => {
     sortEntities();
   }, [sortState.order, sortState.sort]);

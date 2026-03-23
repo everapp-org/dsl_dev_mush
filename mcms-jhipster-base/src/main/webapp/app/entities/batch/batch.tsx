@@ -81,6 +81,40 @@ export const Batch = () => {
     dispatch(getStrains({ sort: 'name,asc' }));
   }, []);
 
+  // Feature #363: Clean URL params when navigating from other entities
+  // Remove any parameters that aren't relevant to batch filtering
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const allowedParams = [
+      'page',
+      'sort',
+      'search',
+      'phase',
+      'strainId',
+      'isActive',
+      'startDateFrom',
+      'startDateTo',
+      'numberOfBagsMin',
+      'numberOfBagsMax',
+    ];
+
+    // Check if there are any irrelevant params
+    const hasIrrelevantParams = Array.from(params.keys()).some(key => !allowedParams.includes(key));
+
+    if (hasIrrelevantParams) {
+      // Build clean URL with only allowed params
+      const cleanParams = new URLSearchParams();
+      allowedParams.forEach(key => {
+        if (params.has(key)) {
+          cleanParams.set(key, params.get(key));
+        }
+      });
+
+      const cleanURL = cleanParams.toString() ? `?${cleanParams.toString()}` : '';
+      navigate(`${pageLocation.pathname}${cleanURL}`, { replace: true });
+    }
+  }, []); // Run once on mount
+
   // Initialize filters from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
