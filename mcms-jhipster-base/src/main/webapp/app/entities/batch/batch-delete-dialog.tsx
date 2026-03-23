@@ -5,7 +5,7 @@ import { Alert, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'react
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { deleteEntity, getEntity } from './batch.reducer';
+import { deleteEntity, getEntities, getEntity } from './batch.reducer';
 import axios from 'axios';
 
 export const BatchDeleteDialog = () => {
@@ -38,23 +38,39 @@ export const BatchDeleteDialog = () => {
 
   const confirmDelete = async (cascade = false) => {
     setIsDeleting(true);
-    try {
-      const url = `/api/batches/${batchEntity.id}${cascade ? '?cascade=true' : ''}`;
-      await axios.delete(url);
-      // Success - close dialog and refresh
-      handleClose();
-      window.location.reload();
-    } catch (error) {
-      if (error.response?.status === 409) {
-        // Conflict - batch has related entities
-        const warningMessage = error.response.headers['x-mcmsapp-error'] || 'Batch has related records. Use force delete to proceed.';
-        setCascadeWarning(warningMessage);
-      } else {
-        // Other error - use standard delete action
-        dispatch(deleteEntity(batchEntity.id));
+    if (cascade) {
+      // For cascade delete, we need to use axios directly with cascade=true parameter
+      try {
+        const url = `/api/batches/${batchEntity.id}?cascade=true`;
+        await axios.delete(url);
+        // Success - manually refresh the batch list
+        // This will update lists (Feature #355) and dropdowns (Feature #356)
+        await dispatch(getEntities({}));
+        handleClose();
+      } catch (error) {
+        setCascadeWarning(error.response?.headers['x-mcmsapp-error'] || 'Failed to delete batch');
+      } finally {
+        setIsDeleting(false);
       }
-    } finally {
-      setIsDeleting(false);
+    } else {
+      // For normal delete, use Redux action which handles optimistic UI updates
+      // Features #355, #356: The reducer will immediately remove batch from lists and dropdowns
+      try {
+        await dispatch(deleteEntity(batchEntity.id)).unwrap();
+        // Success - close dialog (list is already updated optimistically)
+        handleClose();
+      } catch (error) {
+        if (error.status === 409) {
+          // Conflict - batch has related entities
+          const warningMessage = error.headers?.['x-mcmsapp-error'] || 'Batch has related records. Use force delete to proceed.';
+          setCascadeWarning(warningMessage);
+        } else {
+          // Other error - show error message
+          setCascadeWarning(error.message || 'Failed to delete batch');
+        }
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
