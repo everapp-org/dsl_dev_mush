@@ -13545,3 +13545,280 @@ Created comprehensive `search-input-styling.scss` (269 lines) with:
 - Continue with remaining features to complete the project
 
 
+
+---
+
+## Session: 2026-03-23 (Session 153)
+
+### Completed Features (401/405 - 99.0%)
+
+**Features completed this session:** 2 (both Style category)
+
+#### Feature #403: Environmental dashboard grid layout - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Create a visual environmental monitoring dashboard with a grid layout of room cards showing sensor status and environmental alerts at a glance.
+
+**Implementation:**
+
+**Backend (`/api/dashboard/environmental` endpoint):**
+- Added `SensorRepository` and `EnvironmentalAlertRepository` to `DashboardResource`
+- Created GET endpoint returning comprehensive room data:
+  - Room details (name, code, type, status, capacity, occupancy, area, HVAC, misting)
+  - Sensor counts (total and active sensors per room)
+  - Alert counts (total, unacknowledged, critical alerts per room)
+  - Summary statistics (total rooms, active rooms, total sensors, active sensors, total alerts)
+- Authenticated endpoint (isAuthenticated()) accessible to all logged-in users
+
+**Frontend (Environmental Dashboard Component):**
+- Created `environmental-dashboard.tsx` component with:
+  - KPI cards showing summary statistics (active rooms, active sensors, pending alerts, critical alerts)
+  - Responsive grid layout (4 columns desktop, 3 tablet, 2 mobile, 1 very small)
+  - Room cards with color-coded borders based on status:
+    - ACTIVE: Green border (#28a745) with light green gradient background
+    - MAINTENANCE: Yellow border (#ffc107) with light yellow gradient background
+    - DISINFECTION: Orange border (#fd7e14) with light orange gradient background
+    - INACTIVE: Gray border (#6c757d) with light gray gradient background
+  - Sensor status indicators with color-coded icons:
+    - Green: All sensors active
+    - Yellow: Some sensors inactive
+    - Red: All sensors inactive
+    - Gray: No sensors installed
+  - Alert badges showing pending/critical alerts with color-coded warnings
+  - HVAC and misting status indicators
+  - "View Details" button linking to individual room pages
+- Created `environmental-dashboard.scss` with:
+  - Hover effects (card lifts on hover)
+  - Responsive design breakpoints
+  - Smooth transitions and animations
+  - Custom color-coded borders and gradient backgrounds
+- Added route: `/environmental/dashboard` in `routes.tsx`
+- Added sidebar link in Facility section: "Environmental Dashboard" with thermometer icon
+
+**Files Created:**
+- `environmental-dashboard.tsx` (290 lines)
+- `environmental-dashboard.scss` (223 lines)
+
+**Files Modified:**
+- `DashboardResource.java`: Added environmental endpoint (80 lines added)
+- `routes.tsx`: Added environmental dashboard route
+- `sidebar.tsx`: Added navigation link
+
+**Verification:**
+✅ Backend compiles successfully (Maven BUILD SUCCESS)
+✅ Frontend compiles successfully (ESLint 0 errors)
+✅ Color-coded room cards match status (ACTIVE=green, MAINTENANCE=yellow, etc.)
+✅ Grid layout responsive (4-3-2-1 columns based on screen size)
+✅ Sensor status indicators functional with tooltips
+✅ Backend health check: {"status":"UP","groups":["liveness","readiness"]}
+
+---
+
+#### Feature #404: Batch timeline visualization polished - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Create a polished horizontal timeline visualization for the batch lifecycle showing the 10-phase progression with color-coded phases, clear date display, and current phase highlighting.
+
+**Implementation:**
+
+**Timeline Component (`batch-timeline.tsx`):**
+- Horizontal scrollable timeline with phase cards
+- Circular phase indicators (60px diameter) with phase numbers
+- Color-coded using existing phase-badge-colors.scss palette:
+  1. INOCULATION: Blue (#0d6efd)
+  2. EARLY_COLONIZATION: Teal (#20c997)
+  3. FULL_COLONIZATION: Green (#28a745)
+  4. CONSOLIDATION: Dark Gray (#495057)
+  5. FRUITING_TRIGGER: Yellow (#ffc107)
+  6. PRIMORDIA: Orange (#fd7e14)
+  7. FRUITING_BODY_GROWTH: Purple (#6f42c1)
+  8. HARVEST: Bright Green (#198754)
+  9. REHYDRATION_PAUSE: Cyan (#0dcaf0)
+  10. COMPLETED: Gray (#6c757d)
+- Phase info cards showing:
+  - Phase name with colored border
+  - Start date
+  - End date (if completed)
+  - Duration in days
+  - Room name
+  - Responsible person
+- Current phase highlighting:
+  - Pulsing glow animation around phase bar
+  - "Current Phase" badge with phase color
+  - Enhanced card shadow
+- Connector lines between phases (gradient fade)
+- Visual legend explaining:
+  - Completed phases (green indicator)
+  - In-progress phases (yellow indicator)
+  - Current phase (blue indicator with pulse animation)
+
+**Styling (`batch-timeline.scss`):**
+- Responsive design:
+  - Desktop: 180px phase cards, 60px phase bars
+  - Tablet: 140px phase cards, 50px phase bars
+  - Mobile: 120px phase cards, 40px phase bars
+- Smooth horizontal scrolling with custom scrollbar
+- Hover effects (card lifts on hover)
+- Pulse glow animation for current phase (2s infinite)
+- Badge pulse animation for current phase label
+- Empty state message for batches with no phase data
+
+**Integration:**
+- Added import in `batch-detail.tsx`
+- Replaced simple table in `phaseHistory` tab with timeline component
+- Kept detailed table below timeline for reference
+- Loading state shows "Loading phase history..."
+
+**Files Created:**
+- `batch-timeline.tsx` (182 lines)
+- `batch-timeline.scss` (304 lines)
+
+**Files Modified:**
+- `batch-detail.tsx`: Integrated timeline component into phaseHistory tab
+
+**Verification:**
+✅ Horizontal phase bars display correctly
+✅ Color-coded phases use 10-color palette from phase-badge-colors.scss
+✅ Current phase highlighted with pulsing glow animation
+✅ Dates displayed clearly (start, end, duration)
+✅ Responsive design works on all screen sizes
+✅ ESLint 0 errors (2 pre-existing complexity warnings)
+
+---
+
+## Session Summary (Session 153)
+- **Features Completed:** 2 (both Style category)
+- **Feature #403:** Environmental dashboard grid layout ✅
+- **Feature #404:** Batch timeline visualization polished ✅
+- **Code Changes:**
+  - Backend: Added environmental dashboard endpoint (80 lines)
+  - Frontend: Created 4 new files (999 lines total)
+  - Modified 4 existing files
+  - Total: 8 files changed, 1144 insertions(+), 35 deletions(-)
+- **Progress:** 399 → 401 / 405 (98.5% → 99.0%)
+- **Commit:** 6097d9e - feat: implement environmental dashboard and batch timeline
+- **Build Status:** ESLint 0 errors (2 pre-existing complexity warnings), backend healthy
+
+---
+
+## Technical Implementation Details
+
+### Feature #403: Environmental Dashboard Architecture
+
+**Data Flow:**
+1. Frontend calls `/api/dashboard/environmental`
+2. Backend queries:
+   - `RoomRepository.findAll()` for all rooms
+   - `SensorRepository.findByRoomId()` for sensors per room
+   - `EnvironmentalAlertRepository.findByRoomId()` for alerts per room
+3. Backend aggregates:
+   - Sensor counts (total and active)
+   - Alert counts (total, unacknowledged, critical)
+   - Summary statistics
+4. Frontend renders:
+   - KPI summary cards
+   - Grid of room cards with real-time data
+   - Color-coded visual indicators
+
+**Color-Coding Strategy:**
+- Room status: Left border (5px solid) + gradient background
+- Sensor status: Icon color (green/yellow/red/gray)
+- Alerts: Warning badges with count (yellow for pending, red for critical)
+
+**Responsive Grid:**
+- `Col md="6" lg="4" xl="3"` for room cards
+- 4 columns on extra-large screens (≥1200px)
+- 3 columns on large screens (≥992px)
+- 2 columns on medium screens (≥768px)
+- 1 column on small screens (<768px)
+
+**UX Enhancements:**
+- Hover effects: Cards lift 4px on hover
+- Tooltips: Sensor status tooltips explain what each color means
+- Loading states: Spinner while fetching data
+- Empty states: Message when no data available
+- Link buttons: Direct navigation to room details
+
+---
+
+### Feature #404: Batch Timeline Architecture
+
+**Component Structure:**
+```
+BatchTimeline
+├── Timeline Header (title + subtitle)
+├── Horizontal Scrollable Container
+│   └── Phase Cards (map over phaseExecutions)
+│       ├── Phase Bar (circular colored indicator)
+│       ├── Connector Line (gradient between phases)
+│       └── Phase Info Card
+│           ├── Phase Name (with colored border)
+│           ├── Phase Details (dates, duration, room, person)
+│           └── Current Phase Badge (if applicable)
+└── Legend (completed, in-progress, current indicators)
+```
+
+**Animation Details:**
+- **Pulse Glow (current phase):**
+  - 0%: box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.3)
+  - 50%: box-shadow: 0 0 0 8px rgba(13, 110, 253, 0.1)
+  - 100%: box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.3)
+  - Duration: 2s infinite
+- **Badge Pulse (current phase label):**
+  - 0%: opacity: 1
+  - 50%: opacity: 0.8
+  - 100%: opacity: 1
+  - Duration: 2s infinite
+
+**Horizontal Scrolling:**
+- Smooth scroll behavior
+- Custom scrollbar (8px height, rounded, gray)
+- Scrollbar hover: darker gray
+- Each phase: min-width 180px, flex-shrink: 0
+
+**Data Mapping:**
+- `phaseExecutions` array sorted by `sequenceOrder`
+- Color lookup from phase name to hex color
+- Display name mapping (EARLY_COLONIZATION → "Early Colonization")
+- Date formatting using react-jhipster TextFormat
+- Current phase detection: `phase.phase === currentPhase`
+
+---
+
+## Build Verification
+
+### ESLint
+- Exit code: 0 ✅
+- Errors: 0
+- Warnings: 2 (pre-existing complexity warnings)
+  - notification-middleware.ts: complexity 54 (max 40)
+  - batch-detail.tsx: complexity 44 (max 40)
+- No new errors or warnings from this session's changes
+
+### Backend Status
+- Java backend: Running on port 8080
+- Health check: {"status":"UP","groups":["liveness","readiness"]}
+- Maven compile: BUILD SUCCESS
+- No compilation errors
+
+### Frontend Status
+- Webpack dev server: Running on port 9060
+- All new files compiled successfully
+- Prettier formatting: All auto-fixed ✅
+
+---
+
+## Next Session Recommendations
+- **4 features remaining** to reach 100% completion! 🎉🎉🎉🎉
+- Progress: 401/405 (99.0%) - Almost done!
+- Both servers stable and running
+- Style category: Excellent progress on dashboards and visualizations
+- Environmental monitoring now has dedicated dashboard view
+- Batch timeline provides clear visual representation of lifecycle progression
+- No outstanding issues or technical debt from this session
+- Continue with remaining features to complete the project
+
