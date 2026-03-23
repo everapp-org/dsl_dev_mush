@@ -56,6 +56,7 @@
     <include file="config/liquibase/changelog/20260323000001_add_search_indexes_to_batch.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260323000002_add_cascade_delete_to_batch_relationships.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260323000003_add_set_null_to_room_relationships.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260323000004_add_cascade_delete_to_supply_order_line.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260222143012_added_entity_constraints_Batch.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222143013_added_entity_constraints_PhaseExecution.xml" relativeToChangelogFile="false"/>
