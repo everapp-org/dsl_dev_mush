@@ -60,20 +60,39 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      style={{
-        width,
-        height,
-        objectFit: 'contain',
-        display: imageLoading ? 'none' : 'block',
-        ...style,
-      }}
-      onError={handleImageError}
-      onLoad={handleImageLoad}
-    />
+    <>
+      {imageLoading && (
+        <div
+          style={{
+            width,
+            height,
+            backgroundColor: '#f8f9fa',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid #dee2e6',
+            borderRadius: '4px',
+          }}
+        >
+          <span className="text-muted small">Loading...</span>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        loading="lazy" // Feature #344: Native lazy loading
+        style={{
+          width,
+          height,
+          objectFit: 'contain',
+          display: imageLoading ? 'none' : 'block',
+          ...style,
+        }}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+      />
+    </>
   );
 };
 

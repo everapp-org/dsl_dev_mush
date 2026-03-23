@@ -9,6 +9,8 @@ import { IBatch, defaultValue } from 'app/shared/model/batch.model';
 interface BatchState extends EntityState<IBatch> {
   optimisticEntity: IBatch | null;
   deletedEntity: IBatch | null; // Track deleted entity for rollback on error
+  loadingMore: boolean; // Feature #343: Track loading more items for infinite scroll
+  hasMore: boolean; // Feature #343: Track if there are more items to load
 }
 
 const initialState: BatchState = {
@@ -21,6 +23,8 @@ const initialState: BatchState = {
   updateSuccess: false,
   optimisticEntity: null, // Track optimistically added entity
   deletedEntity: null, // Track deleted entity for potential rollback
+  loadingMore: false, // Feature #343: Track loading more items for infinite scroll
+  hasMore: true, // Feature #343: Track if there are more items to load
 };
 
 const apiUrl = 'api/batches';
@@ -72,6 +76,45 @@ export const getEntities = createAsyncThunk(
 
     const requestUrl = `${apiUrl}?${params.toString()}`;
     // Feature #322: Pass AbortController signal to axios for request cancellation
+    return axios.get<IBatch[]>(requestUrl, { signal });
+  },
+  { serializeError: serializeAxiosError },
+);
+
+// Feature #343: Load more entities for infinite scroll (appends to existing list)
+export const getMoreEntities = createAsyncThunk(
+  'batch/fetch_more_entities',
+  async (
+    {
+      page,
+      size,
+      sort,
+      search,
+      phase,
+      strainId,
+      isActive,
+      startDateFrom,
+      startDateTo,
+      numberOfBagsMin,
+      numberOfBagsMax,
+    }: IQueryParamsWithFilters,
+    { signal },
+  ) => {
+    const params = new URLSearchParams();
+    if (sort) params.append('sort', sort);
+    if (page !== undefined) params.append('page', page.toString());
+    if (size !== undefined) params.append('size', size.toString());
+    if (search) params.append('search', search);
+    if (phase) params.append('phase', phase);
+    if (strainId !== undefined) params.append('strainId', strainId.toString());
+    if (isActive !== undefined) params.append('isActive', isActive.toString());
+    if (startDateFrom) params.append('startDateFrom', startDateFrom);
+    if (startDateTo) params.append('startDateTo', startDateTo);
+    if (numberOfBagsMin !== undefined) params.append('numberOfBagsMin', numberOfBagsMin.toString());
+    if (numberOfBagsMax !== undefined) params.append('numberOfBagsMax', numberOfBagsMax.toString());
+    params.append('cacheBuster', new Date().getTime().toString());
+
+    const requestUrl = `${apiUrl}?${params.toString()}`;
     return axios.get<IBatch[]>(requestUrl, { signal });
   },
   { serializeError: serializeAxiosError },
@@ -252,7 +295,35 @@ export const BatchSlice = createEntitySlice({
           }),
           optimisticEntity: null, // Clear optimistic entity when fresh data loads
           deletedEntity: null, // Clear deleted entity when fresh data loads
+          hasMore: data.length === action.meta.arg.size, // Feature #343: If we got less than requested, no more items
         };
+      })
+      // Feature #343: Handle infinite scroll - append new items to existing list
+      .addMatcher(isFulfilled(getMoreEntities), (state, action) => {
+        const { data, headers } = action.payload;
+        const batchState = state as unknown as BatchState;
+
+        const sortedNewData = data.sort((a, b) => {
+          if (!action.meta?.arg?.sort) {
+            return 1;
+          }
+          const order = action.meta.arg.sort.split(',')[1];
+          const predicate = action.meta.arg.sort.split(',')[0];
+          return order === ASC ? (a[predicate] < b[predicate] ? -1 : 1) : b[predicate] < a[predicate] ? -1 : 1;
+        });
+
+        return {
+          ...state,
+          loadingMore: false,
+          totalItems: parseInt(headers['x-total-count'], 10),
+          entities: [...state.entities, ...sortedNewData], // Append new items
+          hasMore: data.length === action.meta.arg.size, // If we got less than requested, no more items
+        };
+      })
+      .addMatcher(isPending(getMoreEntities), state => {
+        const batchState = state as unknown as BatchState;
+        batchState.loadingMore = true;
+        batchState.errorMessage = null;
       })
       .addMatcher(isFulfilled(updateEntity, partialUpdateEntity, discardBatch), (state, action) => {
         state.updating = false;
@@ -274,6 +345,11 @@ export const BatchSlice = createEntitySlice({
 });
 
 export const { reset } = BatchSlice.actions;
+
+// Feature #343: Action to reset infinite scroll state (clear entities, reset hasMore)
+export const resetInfiniteScroll = () => (dispatch: any) => {
+  dispatch(reset());
+};
 
 // Reducer
 export default BatchSlice.reducer;

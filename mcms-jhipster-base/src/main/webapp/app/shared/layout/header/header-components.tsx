@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
-    <img src="content/images/logo-jhipster.png" alt="MCMS - Mushroom Cultivation Management System logo" />
+    <img src="content/images/logo-jhipster.png" alt="MCMS - Mushroom Cultivation Management System logo" loading="lazy" />
   </div>
 );
 

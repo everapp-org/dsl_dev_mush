@@ -11,10 +11,11 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
+import { useInfiniteScroll } from 'app/shared/hooks/use-infinite-scroll';
 import { StatusBadge } from 'app/shared/badge/status-badge';
 import { localDateToUTCStart, localDateToUTCEnd } from 'app/config/locale-date-format';
 
-import { getEntities } from './batch.reducer';
+import { getEntities, getMoreEntities, resetInfiniteScroll } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
 
 export const Batch = () => {
@@ -52,6 +53,16 @@ export const Batch = () => {
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
   const totalItems = useAppSelector(state => state.batch.totalItems);
+  // @ts-expect-error - Feature #343: These fields are added to BatchState but not in the base EntityState type
+  const loadingMore = useAppSelector(state => state.batch.loadingMore);
+  // @ts-expect-error - Feature #343: These fields are added to BatchState but not in the base EntityState type
+  const hasMore = useAppSelector(state => state.batch.hasMore);
+
+  // Feature #343: Infinite scroll mode toggle
+  const [infiniteScrollMode, setInfiniteScrollMode] = useState(() => {
+    const saved = localStorage.getItem('batchListInfiniteScroll');
+    return saved === 'true';
+  });
 
   // Feature #280: Announce loading states to screen readers
   useLoadingAnnouncer({
@@ -110,6 +121,33 @@ export const Batch = () => {
     currentRequestRef.current = promise;
   };
 
+  // Feature #343: Load more items for infinite scroll
+  const loadMoreEntities = () => {
+    if (loadingMore || !hasMore) return;
+
+    const startDateFromUTC = filters.startDateFrom ? localDateToUTCStart(filters.startDateFrom) : undefined;
+    const startDateToUTC = filters.startDateTo ? localDateToUTCEnd(filters.startDateTo) : undefined;
+
+    // Calculate next page
+    const currentPage = Math.floor(batchList.length / paginationState.itemsPerPage);
+
+    dispatch(
+      getMoreEntities({
+        page: currentPage,
+        size: paginationState.itemsPerPage,
+        sort: `${paginationState.sort},${paginationState.order}`,
+        search: filters.search?.trim() || undefined,
+        phase: filters.phase || undefined,
+        strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
+        isActive: filters.isActive ? filters.isActive === 'true' : undefined,
+        startDateFrom: startDateFromUTC,
+        startDateTo: startDateToUTC,
+        numberOfBagsMin: filters.numberOfBagsMin ? parseInt(filters.numberOfBagsMin, 10) : undefined,
+        numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
+      }),
+    );
+  };
+
   const buildURL = () => {
     const params = new URLSearchParams();
     params.set('page', paginationState.activePage.toString());
@@ -161,9 +199,28 @@ export const Batch = () => {
     }
   };
 
+  // Feature #343: Setup infinite scroll observer
+  const { scrollContainerRef, sentinelRef } = useInfiniteScroll({
+    loading: loadingMore,
+    hasMore: hasMore && infiniteScrollMode,
+    onLoadMore: loadMoreEntities,
+    threshold: 200,
+  });
+
   useEffect(() => {
     sortEntities();
   }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.itemsPerPage, filters]);
+
+  // Feature #343: Reset infinite scroll when mode changes or filters change
+  useEffect(() => {
+    if (infiniteScrollMode) {
+      dispatch(resetInfiniteScroll());
+      setPaginationState({
+        ...paginationState,
+        activePage: 1,
+      });
+    }
+  }, [infiniteScrollMode, filters]);
 
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
@@ -310,6 +367,19 @@ export const Batch = () => {
       <h1 id="batch-heading" data-cy="BatchHeading">
         Batches
         <div className="d-flex justify-content-end">
+          <Button
+            className="me-2"
+            color="secondary"
+            size="sm"
+            onClick={() => {
+              const newMode = !infiniteScrollMode;
+              setInfiniteScrollMode(newMode);
+              localStorage.setItem('batchListInfiniteScroll', String(newMode));
+            }}
+            title={infiniteScrollMode ? 'Switch to pagination mode' : 'Switch to infinite scroll mode'}
+          >
+            <FontAwesomeIcon icon={infiniteScrollMode ? 'list' : 'arrows-alt-v'} /> {infiniteScrollMode ? 'Pagination' : 'Infinite Scroll'}
+          </Button>
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
@@ -643,7 +713,33 @@ export const Batch = () => {
           )
         )}
       </div>
-      {totalItems ? (
+
+      {/* Feature #343: Infinite scroll sentinel - triggers loading more when visible */}
+      {infiniteScrollMode && batchList && batchList.length > 0 && hasMore && (
+        <div ref={sentinelRef} className="text-center py-3">
+          {loadingMore && (
+            <div className="d-flex justify-content-center align-items-center">
+              <Spinner color="primary" style={{ width: '2rem', height: '2rem' }}>
+                Loading more...
+              </Spinner>
+              <span className="ms-2">Loading more batches...</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Feature #343: Show total count in infinite scroll mode */}
+      {infiniteScrollMode && totalItems > 0 && (
+        <div className="text-center text-muted my-3">
+          <small>
+            Showing {batchList.length} of {totalItems} total batches
+            {!hasMore && ' (all loaded)'}
+          </small>
+        </div>
+      )}
+
+      {/* Pagination controls - only show in pagination mode */}
+      {!infiniteScrollMode && totalItems ? (
         <div className={batchList && batchList.length > 0 ? '' : 'd-none'}>
           <div className="justify-content-center d-flex align-items-center">
             <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
