@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createAsyncThunk, isFulfilled, isPending } from '@reduxjs/toolkit';
+import { createAsyncThunk, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit';
 import { ASC } from 'app/shared/util/pagination.constants';
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
@@ -340,6 +340,21 @@ export const BatchSlice = createEntitySlice({
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;
+      })
+      // Feature #365, #366: Handle errors when fetching entities (404, malformed ID, network errors)
+      .addMatcher(isRejected(getEntities, getEntity), (state, action) => {
+        state.loading = false;
+        state.updateSuccess = false;
+        state.errorMessage = action.error.message;
+        // For getEntity failures (e.g., 404, malformed ID), reset entity to default
+        if (action.type.includes('fetch_entity/')) {
+          state.entity = defaultValue;
+        }
+      })
+      .addMatcher(isRejected(updateEntity, partialUpdateEntity, deleteEntity, discardBatch), (state, action) => {
+        state.updating = false;
+        state.updateSuccess = false;
+        state.errorMessage = action.error.message;
       });
   },
 });
