@@ -700,51 +700,50 @@ public class BatchResource {
     }
 
     /**
-     * {@code DELETE  /batches/:id} : delete the "id" batch.
+     * {@code DELETE  /batches/:id} : soft delete the "id" batch (mark as inactive).
      *
      * @param id the id of the batch to delete.
-     * @param cascade whether to cascade delete related entities.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)} or {@code 409 (CONFLICT)} if batch has related entities and cascade is false.
+     * @param cascade whether to cascade delete related entities (deprecated - soft delete always preserves data).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the soft-deleted batch, or {@code 404 (NOT_FOUND)} if batch doesn't exist.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MANAGER')")
-    public ResponseEntity<Void> deleteBatch(
+    public ResponseEntity<Batch> deleteBatch(
         @PathVariable("id") Long id,
         @RequestParam(value = "cascade", required = false, defaultValue = "false") boolean cascade
     ) {
-        LOG.debug("REST request to delete Batch : {}, cascade: {}", id, cascade);
+        LOG.debug("REST request to soft delete Batch : {}", id);
 
-        // Check for related entities
-        long flushCycleCount = flushCycleRepository.countByBatchId(id);
-        long phaseExecutionCount = phaseExecutionRepository.countByBatchId(id);
-        long costRecordCount = costRecordRepository.countByBatchId(id);
-        long materialUsageCount = batchMaterialUsageRepository.countByBatchId(id);
-        long salesOrderLineCount = salesOrderLineRepository.countByBatchId(id);
-
-        long totalRelated = flushCycleCount + phaseExecutionCount + costRecordCount + materialUsageCount + salesOrderLineCount;
-
-        // If there are related entities and cascade is not requested, return conflict
-        if (totalRelated > 0 && !cascade) {
-            String message = String.format(
-                "Batch has %d related records (FlushCycles: %d, PhaseExecutions: %d, CostRecords: %d, MaterialUsages: %d, SalesOrderLines: %d). Use cascade=true to force delete.",
-                totalRelated,
-                flushCycleCount,
-                phaseExecutionCount,
-                costRecordCount,
-                materialUsageCount,
-                salesOrderLineCount
-            );
-            return ResponseEntity.status(HttpStatus.CONFLICT).header("X-mcmsApp-error", message).header("X-mcmsApp-params", "batch")
-                .build();
+        // Find the batch
+        Optional<Batch> batchOptional = batchRepository.findById(id);
+        if (batchOptional.isEmpty()) {
+            throw new BadRequestAlertException("Batch not found", ENTITY_NAME, "idnotfound");
         }
 
-        // Proceed with delete (JPA will handle cascading based on relationship configuration)
-        batchRepository.deleteById(id);
+        Batch batch = batchOptional.get();
+
+        // Soft delete: Mark as inactive, set end date, add completion note
+        batch.setIsActive(false);
+        batch.setEndDate(LocalDate.now());
+
+        // Preserve existing completion note or add new one
+        String currentNote = batch.getCompletionNote();
+        if (currentNote == null || currentNote.isEmpty()) {
+            batch.setCompletionNote("Batch deactivated (soft delete) on " + LocalDate.now());
+        } else {
+            batch.setCompletionNote(currentNote + " | Deactivated on " + LocalDate.now());
+        }
+
+        // Save the updated batch
+        batch = batchRepository.save(batch);
+
+        LOG.info("Batch {} soft deleted (marked inactive) by {}", id, SecurityContextHolder.getContext().getAuthentication().getName());
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-" + applicationName + "-alert", "Batch deleted successfully");
+        headers.add("X-" + applicationName + "-alert", "Batch deactivated successfully (soft delete)");
         headers.add("X-" + applicationName + "-params", id.toString());
-        return ResponseEntity.noContent()
+        return ResponseEntity.ok()
             .headers(headers)
-            .build();
+            .body(batch);
     }
 }
