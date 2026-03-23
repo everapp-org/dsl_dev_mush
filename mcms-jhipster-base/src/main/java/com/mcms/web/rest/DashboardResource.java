@@ -68,16 +68,9 @@ public class DashboardResource {
 
         Map<String, Object> dashboard = new HashMap<>();
 
-        // Calculate total costs from all cost records
-        BigDecimal totalCosts = costRecordRepository.findAll().stream()
-            .map(cost -> cost.getAmount())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Calculate total revenue from all sales orders
-        BigDecimal totalRevenue = salesOrderRepository.findAll().stream()
-            .filter(order -> order.getTotalRevenue() != null)
-            .map(order -> order.getTotalRevenue())
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Performance optimized: Calculate totals with database aggregation queries
+        BigDecimal totalCosts = costRecordRepository.calculateTotalCosts();
+        BigDecimal totalRevenue = salesOrderRepository.calculateTotalRevenue();
 
         // Calculate profit
         BigDecimal profit = totalRevenue.subtract(totalCosts);
@@ -88,12 +81,8 @@ public class DashboardResource {
             profitMargin = profit.divide(totalRevenue, 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
         }
 
-        // Count active batches
-        long activeBatches = batchRepository.findAll().stream()
-            .filter(batch -> batch.getIsActive() != null && batch.getIsActive())
-            .count();
-
-        // Count total batches
+        // Performance optimized: Count active batches with database query
+        long activeBatches = batchRepository.countActiveBatches();
         long totalBatches = batchRepository.count();
 
         // Build response
@@ -206,24 +195,12 @@ public class DashboardResource {
 
         Map<String, Object> dashboard = new HashMap<>();
 
-        // Count active batches
-        long activeBatches = batchRepository.findAll().stream()
-            .filter(batch -> batch.getIsActive() != null && batch.getIsActive())
-            .count();
-
-        // Count total batches
+        // Performance optimized: Use database aggregation queries instead of loading all records
+        long activeBatches = batchRepository.countActiveBatches();
         long totalBatches = batchRepository.count();
-
-        // Count total strains
         long totalStrains = strainRepository.count();
-
-        // Count total rooms
         long totalRooms = roomRepository.count();
-
-        // Count pending tasks (not completed)
-        long totalTasks = taskRepository.findAll().stream()
-            .filter(task -> task.getCompleted() == null || !task.getCompleted())
-            .count();
+        long totalTasks = taskRepository.countPendingTasks();
 
         // Build response
         dashboard.put("activeBatches", activeBatches);
@@ -247,20 +224,20 @@ public class DashboardResource {
 
         Map<String, Object> dashboard = new HashMap<>();
 
-        // Get all active batches
-        var activeBatches = batchRepository.findAll().stream()
-            .filter(batch -> batch.getIsActive() != null && batch.getIsActive())
-            .toList();
+        // Performance optimized: Use database GROUP BY query instead of loading all batches
+        long activeBatchCount = batchRepository.countActiveBatches();
+        List<Object[]> phaseResults = batchRepository.countActiveBatchesByPhase();
 
-        // Count batches by phase for chart data
+        // Convert query results to Map
         Map<String, Long> batchesByPhase = new HashMap<>();
-        activeBatches.forEach(batch -> {
-            String phase = batch.getCurrentPhase() != null ? batch.getCurrentPhase().toString() : "UNKNOWN";
-            batchesByPhase.put(phase, batchesByPhase.getOrDefault(phase, 0L) + 1);
+        phaseResults.forEach(result -> {
+            String phase = result[0] != null ? result[0].toString() : "UNKNOWN";
+            Long count = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+            batchesByPhase.put(phase, count);
         });
 
         // Build response
-        dashboard.put("activeBatchCount", (long) activeBatches.size());
+        dashboard.put("activeBatchCount", activeBatchCount);
         dashboard.put("batchesByPhase", batchesByPhase);
 
         return ResponseEntity.ok().body(dashboard);

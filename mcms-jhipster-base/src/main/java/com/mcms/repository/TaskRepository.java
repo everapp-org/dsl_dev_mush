@@ -37,4 +37,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("select task from Task task left join fetch task.batch left join fetch task.room where task.id =:id")
     Optional<Task> findOneWithToOneRelationships(@Param("id") Long id);
+
+    // Performance: Count pending (not completed) tasks with a single database query
+    @Query("select count(t) from Task t where t.completed is null or t.completed = false")
+    long countPendingTasks();
 }

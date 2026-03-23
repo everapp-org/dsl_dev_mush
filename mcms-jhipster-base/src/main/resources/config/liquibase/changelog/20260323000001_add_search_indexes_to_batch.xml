@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        Add performance indexes for batch search and filtering (Feature #341)
+    -->
+    <changeSet id="20260323000001-1" author="claude">
+        <!-- Index on current_phase for phase filtering -->
+        <createIndex indexName="idx_batch_current_phase" tableName="batch">
+            <column name="current_phase"/>
+        </createIndex>
+
+        <!-- Index on is_active for active/inactive filtering -->
+        <createIndex indexName="idx_batch_is_active" tableName="batch">
+            <column name="is_active"/>
+        </createIndex>
+
+        <!-- Index on start_date for date range queries -->
+        <createIndex indexName="idx_batch_start_date" tableName="batch">
+            <column name="start_date"/>
+        </createIndex>
+
+        <!-- Composite index for common filter combinations (active batches by phase) -->
+        <createIndex indexName="idx_batch_active_phase" tableName="batch">
+            <column name="is_active"/>
+            <column name="current_phase"/>
+        </createIndex>
+
+        <!-- Index on is_contaminated for contamination filtering -->
+        <createIndex indexName="idx_batch_is_contaminated" tableName="batch">
+            <column name="is_contaminated"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -43,4 +43,8 @@ public interface SalesOrderRepository extends JpaRepository<SalesOrder, Long> {
 
     @Query("select salesOrder from SalesOrder salesOrder left join fetch salesOrder.customer where salesOrder.customer.id = :customerId order by salesOrder.orderDate desc")
     List<SalesOrder> findByCustomerId(@Param("customerId") Long customerId);
+
+    // Performance: Calculate total revenue with a single database query
+    @Query("select coalesce(sum(so.totalRevenue), 0) from SalesOrder so")
+    java.math.BigDecimal calculateTotalRevenue();
 }

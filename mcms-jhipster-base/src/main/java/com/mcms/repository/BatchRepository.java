@@ -80,4 +80,12 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
         "where YEAR(batch.startDate) = :year and MONTH(batch.startDate) = :month"
     )
     List<Batch> findByYearAndMonth(@Param("year") Integer year, @Param("month") Integer month);
+
+    // Performance: Count active batches with a single database query
+    @Query("select count(b) from Batch b where b.isActive = true")
+    long countActiveBatches();
+
+    // Performance: Get batch count grouped by phase (for active batches only)
+    @Query("select b.currentPhase as phase, count(b) as count from Batch b where b.isActive = true group by b.currentPhase")
+    List<Object[]> countActiveBatchesByPhase();
 }

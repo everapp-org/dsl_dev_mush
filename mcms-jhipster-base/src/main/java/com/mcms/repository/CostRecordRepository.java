@@ -44,4 +44,8 @@ public interface CostRecordRepository extends JpaRepository<CostRecord, Long> {
     // Count cost records for a batch
     @Query("select count(cr) from CostRecord cr where cr.batch.id = :batchId")
     long countByBatchId(@Param("batchId") Long batchId);
+
+    // Performance: Calculate total costs with a single database query
+    @Query("select coalesce(sum(cr.amount), 0) from CostRecord cr")
+    java.math.BigDecimal calculateTotalCosts();
 }

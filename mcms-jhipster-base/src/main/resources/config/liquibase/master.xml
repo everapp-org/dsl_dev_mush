@@ -53,6 +53,7 @@
     <include file="config/liquibase/changelog/20260317160000_add_payment_amount_to_sales_order.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260322000000_add_version_to_inventory_lot.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260322000001_add_version_to_task.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260323000001_add_search_indexes_to_batch.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260222143012_added_entity_constraints_Batch.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222143013_added_entity_constraints_PhaseExecution.xml" relativeToChangelogFile="false"/>
