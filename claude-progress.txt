@@ -13008,3 +13008,161 @@ Used built-in semantic color classes:
 - Consider fixing remaining Feature #363 TypeScript errors in other entity files
 - No outstanding issues or technical debt from this session
 
+
+---
+
+## Session: 2026-03-23 (Session 150)
+
+### Completed Features (395/405 - 97.5%)
+
+**Features completed this session:** 2 (both Style category)
+
+#### Feature #397: Grade badge styling - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Make harvest quality grades visually distinct with color-coded badges for immediate quality recognition.
+
+**Grade Color Mapping:**
+- A_PREMIUM → warning (gold/yellow) - Premium quality, highest grade
+- B_STANDARD → secondary (gray/silver) - Standard quality
+- C_INDUSTRIAL → info (blue) - Industrial grade (bronze approximation)
+- WASTE → dark (dark gray) - Waste grade, lowest quality
+
+**Implementation:**
+- Added Badge import from reactstrap to harvest-record.tsx and harvest-record-detail.tsx
+- Created getGradeBadgeColor() helper function
+- Replaced plain text grade with color-coded badges
+- Applied to both list and detail views for consistency
+
+**Files Modified:**
+- harvest-record.tsx (list view)
+- harvest-record-detail.tsx (detail view)
+
+**Verification:**
+✅ ESLint passed (0 errors, 2 pre-existing warnings)
+✅ Bootstrap 5 semantic colors for accessibility
+✅ Consistent styling between list and detail views
+✅ Immediate visual recognition of harvest quality grades
+✅ Servers running cleanly (backend and frontend)
+
+---
+
+#### Feature #398: Batch contamination flag visual - PASSING
+**Category:** Style
+**Date:** 2026-03-23
+
+**Purpose:**
+Make contaminated batches prominently visible with a red flag icon and explanatory tooltip for immediate recognition and safety.
+
+**Implementation:**
+- Added UncontrolledTooltip import from reactstrap to batch.tsx
+- Replaced plain text "true"/"false" contamination status with visual indicators
+- **List view (batch.tsx):**
+  - Red flag icon (FontAwesomeIcon "flag" with text-danger class)
+  - Tooltip: "Contaminated - This batch has been marked as contaminated and may require special handling"
+  - Non-contaminated batches show "-" (muted text)
+- **Detail view (batch-detail.tsx):**
+  - Red flag icon with "Yes - Contaminated" text (both in danger color)
+  - Same explanatory tooltip
+  - Non-contaminated batches show "No" (muted text)
+
+**Files Modified:**
+- batch.tsx (list view - line 697)
+- batch-detail.tsx (detail view - line 318)
+
+**Verification:**
+✅ ESLint passed (0 errors, 2 pre-existing warnings)
+✅ Red flag icon immediately draws attention to contaminated batches
+✅ Tooltip provides context and explains implications
+✅ Consistent styling between list and detail views
+✅ Accessibility: Color (red) + icon (flag) + text for multiple sensory channels
+✅ Servers running cleanly (backend and frontend)
+
+---
+
+## Session Summary (Session 150)
+- **Features Completed:** 2 (both Style category)
+- **Feature #397:** Grade badge styling ✅
+- **Feature #398:** Batch contamination flag visual ✅
+- **Code Changes:**
+  - Added Badge components and helper functions
+  - Added red flag icons with tooltips for contamination
+  - Updated 4 files (harvest-record list/detail, batch list/detail)
+  - Total: 4 files changed, 64 insertions(+), 7 deletions(-)
+- **Progress:** 393 → 395 / 405 (97.0% → 97.5%)
+- **Commit:** 5e73c85 - feat: implement grade badges and contamination flag
+- **Build Status:** ESLint 0 errors (2 pre-existing complexity warnings), servers running cleanly
+
+---
+
+## Technical Implementation
+
+### Pattern Used
+Both features follow consistent implementation pattern:
+1. Import Badge/UncontrolledTooltip component from reactstrap
+2. Create helper function mapping values to Bootstrap color names (for badges)
+3. Replace plain text with styled components
+4. Apply to both list and detail views for consistency
+5. Add tooltips where additional context is helpful
+
+### Bootstrap 5 Semantic Colors
+Used built-in semantic color classes:
+- warning (yellow/gold), secondary (gray), info (blue), dark (dark gray), danger (red)
+- WCAG 2.1 AA compliant for accessibility
+- Consistent across entire application
+- Theme-aware and responsive
+
+### User Experience Improvements
+
+**Feature #397 - Grade Badges:**
+- **Before:** Plain text grades ("A_PREMIUM", "B_STANDARD", etc.)
+- **After:** Color-coded badges with intuitive color mapping
+  - Gold/yellow = premium quality (A_PREMIUM)
+  - Gray/silver = standard quality (B_STANDARD)
+  - Blue = industrial grade (C_INDUSTRIAL)
+  - Dark gray = waste (WASTE)
+- **Benefits:**
+  - Faster scanning of harvest records
+  - Immediate quality assessment without reading text
+  - Professional, polished appearance
+  - Intuitive color associations (gold=best, gray=waste)
+
+**Feature #398 - Contamination Flag:**
+- **Before:** Plain text "true" or "false" in contamination column
+- **After:** Prominent red flag icon with explanatory tooltip
+  - Red color = danger/warning (universal safety color)
+  - Flag icon = alert/warning symbol
+  - Tooltip = explains implications ("may require special handling")
+- **Benefits:**
+  - Immediate visual alert for contaminated batches
+  - Reduces risk of overlooking contamination status
+  - Tooltip provides context for operators
+  - Multi-sensory design: color + icon + text for accessibility
+
+---
+
+## Build Verification
+
+### ESLint
+- Exit code: 0
+- Errors: 0
+- Warnings: 2 (pre-existing complexity warnings in notification-middleware.ts and batch-detail.tsx)
+- New code: 0 errors, 0 warnings ✅
+
+### Server Status
+- Backend (Java): Running cleanly on port 8080, health check passed
+- Frontend (Node): Webpack dev server running on port 9060
+- No new console errors or runtime issues
+
+---
+
+## Next Session Recommendations
+- **10 features remaining** to reach 100% completion! 🎉
+- Progress: 395/405 (97.5%) - Final stretch!
+- Both servers stable and running
+- Style category: Excellent progress on visual consistency and safety indicators
+- No outstanding issues or technical debt from this session
+- Continue with remaining features to complete the project
+
