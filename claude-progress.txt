@@ -11701,3 +11701,71 @@ Malformed IDs now show error toast and redirect to list.
 - Added isRejected matchers for proper error handling
 - Remaining: 42 features
 
+
+
+---
+
+## Session 135: 2026-03-23
+
+### Completed Features (365/405 - 90.1%)
+
+#### Feature #367: Non-existent ID shows 404 - PASSING
+**Category:** URL & Direct Access
+
+**Purpose:**
+Display a proper 404 page when users navigate to a non-existent batch ID instead of just redirecting to the list.
+
+**Implementation:**
+Modified batch-detail.tsx to show PageNotFound component when entity is not found:
+
+1. Added PageNotFound import
+2. Added errorMessage state selector  
+3. Added 404 check before rendering: if (!loading && !batchEntity.id && id) return <PageNotFound />
+4. Removed redirect logic that was sending users to /batch list
+
+**How It Works:**
+- User navigates to /batches/99999 (non-existent ID)
+- Reducer sets loading=false, entity=defaultValue (no ID)
+- Component renders PageNotFound component
+- User sees Page Not Found alert with Return to Dashboard button
+
+---
+
+#### Feature #368: Shareable filter URLs - PASSING
+**Category:** URL & Direct Access
+
+**Purpose:**
+Allow users to share URLs with filters applied, so recipients see the same filtered data.
+
+**Status:**
+Already fully implemented! No code changes needed.
+
+**Implementation:**
+- buildURL() constructs URL with all filter params (lines 207-222)
+- sortEntities() updates browser URL via navigate() (lines 252-255)
+- Filters initialized from URL on mount (lines 118-133)
+- getAllEntities() applies filters to API call (lines 154-178)
+
+**Supported Filters:**
+search, phase, strainId, isActive, startDateFrom, startDateTo, numberOfBagsMin, numberOfBagsMax, page, sort
+
+---
+
+## Session Summary
+- Features Completed: 2 (both URL & Direct Access category)
+- Progress: 363 to 365 / 405 (89.6% to 90.1%)
+- Commit: 96575a4
+- Session Type: YOLO mode
+- Milestone: 90% completion reached!
+
+## Build Status
+- ESLint: PASSED (pre-existing warnings only)
+- TypeScript: Compiles successfully
+- Servers: Both backend and frontend running
+
+## Progress Tracking
+- Starting: 363/405 (89.6%)
+- Ending: 365/405 (90.1%)
+- Remaining: 40 features
+
+---
