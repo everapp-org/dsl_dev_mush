@@ -1,0 +1,183 @@
+/* ==========================================================================
+   Pagination Controls Styling (Feature #401)
+   ========================================================================== */
+
+/*
+ * Ensure pagination buttons are uniformly styled across all entity lists
+ * Targets JhiPagination component from react-jhipster
+ * Applies consistent button styles, disabled states, and spacing
+ */
+
+// Pagination container
+.pagination {
+  margin: 1rem 0;
+
+  // Pagination items (li elements)
+  .page-item {
+    margin: 0 2px;
+
+    // Pagination links (buttons/anchors)
+    .page-link {
+      // Consistent dimensions
+      min-width: 38px;
+      min-height: 38px;
+      padding: 0.375rem 0.75rem;
+
+      // Consistent colors (Bootstrap primary)
+      color: #007bff;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+
+      // Typography
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      text-align: center;
+      text-decoration: none;
+
+      // Transitions for smooth interactions
+      transition: all 0.15s ease-in-out;
+
+      // Hover state
+      &:hover:not(.disabled) {
+        color: #0056b3;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        cursor: pointer;
+      }
+
+      // Focus state (accessibility)
+      &:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        z-index: 2;
+      }
+    }
+
+    // Active page button
+    &.active .page-link {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      font-weight: 600;
+
+      &:hover {
+        color: #fff;
+        background-color: #0056b3;
+        border-color: #004085;
+        cursor: default;
+      }
+    }
+
+    // Disabled state (no more pages)
+    &.disabled .page-link {
+      color: #6c757d;
+      background-color: #fff;
+      border-color: #dee2e6;
+      opacity: 0.6;
+      cursor: not-allowed;
+
+      &:hover {
+        color: #6c757d;
+        background-color: #fff;
+        border-color: #dee2e6;
+      }
+    }
+
+    // First and Last page buttons
+    &:first-child .page-link {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    &:last-child .page-link {
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+  }
+}
+
+// Items per page selector (in batch list)
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  // Page size dropdown
+  .page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      margin: 0;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    select {
+      min-width: 70px;
+      padding: 0.375rem 0.75rem;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      transition: border-color 0.15s ease-in-out;
+
+      &:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+  }
+}
+
+// Item count display (e.g., "Showing 1 to 20 of 100 items")
+.pagination-info {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+
+  strong {
+    color: #495057;
+    font-weight: 600;
+  }
+}
+
+// Responsive adjustments for mobile devices
+@media (max-width: 768px) {
+  .pagination {
+    .page-item .page-link {
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    // Hide some page numbers on mobile for better fit
+    .page-item:not(.active):not(:first-child):not(:last-child) {
+      &:nth-child(n+4):nth-last-child(n+4) {
+        display: none;
+      }
+    }
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+// Ensure consistent styling across all JHipster pagination instances
+.jh-pagination,
+.jhipster-pagination,
+[class*="pagination"] {
+  // Apply same styles as above
+  .pagination {
+    // Inherit all styles from above
+  }
+}

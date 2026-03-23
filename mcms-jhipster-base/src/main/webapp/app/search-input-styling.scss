@@ -1,0 +1,258 @@
+/* ==========================================================================
+   Search Input Styling (Feature #402)
+   ========================================================================== */
+
+/*
+ * Ensure search input boxes are uniformly styled across all entity lists
+ * Consistent icon positioning, placeholder styling, and interaction states
+ * Applies to search fields in batch, strain, product, and all other entities
+ */
+
+// Search input container (when wrapped in a form-group or div)
+.search-container {
+  position: relative;
+  margin-bottom: 1rem;
+
+  // Search icon positioning (prepended or appended)
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    z-index: 5;
+
+    &.icon-left {
+      left: 0.75rem;
+    }
+
+    &.icon-right {
+      right: 0.75rem;
+    }
+  }
+
+  // Search input field
+  input[type="text"],
+  input[type="search"] {
+    // With left icon
+    &.with-icon-left {
+      padding-left: 2.5rem;
+    }
+
+    // With right icon
+    &.with-icon-right {
+      padding-right: 2.5rem;
+    }
+  }
+}
+
+// Generic search input styling (applies to all search fields)
+input[type="text"][id*="search"],
+input[type="text"][id*="Search"],
+input[type="text"][placeholder*="search" i],
+input[type="text"][placeholder*="Search"],
+input[type="search"],
+input[data-cy*="SearchInput"],
+input[data-cy*="searchInput"] {
+  // Consistent dimensions
+  min-height: 38px;
+  padding: 0.375rem 0.75rem;
+
+  // Consistent border and colors
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  color: #495057;
+
+  // Typography
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+
+  // Placeholder styling
+  &::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  // Transitions for smooth interactions
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  // Focus state
+  &:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    background-color: #fff;
+  }
+
+  // Hover state (subtle)
+  &:hover:not(:focus):not(:disabled) {
+    border-color: #adb5bd;
+  }
+
+  // Disabled state
+  &:disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Invalid state (validation errors)
+  &.is-invalid,
+  &:invalid {
+    border-color: #dc3545;
+
+    &:focus {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+
+  // Valid state (validation success)
+  &.is-valid,
+  &:valid {
+    border-color: #28a745;
+
+    &:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+  }
+}
+
+// Specific styling for FormGroup with Label
+.form-group {
+  label[for*="search"],
+  label[for*="Search"] {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
+
+// Clear button styling (if search has a clear/reset button)
+.search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  transition: color 0.15s ease-in-out;
+
+  &:hover {
+    color: #495057;
+  }
+
+  &:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
+  }
+}
+
+// Search with accompanying button (search + button side by side)
+.search-with-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+
+  input {
+    flex: 1;
+    min-width: 0; // Allow input to shrink
+  }
+
+  button {
+    flex-shrink: 0;
+    min-width: 100px;
+  }
+}
+
+// Responsive adjustments for mobile devices
+@media (max-width: 768px) {
+  input[type="text"][id*="search"],
+  input[type="text"][id*="Search"],
+  input[type="text"][placeholder*="search" i],
+  input[type="text"][placeholder*="Search"],
+  input[type="search"] {
+    min-height: 36px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .search-with-button {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Loading state for search (when results are being fetched)
+.search-loading {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #007bff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: search-spinner 0.6s linear infinite;
+  }
+
+  input {
+    padding-right: 2.5rem;
+  }
+}
+
+@keyframes search-spinner {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+// Search results count/info display
+.search-results-info {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+
+  strong {
+    color: #495057;
+    font-weight: 600;
+    font-style: normal;
+  }
+}
+
+// Empty search results message
+.search-no-results {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6c757d;
+
+  .empty-icon {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
