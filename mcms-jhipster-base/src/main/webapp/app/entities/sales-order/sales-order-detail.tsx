@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Badge } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,6 +8,24 @@ import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './sales-order.reducer';
+
+// Feature #394: Helper function to get badge color based on payment status
+const getPaymentStatusBadgeColor = (paymentStatus: string): string => {
+  switch (paymentStatus) {
+    case 'PAID':
+      return 'success'; // green
+    case 'UNPAID':
+      return 'danger'; // red
+    case 'PARTIALLY_PAID':
+      return 'warning'; // yellow
+    case 'OVERDUE':
+      return 'danger'; // red (Bootstrap danger is the standard red)
+    case 'REFUNDED':
+      return 'secondary'; // gray (optional additional status)
+    default:
+      return 'secondary';
+  }
+};
 
 export const SalesOrderDetail = () => {
   const dispatch = useAppDispatch();
@@ -89,7 +107,9 @@ export const SalesOrderDetail = () => {
             <span id="paymentStatus">Payment Status</span>
             <UncontrolledTooltip target="paymentStatus">Payment tracking (replaces simple isPaid boolean)</UncontrolledTooltip>
           </dt>
-          <dd>{salesOrderEntity.paymentStatus}</dd>
+          <dd>
+            <Badge color={getPaymentStatusBadgeColor(salesOrderEntity.paymentStatus)}>{salesOrderEntity.paymentStatus}</Badge>
+          </dd>
           <dt>
             <span id="paymentDueDate">Payment Due Date</span>
             <UncontrolledTooltip target="paymentDueDate">When payment is due</UncontrolledTooltip>

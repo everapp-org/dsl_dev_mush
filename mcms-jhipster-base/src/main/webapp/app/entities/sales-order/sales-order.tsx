@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Badge } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,24 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './sales-order.reducer';
 import { EmptyState } from 'app/shared/components/EmptyState';
+
+// Feature #394: Helper function to get badge color based on payment status
+const getPaymentStatusBadgeColor = (paymentStatus: string): string => {
+  switch (paymentStatus) {
+    case 'PAID':
+      return 'success'; // green
+    case 'UNPAID':
+      return 'danger'; // red
+    case 'PARTIALLY_PAID':
+      return 'warning'; // yellow
+    case 'OVERDUE':
+      return 'danger'; // red (Bootstrap danger is the standard red)
+    case 'REFUNDED':
+      return 'secondary'; // gray (optional additional status)
+    default:
+      return 'secondary';
+  }
+};
 
 export const SalesOrder = () => {
   const dispatch = useAppDispatch();
@@ -161,7 +179,9 @@ export const SalesOrder = () => {
                   <td>{salesOrder.totalRevenue}</td>
                   <td>{salesOrder.currency}</td>
                   <td>{salesOrder.invoiceNumber}</td>
-                  <td>{salesOrder.paymentStatus}</td>
+                  <td>
+                    <Badge color={getPaymentStatusBadgeColor(salesOrder.paymentStatus)}>{salesOrder.paymentStatus}</Badge>
+                  </td>
                   <td>
                     {salesOrder.paymentDueDate ? (
                       <TextFormat type="date" value={salesOrder.paymentDueDate} format={APP_LOCAL_DATE_FORMAT} />
