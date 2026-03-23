@@ -180,8 +180,15 @@ export const BatchUpdate = () => {
 
   const defaultValues = () => {
     if (isNew) {
-      // Use autosaved values if available
-      return Object.keys(formValues).length > 0 ? formValues : {};
+      // Feature #359, #360: Set sensible defaults for new batches
+      const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      const newBatchDefaults = {
+        isActive: true,
+        startDate: todayDate,
+        currentPhase: 'INOCULATION',
+      };
+      // Use autosaved values if available, merged with defaults
+      return Object.keys(formValues).length > 0 ? { ...newBatchDefaults, ...formValues } : newBatchDefaults;
     } else {
       return {
         currentPhase: 'INOCULATION',

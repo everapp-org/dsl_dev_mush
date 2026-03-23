@@ -11400,3 +11400,14 @@ See session-128-summary.md for details.
 - Feature #356: Deleted batch removed from dropdowns - PASSING (shared Redux state)
 
 See session-129-summary.md for details.
+
+---
+
+## Session 130: 2026-03-23
+
+### Completed Features (355/405 - 87.7%)
+
+- Feature #357: Statistics updated after delete - PASSING (dashboard queries filter by isActive)
+- Feature #358: Soft delete for batches - PASSING (mark inactive, preserve data)
+
+See session-130-summary.md for details.
