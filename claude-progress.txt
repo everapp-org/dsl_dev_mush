@@ -11379,3 +11379,13 @@ Both features optimize frontend performance:
 - Continue with remaining features (60 left)
 - Both servers stable and running
 - Progress: 345/405 features (85.2%) - approaching 86%!
+
+---
+
+## Session 128: 2026-03-23
+### Completed Features (351/405 - 86.7%)
+
+- Feature #353: Deleting inventory lot checks movements - PASSING (added validation)
+- Feature #354: Deleted batch removed from search results - PASSING (already implemented)
+
+See session-128-summary.md for details.
