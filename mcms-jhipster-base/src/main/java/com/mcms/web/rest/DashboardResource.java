@@ -103,6 +103,64 @@ public class DashboardResource {
         dashboard.put("costRecordCount", costRecordRepository.count());
         dashboard.put("salesOrderCount", salesOrderRepository.count());
 
+        // Chart data: Cost breakdown by category
+        Map<String, BigDecimal> costsByCategory = new HashMap<>();
+        costRecordRepository.findAll().forEach(cost -> {
+            String category = cost.getCategory() != null ? cost.getCategory().toString() : "OTHER";
+            costsByCategory.merge(category, cost.getAmount(), BigDecimal::add);
+        });
+        dashboard.put("costBreakdown", costsByCategory);
+
+        // Chart data: Monthly revenue trend (last 12 months)
+        List<Map<String, Object>> revenueByMonth = new java.util.ArrayList<>();
+        Map<String, BigDecimal> monthlyRevenue = new HashMap<>();
+        salesOrderRepository.findAll().stream()
+            .filter(order -> order.getOrderDate() != null && order.getTotalRevenue() != null)
+            .forEach(order -> {
+                String month = order.getOrderDate().getYear() + "-" +
+                    String.format("%02d", order.getOrderDate().getMonthValue());
+                monthlyRevenue.merge(month, order.getTotalRevenue(), BigDecimal::add);
+            });
+        monthlyRevenue.forEach((month, revenue) -> {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("month", month);
+            entry.put("revenue", revenue);
+            revenueByMonth.add(entry);
+        });
+        revenueByMonth.sort((a, b) -> ((String)a.get("month")).compareTo((String)b.get("month")));
+        dashboard.put("revenueTrend", revenueByMonth);
+
+        // Chart data: Monthly profitability (revenue - costs per month)
+        List<Map<String, Object>> profitabilityByMonth = new java.util.ArrayList<>();
+        Map<String, BigDecimal> monthlyCosts = new HashMap<>();
+        costRecordRepository.findAll().stream()
+            .filter(cost -> cost.getRecordDate() != null && cost.getAmount() != null)
+            .forEach(cost -> {
+                String month = cost.getRecordDate().getYear() + "-" +
+                    String.format("%02d", cost.getRecordDate().getMonthValue());
+                monthlyCosts.merge(month, cost.getAmount(), BigDecimal::add);
+            });
+
+        // Combine revenue and costs by month
+        java.util.Set<String> allMonths = new java.util.HashSet<>();
+        allMonths.addAll(monthlyRevenue.keySet());
+        allMonths.addAll(monthlyCosts.keySet());
+
+        allMonths.forEach(month -> {
+            Map<String, Object> entry = new HashMap<>();
+            BigDecimal revenue = monthlyRevenue.getOrDefault(month, BigDecimal.ZERO);
+            BigDecimal costs = monthlyCosts.getOrDefault(month, BigDecimal.ZERO);
+            BigDecimal monthProfit = revenue.subtract(costs);
+
+            entry.put("month", month);
+            entry.put("revenue", revenue);
+            entry.put("costs", costs);
+            entry.put("profit", monthProfit);
+            profitabilityByMonth.add(entry);
+        });
+        profitabilityByMonth.sort((a, b) -> ((String)a.get("month")).compareTo((String)b.get("month")));
+        dashboard.put("profitability", profitabilityByMonth);
+
         return ResponseEntity.ok().body(dashboard);
     }
 
