@@ -18,11 +18,17 @@ export const InventoryLotDetail = () => {
   const [movements, setMovements] = useState([]);
 
   useEffect(() => {
-    dispatch(getEntity(id));
-    // Fetch stock movements for this lot
-    axios.get(`/api/inventory-lots/${id}/movements`).then(response => {
-      setMovements(response.data);
-    });
+    // Batch API requests using Promise.all for parallel execution
+    const fetchData = async () => {
+      try {
+        const [, movementsResponse] = await Promise.all([dispatch(getEntity(id)), axios.get(`/api/inventory-lots/${id}/movements`)]);
+        setMovements(movementsResponse.data);
+      } catch (error) {
+        console.error('Error fetching inventory lot data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const inventoryLotEntity = useAppSelector(state => state.inventoryLot.entity);

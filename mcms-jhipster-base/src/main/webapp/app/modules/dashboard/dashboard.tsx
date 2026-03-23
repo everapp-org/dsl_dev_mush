@@ -22,42 +22,38 @@ export const Dashboard = () => {
   const [chartLoading, setChartLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardStats = async () => {
+    const fetchAllData = async () => {
       try {
         setLoading(true);
-        // Fetch aggregated statistics from dashboard overview endpoint
-        const response = await axios.get('/api/dashboard/overview');
-        const data = response.data;
+        setChartLoading(true);
 
+        // Batch API requests using Promise.all for parallel execution
+        const [overviewResponse, productionResponse] = await Promise.all([
+          axios.get('/api/dashboard/overview'),
+          axios.get('/api/dashboard/production'),
+        ]);
+
+        // Update stats from overview endpoint
+        const data = overviewResponse.data;
         setStats({
           activeBatches: data.activeBatches || 0,
           totalStrains: data.totalStrains || 0,
           totalRooms: data.totalRooms || 0,
           totalTasks: data.totalTasks || 0,
         });
+
+        // Update production data
+        setProductionData(productionResponse.data);
       } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
-      }
-    };
-
-    const fetchProductionData = async () => {
-      try {
-        setChartLoading(true);
-        // Fetch production chart data from dashboard production endpoint
-        const response = await axios.get('/api/dashboard/production');
-        setProductionData(response.data);
-      } catch (error) {
-        console.error('Error fetching production data:', error);
-      } finally {
         setChartLoading(false);
       }
     };
 
     if (account?.login) {
-      fetchDashboardStats();
-      fetchProductionData();
+      fetchAllData();
     }
   }, [account]);
 
