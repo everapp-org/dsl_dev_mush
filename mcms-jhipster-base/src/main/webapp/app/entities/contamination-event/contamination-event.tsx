@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Badge, Button, Table } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,21 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './contamination-event.reducer';
+
+const getSeverityBadgeColor = (severity: string) => {
+  switch (severity) {
+    case 'LOW':
+      return 'success'; // green
+    case 'MEDIUM':
+      return 'warning'; // yellow
+    case 'HIGH':
+      return 'warning'; // yellow-orange (Bootstrap warning is close to orange)
+    case 'CRITICAL':
+      return 'danger'; // red
+    default:
+      return 'secondary';
+  }
+};
 
 export const ContaminationEvent = () => {
   const dispatch = useAppDispatch();
@@ -160,7 +175,9 @@ export const ContaminationEvent = () => {
                     ) : null}
                   </td>
                   <td>{contaminationEvent.type}</td>
-                  <td>{contaminationEvent.severity}</td>
+                  <td>
+                    <Badge color={getSeverityBadgeColor(contaminationEvent.severity)}>{contaminationEvent.severity}</Badge>
+                  </td>
                   <td>{contaminationEvent.affectedBags}</td>
                   <td>{contaminationEvent.affectedPercentage}</td>
                   <td>{contaminationEvent.actionTaken}</td>

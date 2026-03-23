@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Badge, Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
@@ -11,6 +11,21 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { ImageWithFallback } from 'app/shared/components/ImageWithFallback';
 
 import { getEntity } from './contamination-event.reducer';
+
+const getSeverityBadgeColor = (severity: string) => {
+  switch (severity) {
+    case 'LOW':
+      return 'success'; // green
+    case 'MEDIUM':
+      return 'warning'; // yellow
+    case 'HIGH':
+      return 'warning'; // yellow-orange (Bootstrap warning is close to orange)
+    case 'CRITICAL':
+      return 'danger'; // red
+    default:
+      return 'secondary';
+  }
+};
 
 export const ContaminationEventDetail = () => {
   const dispatch = useAppDispatch();
@@ -52,7 +67,9 @@ export const ContaminationEventDetail = () => {
             <span id="severity">Severity</span>
             <UncontrolledTooltip target="severity">How severe</UncontrolledTooltip>
           </dt>
-          <dd>{contaminationEventEntity.severity}</dd>
+          <dd>
+            <Badge color={getSeverityBadgeColor(contaminationEventEntity.severity)}>{contaminationEventEntity.severity}</Badge>
+          </dd>
           <dt>
             <span id="affectedBags">Affected Bags</span>
             <UncontrolledTooltip target="affectedBags">How many bags/blocks affected</UncontrolledTooltip>
