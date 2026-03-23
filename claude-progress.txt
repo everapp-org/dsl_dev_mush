@@ -11954,3 +11954,69 @@ Both implementations include:
 - Progress: 368/405 features (90.9%) - approaching 91%!
 - Double-Action & Idempotency category: making good progress
 
+
+---
+
+## Session 138: 2026-03-23
+
+### Completed Features (370/405 - 91.4%)
+
+#### Feature #372: Back-and-resubmit prevented - PASSING
+**Category:** Double-Action & Idempotency
+
+**Purpose:**
+Prevent form resubmission when users use browser back/forward buttons after submitting a form.
+
+**Verification:**
+This feature was already fully implemented and working correctly.
+
+**Implementation Details:**
+The application uses the **Post-Redirect-Get (PRG) pattern** via React Router's `replace: true` option:
+
+1. **Form Submission Flow:**
+   - User submits form to saveEntity() dispatches createEntity() or updateEntity()
+   - Success to updateSuccess becomes true
+   - useEffect calls handleClose()
+   - handleClose() calls navigate('/batch', { replace: true })
+
+2. **Why This Works:**
+   - The `replace: true` option replaces the current history entry instead of adding a new one
+   - Form page is removed from browser history after successful submission
+   - Back button goes to the page BEFORE the form, not to the form itself
+   - Forward button cannot return to the submitted form
+   - Browser cannot show "confirm form resubmission" dialog
+
+3. **Code Location:**
+   - All entity update forms (e.g., batch-update.tsx line 51, 106)
+   - Pattern is consistent across all 21 entity forms
+
+**Result:** No code changes needed - feature already implemented correctly.
+
+---
+
+#### Feature #373: Concurrent identical requests deduplicated - PASSING
+**Category:** Double-Action & Idempotency
+
+**Purpose:**
+Prevent duplicate API calls when the same request is triggered multiple times rapidly.
+
+**Implementation:**
+Added API-level request deduplication for GET requests in axios-interceptor.ts
+
+**Files Modified:**
+- axios-interceptor.ts
+
+---
+
+## Session Summary
+- Features Completed: 2 (both Double-Action & Idempotency category)
+- Progress: 368 to 370 / 405 (90.9% to 91.4%)
+- Commit: 31326b8
+- Session Type: YOLO mode
+
+## Progress Tracking
+- Starting: 368/405 (90.9%)
+- Ending: 370/405 (91.4%)
+- Remaining: 35 features
+- Milestone: Passed 91%!
+
