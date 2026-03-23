@@ -9,6 +9,7 @@ import axios from 'axios';
 
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import PageNotFound from 'app/shared/error/page-not-found';
 
 import { getEntity } from './batch.reducer';
 
@@ -84,6 +85,7 @@ export const BatchDetail = () => {
 
   const batchEntity = useAppSelector(state => state.batch.entity);
   const loading = useAppSelector(state => state.batch.loading);
+  const errorMessage = useAppSelector(state => state.batch.errorMessage);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
   const isAdminOrManager = useAppSelector(state =>
     hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
@@ -92,18 +94,6 @@ export const BatchDetail = () => {
     hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
   );
 
-  // Feature #320: Redirect to list if batch is deleted (404 error)
-  useEffect(() => {
-    // If loading finished and there's no entity ID, it means the batch was not found (404)
-    if (!loading && !batchEntity.id && id) {
-      // Small delay to allow the error toast to be displayed
-      const redirectTimer = setTimeout(() => {
-        navigate('/batch', { replace: true });
-      }, 1500);
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [loading, batchEntity.id, id, navigate]);
-
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -111,6 +101,11 @@ export const BatchDetail = () => {
       setSearchParams({ tab });
     }
   };
+
+  // Feature #367: Show 404 page if entity not found
+  if (!loading && !batchEntity.id && id) {
+    return <PageNotFound />;
+  }
 
   return (
     <Row>
