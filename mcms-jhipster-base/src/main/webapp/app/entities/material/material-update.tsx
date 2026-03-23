@@ -139,7 +139,7 @@ export const MaterialUpdate = () => {
               <UncontrolledTooltip target="minimumStockLevelLabel">Reorder threshold - alert when stock falls below</UncontrolledTooltip>
               <ValidatedField label="Description" id="material-description" name="description" data-cy="description" type="textarea" />
               <UncontrolledTooltip target="descriptionLabel">Detailed description / specifications</UncontrolledTooltip>
-              <ValidatedField label="Active" id="material-active" name="active" data-cy="active" check type="checkbox" />
+              <ValidatedField label="Active" id="material-active" name="active" data-cy="active" check type="checkbox" switch />
               <ValidatedField label="Note" id="material-note" name="note" data-cy="note" type="textarea" />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/material" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />

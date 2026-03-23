@@ -209,7 +209,7 @@ export const StrainUpdate = () => {
               <UncontrolledTooltip target="shelfLifeDaysLabel">Post-harvest shelf life in days</UncontrolledTooltip>
               <ValidatedField label="Note" id="strain-note" name="note" data-cy="note" type="textarea" />
               <UncontrolledTooltip target="noteLabel">Cultivation tips, observations</UncontrolledTooltip>
-              <ValidatedField label="Active" id="strain-active" name="active" data-cy="active" check type="checkbox" />
+              <ValidatedField label="Active" id="strain-active" name="active" data-cy="active" check type="checkbox" switch />
               <UncontrolledTooltip target="activeLabel">Is this strain currently in use?</UncontrolledTooltip>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/strain" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
