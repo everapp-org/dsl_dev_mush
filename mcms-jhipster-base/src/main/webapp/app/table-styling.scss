@@ -1,0 +1,76 @@
+/**
+ * Feature #379: Consistent Table Styling
+ *
+ * Ensures all tables across the application have uniform styling:
+ * - Striped rows for better readability
+ * - Hover effects for better user experience
+ * - Consistent header styling
+ */
+
+/* Table Header Styling - Consistent across all tables */
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Sortable Header Styling */
+.table thead th.hand {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.table thead th.hand:hover {
+  background-color: #e9ecef;
+}
+
+/* Table Row Hover Effect - Consistent across all tables */
+.table tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Striped Rows - Applied via React Bootstrap's striped prop */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-striped tbody tr:nth-of-type(odd):hover {
+  background-color: #f1f3f5;
+}
+
+.table-striped tbody tr:nth-of-type(even):hover {
+  background-color: #f8f9fa;
+}
+
+/* Focus Styles for Accessibility */
+.table tbody tr:focus-within {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+/* Cell Padding Consistency */
+.table td,
+.table th {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Action Column Styling */
+.table td.text-end {
+  white-space: nowrap;
+}
+
+/* Responsive Table Wrapper */
+.table-responsive {
+  border-radius: 0.25rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

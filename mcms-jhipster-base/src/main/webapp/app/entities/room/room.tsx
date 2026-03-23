@@ -97,7 +97,7 @@ export const Room = () => {
       </h1>
       <div className="table-responsive">
         {roomList && roomList.length > 0 ? (
-          <Table responsive>
+          <Table responsive striped hover>
             <thead>
               <tr>
                 <th scope="col" className="hand" onClick={sort('id')}>

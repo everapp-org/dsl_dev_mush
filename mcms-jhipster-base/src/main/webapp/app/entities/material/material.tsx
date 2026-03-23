@@ -154,7 +154,7 @@ export const Material = () => {
       </h1>
       <div className="table-responsive">
         {materialList && materialList.length > 0 ? (
-          <Table responsive>
+          <Table responsive striped hover>
             <thead>
               <tr>
                 <th scope="col" className="hand" onClick={sort('id')}>

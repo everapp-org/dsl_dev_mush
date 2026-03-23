@@ -189,7 +189,7 @@ export const Strain = () => {
       </div>
       <div className="table-responsive">
         {strainList && strainList.length > 0 ? (
-          <Table responsive>
+          <Table responsive striped hover>
             <thead>
               <tr>
                 <th scope="col" className="hand" onClick={sort('id')}>
