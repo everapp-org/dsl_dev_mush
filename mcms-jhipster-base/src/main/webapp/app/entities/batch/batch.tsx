@@ -53,9 +53,7 @@ export const Batch = () => {
   const batchList = useAppSelector(state => state.batch.entities);
   const loading = useAppSelector(state => state.batch.loading);
   const totalItems = useAppSelector(state => state.batch.totalItems);
-  // @ts-expect-error - Feature #343: These fields are added to BatchState but not in the base EntityState type
   const loadingMore = useAppSelector(state => state.batch.loadingMore);
-  // @ts-expect-error - Feature #343: These fields are added to BatchState but not in the base EntityState type
   const hasMore = useAppSelector(state => state.batch.hasMore);
 
   // Feature #343: Infinite scroll mode toggle
@@ -240,6 +238,8 @@ export const Batch = () => {
 
   // Validate page number after data loads
   useEffect(() => {
+    let messageTimer: ReturnType<typeof setTimeout> | null = null;
+
     if (totalItems > 0 && !loading) {
       const maxPage = Math.ceil(totalItems / paginationState.itemsPerPage);
       if (paginationState.activePage > maxPage) {
@@ -250,9 +250,16 @@ export const Batch = () => {
           activePage: maxPage,
         });
         // Auto-hide message after 5 seconds
-        setTimeout(() => setShowInvalidPageMessage(false), 5000);
+        messageTimer = setTimeout(() => setShowInvalidPageMessage(false), 5000);
       }
     }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (messageTimer) {
+        clearTimeout(messageTimer);
+      }
+    };
   }, [totalItems, loading]);
 
   // Feature #321: Detect data changes during pagination
