@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
@@ -25,6 +25,9 @@ export const PhaseExecutionUpdate = () => {
   const loading = useAppSelector(state => state.phaseExecution.loading);
   const updating = useAppSelector(state => state.phaseExecution.updating);
   const updateSuccess = useAppSelector(state => state.phaseExecution.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const phaseNameValues = Object.keys(PhaseName);
 
   const handleClose = () => {
@@ -86,6 +89,13 @@ export const PhaseExecutionUpdate = () => {
           room: phaseExecutionEntity?.room?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -100,7 +110,7 @@ export const PhaseExecutionUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="phase-execution-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -168,7 +178,9 @@ export const PhaseExecutionUpdate = () => {
               <ValidatedField label="Note" id="phase-execution-note" name="note" data-cy="note" type="textarea" />
               <UncontrolledTooltip target="noteLabel">Phase observations &amp; notes</UncontrolledTooltip>
               <ValidatedField id="phase-execution-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select batch...
+              </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -179,7 +191,9 @@ export const PhaseExecutionUpdate = () => {
               </ValidatedField>
               <FormText>This field is required.</FormText>
               <ValidatedField id="phase-execution-room" name="room" data-cy="room" label="Room" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select room...
+              </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -192,6 +206,11 @@ export const PhaseExecutionUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

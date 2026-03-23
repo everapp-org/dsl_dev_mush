@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
@@ -23,6 +23,9 @@ export const HarvestRecordUpdate = () => {
   const loading = useAppSelector(state => state.harvestRecord.loading);
   const updating = useAppSelector(state => state.harvestRecord.updating);
   const updateSuccess = useAppSelector(state => state.harvestRecord.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const qualityGradeValues = Object.keys(QualityGrade);
 
   const handleClose = () => {
@@ -75,6 +78,13 @@ export const HarvestRecordUpdate = () => {
           flushCycle: harvestRecordEntity?.flushCycle?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -89,7 +99,7 @@ export const HarvestRecordUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="harvest-record-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -135,7 +145,9 @@ export const HarvestRecordUpdate = () => {
                 type="select"
                 required
               >
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select flushCycle...
+              </option>
                 {flushCycles
                   ? flushCycles.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -149,6 +161,11 @@ export const HarvestRecordUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

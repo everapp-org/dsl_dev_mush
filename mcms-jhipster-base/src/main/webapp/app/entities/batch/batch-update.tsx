@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -28,6 +28,9 @@ export const BatchUpdate = () => {
   const updating = useAppSelector(state => state.batch.updating);
   const updateSuccess = useAppSelector(state => state.batch.updateSuccess);
   const phaseNameValues = Object.keys(PhaseName);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
 
   // Track form dirty state for unsaved changes warning
   const [formIsDirty, setFormIsDirty] = useState(false);
@@ -199,6 +202,19 @@ export const BatchUpdate = () => {
     }
   };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      // Clear autosave
+      localStorage.removeItem(AUTOSAVE_KEY);
+      setFormValues({});
+      setFormIsDirty(false);
+      setShowAutosaveNotice(false);
+      // Reset form to default values
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -221,7 +237,7 @@ export const BatchUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity} onChange={handleFormChange}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity} onChange={handleFormChange}>
               <FormErrorSummary />
               {!isNew ? <ValidatedField name="id" required readOnly id="batch-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
@@ -345,7 +361,9 @@ export const BatchUpdate = () => {
                   required: { value: true, message: 'Strain is required' },
                 }}
               >
-                <option value="" key="0" />
+                <option value="" key="0">
+                  Select strain...
+                </option>
                 {strains
                   ? strains.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -355,7 +373,9 @@ export const BatchUpdate = () => {
                   : null}
               </ValidatedField>
               <ValidatedField id="batch-recipe" name="recipe" data-cy="recipe" label="Recipe" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                  Select recipe...
+                </option>
                 {substrateRecipes
                   ? substrateRecipes.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -369,6 +389,11 @@ export const BatchUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

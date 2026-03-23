@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
@@ -23,6 +23,9 @@ export const MonthlyReportUpdate = () => {
   const loading = useAppSelector(state => state.monthlyReport.loading);
   const updating = useAppSelector(state => state.monthlyReport.updating);
   const updateSuccess = useAppSelector(state => state.monthlyReport.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
 
   const handleClose = () => {
     navigate('/monthly-report', { replace: true });
@@ -98,6 +101,13 @@ export const MonthlyReportUpdate = () => {
           batch: monthlyReportEntity?.batch?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -112,7 +122,7 @@ export const MonthlyReportUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="monthly-report-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -199,7 +209,9 @@ export const MonthlyReportUpdate = () => {
               <ValidatedField label="Summary" id="monthly-report-summary" name="summary" data-cy="summary" type="textarea" />
               <UncontrolledTooltip target="summaryLabel">Executive summary text</UncontrolledTooltip>
               <ValidatedField id="monthly-report-batch" name="batch" data-cy="batch" label="Batch" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select batch...
+              </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -212,6 +224,11 @@ export const MonthlyReportUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

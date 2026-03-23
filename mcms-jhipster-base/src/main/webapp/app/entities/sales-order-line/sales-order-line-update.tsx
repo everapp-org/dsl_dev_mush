@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
@@ -28,6 +28,9 @@ export const SalesOrderLineUpdate = () => {
   const loading = useAppSelector(state => state.salesOrderLine.loading);
   const updating = useAppSelector(state => state.salesOrderLine.updating);
   const updateSuccess = useAppSelector(state => state.salesOrderLine.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const qualityGradeValues = Object.keys(QualityGrade);
   const unitOfMeasureValues = Object.keys(UnitOfMeasure);
 
@@ -100,6 +103,13 @@ export const SalesOrderLineUpdate = () => {
           batch: salesOrderLineEntity?.batch?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -114,7 +124,7 @@ export const SalesOrderLineUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="sales-order-line-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -199,7 +209,9 @@ export const SalesOrderLineUpdate = () => {
                 type="select"
                 required
               >
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select salesOrder...
+              </option>
                 {salesOrders
                   ? salesOrders.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -210,7 +222,9 @@ export const SalesOrderLineUpdate = () => {
               </ValidatedField>
               <FormText>This field is required.</FormText>
               <ValidatedField id="sales-order-line-product" name="product" data-cy="product" label="Product" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select product...
+              </option>
                 {products
                   ? products
                       .filter(p => p.active)
@@ -223,7 +237,9 @@ export const SalesOrderLineUpdate = () => {
               </ValidatedField>
               <FormText>This field is required.</FormText>
               <ValidatedField id="sales-order-line-batch" name="batch" data-cy="batch" label="Batch" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select batch...
+              </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -236,6 +252,11 @@ export const SalesOrderLineUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

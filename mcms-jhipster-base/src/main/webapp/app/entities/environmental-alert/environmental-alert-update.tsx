@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
@@ -29,6 +29,9 @@ export const EnvironmentalAlertUpdate = () => {
   const loading = useAppSelector(state => state.environmentalAlert.loading);
   const updating = useAppSelector(state => state.environmentalAlert.updating);
   const updateSuccess = useAppSelector(state => state.environmentalAlert.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const alertSeverityValues = Object.keys(AlertSeverity);
   const sensorUnitValues = Object.keys(SensorUnit);
 
@@ -99,6 +102,13 @@ export const EnvironmentalAlertUpdate = () => {
           batch: environmentalAlertEntity?.batch?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -113,7 +123,7 @@ export const EnvironmentalAlertUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="environmental-alert-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -215,7 +225,9 @@ export const EnvironmentalAlertUpdate = () => {
               />
               <UncontrolledTooltip target="resolutionNoteLabel">What was done about it</UncontrolledTooltip>
               <ValidatedField id="environmental-alert-room" name="room" data-cy="room" label="Room" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select room...
+              </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -226,7 +238,9 @@ export const EnvironmentalAlertUpdate = () => {
               </ValidatedField>
               <FormText>This field is required.</FormText>
               <ValidatedField id="environmental-alert-sensor" name="sensor" data-cy="sensor" label="Sensor" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select sensor...
+              </option>
                 {sensors
                   ? sensors.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -236,7 +250,9 @@ export const EnvironmentalAlertUpdate = () => {
                   : null}
               </ValidatedField>
               <ValidatedField id="environmental-alert-batch" name="batch" data-cy="batch" label="Batch" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select batch...
+              </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -249,6 +265,11 @@ export const EnvironmentalAlertUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

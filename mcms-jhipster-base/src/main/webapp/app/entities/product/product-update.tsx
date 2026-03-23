@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -24,6 +24,9 @@ export const ProductUpdate = () => {
   const updating = useAppSelector(state => state.product.updating);
   const updateSuccess = useAppSelector(state => state.product.updateSuccess);
   const qualityGradeValues = Object.keys(QualityGrade);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
 
   const handleClose = () => {
     navigate('/product', { replace: true });
@@ -81,6 +84,13 @@ export const ProductUpdate = () => {
           strain: productEntity?.strain?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -95,7 +105,7 @@ export const ProductUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="product-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Code"
@@ -151,7 +161,9 @@ export const ProductUpdate = () => {
               <UncontrolledTooltip target="activeLabel">Currently offered?</UncontrolledTooltip>
               <ValidatedField label="Note" id="product-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="product-strain" name="strain" data-cy="strain" label="Strain" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                  Select strain...
+                </option>
                 {strains
                   ? strains.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -165,6 +177,11 @@ export const ProductUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -22,6 +22,9 @@ export const MandatoryFieldCheckUpdate = () => {
   const loading = useAppSelector(state => state.mandatoryFieldCheck.loading);
   const updating = useAppSelector(state => state.mandatoryFieldCheck.updating);
   const updateSuccess = useAppSelector(state => state.mandatoryFieldCheck.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
 
   const handleClose = () => {
     navigate('/mandatory-field-check', { replace: true });
@@ -69,6 +72,13 @@ export const MandatoryFieldCheckUpdate = () => {
           phaseExecution: mandatoryFieldCheckEntity?.phaseExecution?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -83,7 +93,7 @@ export const MandatoryFieldCheckUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="mandatory-field-check-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -125,7 +135,9 @@ export const MandatoryFieldCheckUpdate = () => {
                 label="Phase Execution"
                 type="select"
               >
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select phaseExecution...
+              </option>
                 {phaseExecutions
                   ? phaseExecutions.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -138,6 +150,11 @@ export const MandatoryFieldCheckUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

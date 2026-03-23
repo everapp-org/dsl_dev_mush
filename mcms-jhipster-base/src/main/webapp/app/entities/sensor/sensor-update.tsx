@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -24,6 +24,9 @@ export const SensorUpdate = () => {
   const loading = useAppSelector(state => state.sensor.loading);
   const updating = useAppSelector(state => state.sensor.updating);
   const updateSuccess = useAppSelector(state => state.sensor.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const sensorUnitValues = Object.keys(SensorUnit);
   const sensorStatusValues = Object.keys(SensorStatus);
 
@@ -75,6 +78,13 @@ export const SensorUpdate = () => {
           room: sensorEntity?.room?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -89,7 +99,7 @@ export const SensorUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="sensor-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Sensor Code"
@@ -134,7 +144,9 @@ export const SensorUpdate = () => {
               <UncontrolledTooltip target="modelLabel">Device model</UncontrolledTooltip>
               <ValidatedField label="Note" id="sensor-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="sensor-room" name="room" data-cy="room" label="Room" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select room...
+              </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -148,6 +160,11 @@ export const SensorUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

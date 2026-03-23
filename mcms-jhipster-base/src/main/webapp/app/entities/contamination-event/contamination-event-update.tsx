@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -29,6 +29,9 @@ export const ContaminationEventUpdate = () => {
   const loading = useAppSelector(state => state.contaminationEvent.loading);
   const updating = useAppSelector(state => state.contaminationEvent.updating);
   const updateSuccess = useAppSelector(state => state.contaminationEvent.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const contaminationTypeValues = Object.keys(ContaminationType);
   const contaminationSeverityValues = Object.keys(ContaminationSeverity);
   const contaminationActionValues = Object.keys(ContaminationAction);
@@ -97,6 +100,13 @@ export const ContaminationEventUpdate = () => {
           room: contaminationEventEntity?.room?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -111,7 +121,7 @@ export const ContaminationEventUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? (
                 <ValidatedField name="id" required readOnly id="contamination-event-id" label="ID" validate={{ required: true }} />
               ) : null}
@@ -214,7 +224,9 @@ export const ContaminationEventUpdate = () => {
               <UncontrolledTooltip target="photosReferenceLabel">Path/URL to photo evidence</UncontrolledTooltip>
               <ValidatedField label="Note" id="contamination-event-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="contamination-event-batch" name="batch" data-cy="batch" label="Batch" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select batch...
+              </option>
                 {batches
                   ? batches.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -231,7 +243,9 @@ export const ContaminationEventUpdate = () => {
                 label="Phase Execution"
                 type="select"
               >
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select phaseExecution...
+              </option>
                 {phaseExecutions
                   ? phaseExecutions.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -241,7 +255,9 @@ export const ContaminationEventUpdate = () => {
                   : null}
               </ValidatedField>
               <ValidatedField id="contamination-event-room" name="room" data-cy="room" label="Room" type="select">
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select room...
+              </option>
                 {rooms
                   ? rooms.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -254,6 +270,11 @@ export const ContaminationEventUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button

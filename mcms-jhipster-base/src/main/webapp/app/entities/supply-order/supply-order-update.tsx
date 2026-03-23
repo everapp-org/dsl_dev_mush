@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -23,6 +23,9 @@ export const SupplyOrderUpdate = () => {
   const loading = useAppSelector(state => state.supplyOrder.loading);
   const updating = useAppSelector(state => state.supplyOrder.updating);
   const updateSuccess = useAppSelector(state => state.supplyOrder.updateSuccess);
+
+  // Feature #362: Form ref for reset functionality
+  const formRef = useRef<any>(null);
   const orderStatusValues = Object.keys(OrderStatus);
 
   const handleClose = () => {
@@ -75,6 +78,13 @@ export const SupplyOrderUpdate = () => {
           supplier: supplyOrderEntity?.supplier?.id,
         };
 
+  // Feature #362: Reset button handler
+  const handleReset = () => {
+    if (formRef.current) {
+      formRef.current.reset(defaultValues());
+    }
+  };
+
   return (
     <div>
       <Row className="justify-content-center">
@@ -89,7 +99,7 @@ export const SupplyOrderUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="supply-order-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
                 label="Order Code"
@@ -160,7 +170,9 @@ export const SupplyOrderUpdate = () => {
               <UncontrolledTooltip target="shippingAddressLabel">Delivery address (if different from default)</UncontrolledTooltip>
               <ValidatedField label="Note" id="supply-order-note" name="note" data-cy="note" type="textarea" />
               <ValidatedField id="supply-order-supplier" name="supplier" data-cy="supplier" label="Supplier" type="select" required>
-                <option value="" key="0" />
+                <option value="" key="0">
+                Select supplier...
+              </option>
                 {suppliers
                   ? suppliers.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
@@ -174,6 +186,11 @@ export const SupplyOrderUpdate = () => {
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
+              </Button>
+              &nbsp;
+              <Button color="secondary" id="reset-form" data-cy="entityResetButton" type="button" onClick={handleReset}>
+                <FontAwesomeIcon icon="undo" />
+                &nbsp; Reset
               </Button>
               &nbsp;
               <Button
