@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane, Table, Alert, Spinner } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Nav, NavItem, NavLink, TabContent, TabPane, Table, Alert } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import PageNotFound from 'app/shared/error/page-not-found';
+import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 
 import { getEntity } from './batch.reducer';
 
@@ -111,11 +112,7 @@ export const BatchDetail = () => {
     <Row>
       <Col md="12">
         {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}>
-              Loading...
-            </Spinner>
-          </div>
+          <LoadingSpinner size="large" message="Loading batch details..." centered minHeight="400px" />
         ) : (
           <>
             <h1 data-cy="batchDetailsHeading">

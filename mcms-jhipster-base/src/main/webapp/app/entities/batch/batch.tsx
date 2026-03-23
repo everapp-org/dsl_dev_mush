@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table, Input, Spinner, Row, Col, FormGroup, Label, Card, CardBody, Alert } from 'reactstrap';
+import { Button, Table, Input, Row, Col, FormGroup, Label, Card, CardBody, Alert } from 'reactstrap';
 import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 import { useInfiniteScroll } from 'app/shared/hooks/use-infinite-scroll';
 import { StatusBadge } from 'app/shared/badge/status-badge';
 import { localDateToUTCStart, localDateToUTCEnd } from 'app/config/locale-date-format';
+import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 
 import { getEntities, getMoreEntities, resetInfiniteScroll } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
@@ -607,11 +608,7 @@ export const Batch = () => {
 
       <div className="table-responsive">
         {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}>
-              Loading...
-            </Spinner>
-          </div>
+          <LoadingSpinner size="large" message="Loading batch list..." centered minHeight="200px" />
         ) : batchList && batchList.length > 0 ? (
           <Table responsive striped hover>
             <thead>
@@ -790,14 +787,7 @@ export const Batch = () => {
       {/* Feature #343: Infinite scroll sentinel - triggers loading more when visible */}
       {infiniteScrollMode && batchList && batchList.length > 0 && hasMore && (
         <div ref={sentinelRef} className="text-center py-3">
-          {loadingMore && (
-            <div className="d-flex justify-content-center align-items-center">
-              <Spinner color="primary" style={{ width: '2rem', height: '2rem' }}>
-                Loading more...
-              </Spinner>
-              <span className="ms-2">Loading more batches...</span>
-            </div>
-          )}
+          {loadingMore && <LoadingSpinner size="medium" message="Loading more batches..." className="justify-content-center" />}
         </div>
       )}
 

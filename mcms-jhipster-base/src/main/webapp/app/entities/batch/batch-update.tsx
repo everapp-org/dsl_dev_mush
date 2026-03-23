@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, Col, FormText, Row, UncontrolledTooltip } from 'reactstrap';
+import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -251,7 +252,7 @@ export const BatchUpdate = () => {
             </Alert>
           )}
           {loading ? (
-            <p>Loading...</p>
+            <LoadingSpinner size="large" message="Loading form..." centered minHeight="200px" />
           ) : (
             <ValidatedForm ref={formRef} defaultValues={defaultValues()} onSubmit={saveEntity} onChange={handleFormChange}>
               <FormErrorSummary />

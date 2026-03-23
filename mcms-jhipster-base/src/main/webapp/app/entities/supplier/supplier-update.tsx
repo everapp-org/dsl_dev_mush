@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 import { ValidatedField, ValidatedForm, isNumber } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -82,7 +83,7 @@ export const SupplierUpdate = () => {
       <Row className="justify-content-center">
         <Col md="8">
           {loading ? (
-            <p>Loading...</p>
+            <LoadingSpinner size="large" message="Loading form..." centered minHeight="200px" />
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               <FormErrorSummary />
