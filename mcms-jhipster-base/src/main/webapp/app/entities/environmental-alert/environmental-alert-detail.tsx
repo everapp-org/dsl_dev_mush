@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Badge } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -10,6 +10,20 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntity } from './environmental-alert.reducer';
+
+// Feature #391: Helper function to get badge color based on severity
+const getSeverityBadgeColor = (severity: string): string => {
+  switch (severity) {
+    case 'INFO':
+      return 'info';
+    case 'WARNING':
+      return 'warning';
+    case 'CRITICAL':
+      return 'danger';
+    default:
+      return 'secondary';
+  }
+};
 
 export const EnvironmentalAlertDetail = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +58,11 @@ export const EnvironmentalAlertDetail = () => {
             <span id="severity">Severity</span>
             <UncontrolledTooltip target="severity">INFO / WARNING / CRITICAL</UncontrolledTooltip>
           </dt>
-          <dd>{environmentalAlertEntity.severity}</dd>
+          <dd>
+            {environmentalAlertEntity.severity && (
+              <Badge color={getSeverityBadgeColor(environmentalAlertEntity.severity)}>{environmentalAlertEntity.severity}</Badge>
+            )}
+          </dd>
           <dt>
             <span id="parameter">Parameter</span>
             <UncontrolledTooltip target="parameter">Which environmental parameter</UncontrolledTooltip>

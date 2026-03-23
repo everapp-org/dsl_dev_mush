@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Badge } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,20 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { RelativeTime } from 'app/shared/util/relative-time';
 
 import { getEntities } from './environmental-alert.reducer';
+
+// Feature #391: Helper function to get badge color based on severity
+const getSeverityBadgeColor = (severity: string): string => {
+  switch (severity) {
+    case 'INFO':
+      return 'info';
+    case 'WARNING':
+      return 'warning';
+    case 'CRITICAL':
+      return 'danger';
+    default:
+      return 'secondary';
+  }
+};
 
 export const EnvironmentalAlert = () => {
   const dispatch = useAppDispatch();
@@ -146,7 +160,9 @@ export const EnvironmentalAlert = () => {
                       <RelativeTime value={environmentalAlert.alertTime} id={`alert-time-${environmentalAlert.id}`} />
                     ) : null}
                   </td>
-                  <td>{environmentalAlert.severity}</td>
+                  <td>
+                    <Badge color={getSeverityBadgeColor(environmentalAlert.severity)}>{environmentalAlert.severity}</Badge>
+                  </td>
                   <td>{environmentalAlert.parameter}</td>
                   <td>{environmentalAlert.actualValue}</td>
                   <td>{environmentalAlert.thresholdValue}</td>
