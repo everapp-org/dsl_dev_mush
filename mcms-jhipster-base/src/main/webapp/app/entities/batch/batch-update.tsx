@@ -38,6 +38,9 @@ export const BatchUpdate = () => {
   const [showAutosaveNotice, setShowAutosaveNotice] = useState(false);
   const AUTOSAVE_KEY = isNew ? 'batch-create-autosave' : `batch-edit-autosave-${id}`;
 
+  // Feature #370: Prevent double-click submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Feature #290: Get referrer search params from navigation state
   const referrerSearch = location.state?.referrerSearch || '';
 
@@ -87,6 +90,13 @@ export const BatchUpdate = () => {
     }
   }, [updateSuccess]);
 
+  // Feature #370: Reset isSubmitting when operation completes (success or error)
+  useEffect(() => {
+    if (!updating) {
+      setIsSubmitting(false);
+    }
+  }, [updating]);
+
   // Feature #320: Redirect to list if batch is deleted (404 error)
   useEffect(() => {
     // If editing existing batch and loading finished with no entity ID, batch was deleted
@@ -115,6 +125,12 @@ export const BatchUpdate = () => {
   }, [formIsDirty]);
 
   const saveEntity = values => {
+    // Feature #370: Prevent double-click submission
+    if (isSubmitting) {
+      return; // Already submitting, ignore this click
+    }
+    setIsSubmitting(true);
+
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
@@ -401,11 +417,11 @@ export const BatchUpdate = () => {
                 id="save-entity"
                 data-cy="entityCreateSaveButton"
                 type="submit"
-                disabled={updating}
-                aria-disabled={updating}
+                disabled={updating || isSubmitting}
+                aria-disabled={updating || isSubmitting}
               >
-                <FontAwesomeIcon icon={updating ? 'spinner' : 'save'} spin={updating} />
-                &nbsp; {updating ? 'Saving...' : 'Save'}
+                <FontAwesomeIcon icon={updating || isSubmitting ? 'spinner' : 'save'} spin={updating || isSubmitting} />
+                &nbsp; {updating || isSubmitting ? 'Saving...' : 'Save'}
               </Button>
             </ValidatedForm>
           )}

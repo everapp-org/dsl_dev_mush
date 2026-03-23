@@ -37,6 +37,10 @@ export const BatchDeleteDialog = () => {
   }, [updateSuccess]);
 
   const confirmDelete = async (cascade = false) => {
+    // Feature #371: Prevent rapid delete clicks
+    if (isDeleting) {
+      return; // Already deleting, ignore this click
+    }
     setIsDeleting(true);
     if (cascade) {
       // For cascade delete, we need to use axios directly with cascade=true parameter
