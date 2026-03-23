@@ -11833,3 +11833,124 @@ User navigates to /admin/users while logged out → App loads → getSession() c
 - Session Type: YOLO mode verification
 - Remaining: 39 features
 
+
+---
+
+## Session 137: 2026-03-23
+
+### Completed Features (368/405 - 90.9%)
+
+#### Feature #370: Double-click submit creates only one - PASSING
+**Category:** Double-Action & Idempotency
+
+**Purpose:**
+Prevent users from accidentally creating duplicate batches by rapidly double-clicking the Save button.
+
+**Implementation:**
+Modified batch-update.tsx to add local state tracking:
+
+1. **Local State:** Added `isSubmitting` state variable
+2. **Guard Function:** Early return in `saveEntity` if already submitting
+3. **Button State:** Disabled button when `updating || isSubmitting`
+4. **Visual Feedback:** Shows spinner icon and "Saving..." text when submitting
+5. **Reset Logic:** useEffect resets `isSubmitting` when `updating` becomes false
+
+**How It Works:**
+- User clicks Save → `isSubmitting` set to true immediately
+- Button disabled before Redux processes the action
+- If user clicks again, `saveEntity` returns early (line 129-131)
+- After dispatch completes, `updating` becomes false
+- useEffect resets `isSubmitting` to false (line 94-98)
+
+**Why This Prevents Double-Click:**
+The Redux `updating` flag is set asynchronously after the action is dispatched. Rapid double-clicks could both dispatch before Redux updates. By adding local `isSubmitting` state that's set synchronously, we block the second click immediately.
+
+**Files Modified:**
+- batch-update.tsx
+
+---
+
+#### Feature #371: Rapid delete clicks handled - PASSING
+**Category:** Double-Action & Idempotency
+
+**Purpose:**
+Prevent users from accidentally triggering multiple delete requests by rapidly clicking the Delete button.
+
+**Implementation:**
+Enhanced batch-delete-dialog.tsx with an additional guard:
+
+1. **Existing Protection:** Button already had `isDeleting` state and `disabled` attribute
+2. **Added Guard:** Early return in `confirmDelete` if already deleting (line 41-43)
+3. **Visual Feedback:** Already showed spinner and "Deleting..." text
+4. **Reset Logic:** Already had proper finally blocks to reset state
+
+**How It Works:**
+- User clicks Delete → `isDeleting` set to true immediately
+- If user clicks again rapidly, `confirmDelete` returns early before dispatching
+- Button is disabled (`disabled={isDeleting}`)
+- After operation completes, `finally` block resets `isDeleting` to false
+
+**Existing Features Used:**
+- Button disabled when `isDeleting` (lines 113, 125)
+- ARIA attributes for accessibility (lines 114, 126)
+- Spinner icon when deleting (line 128)
+- "Deleting..." text when deleting (line 129)
+- Finally blocks reset state (lines 53, 72)
+
+**Files Modified:**
+- batch-delete-dialog.tsx
+
+---
+
+## Session Summary
+- **Features Completed:** 2 (both Double-Action & Idempotency category)
+- **Progress:** 366 → 368 / 405 (90.4% → 90.9%)
+- **Commit:** 94f5a33
+- **Session Type:** YOLO mode
+
+## Technical Highlights
+
+### Double-Click Prevention Pattern
+Both features use the same pattern:
+1. Local state flag (`isSubmitting` / `isDeleting`)
+2. Set to true immediately on user action
+3. Early return guard in handler function
+4. Button disabled via state
+5. Visual feedback (spinner + text)
+6. Reset in effect/finally block
+
+### Why Local State Matters
+Redux state updates are asynchronous. By the time `updating` becomes true in the Redux store, a rapid second click may have already dispatched. Local state (`isSubmitting`) is updated synchronously, blocking the second click before it can dispatch.
+
+### Accessibility
+Both implementations include:
+- `disabled` attribute (prevents click events)
+- `aria-disabled` attribute (screen reader support)
+- Visual feedback (spinner icon + loading text)
+- Color changes (via Bootstrap button states)
+
+## Build Status
+- **ESLint:** Not run (YOLO mode)
+- **TypeScript:** Compiles successfully (dev server running)
+- **Frontend:** Dev server running on port 9060
+- **Backend:** Running on port 8080 (401 auth responses confirm healthy)
+
+## Verification (YOLO Mode)
+- ✅ No mock data patterns found (grep check passed)
+- ✅ Both servers running cleanly
+- ✅ Backend API responding (401 = authentication required)
+- ✅ TypeScript compiles (no syntax errors)
+- ✅ Code logic verified (early return guards + disabled buttons)
+
+## Progress Tracking
+- **Starting:** 366/405 (90.4%)
+- **Ending:** 368/405 (90.9%)
+- **Remaining:** 37 features
+- **Milestone:** Approaching 91%!
+
+## Next Session Recommendations
+- Continue with remaining features (37 left)
+- Both servers stable and running
+- Progress: 368/405 features (90.9%) - approaching 91%!
+- Double-Action & Idempotency category: making good progress
+
