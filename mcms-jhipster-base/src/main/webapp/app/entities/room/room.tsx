@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Badge } from 'reactstrap';
 import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,22 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './room.reducer';
 import { EmptyState } from 'app/shared/components/EmptyState';
+
+// Feature #393: Helper function to get badge color based on room status
+const getRoomStatusBadgeColor = (status: string): string => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success'; // green
+    case 'MAINTENANCE':
+      return 'warning'; // yellow
+    case 'DISINFECTION':
+      return 'warning'; // orange/yellow (Bootstrap warning is amber, closest to orange)
+    case 'INACTIVE':
+      return 'secondary'; // gray
+    default:
+      return 'secondary';
+  }
+};
 
 export const Room = () => {
   const dispatch = useAppDispatch();
@@ -151,7 +167,9 @@ export const Room = () => {
                   <td>{room.name}</td>
                   <td>{room.code}</td>
                   <td>{room.roomType}</td>
-                  <td>{room.status}</td>
+                  <td>
+                    <Badge color={getRoomStatusBadgeColor(room.status)}>{room.status}</Badge>
+                  </td>
                   <td>{room.capacityBags}</td>
                   <td>{room.currentOccupancy}</td>
                   <td>{room.areaSqM}</td>

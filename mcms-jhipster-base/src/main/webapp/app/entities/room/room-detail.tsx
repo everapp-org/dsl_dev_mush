@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Col, Row, UncontrolledTooltip, Table } from 'reactstrap';
+import { Button, Col, Row, UncontrolledTooltip, Table, Badge } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -9,6 +9,22 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntity, getBatchesInRoom, getSensorsInRoom, getAlertsInRoom } from './room.reducer';
+
+// Feature #393: Helper function to get badge color based on room status
+const getRoomStatusBadgeColor = (status: string): string => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success'; // green
+    case 'MAINTENANCE':
+      return 'warning'; // yellow
+    case 'DISINFECTION':
+      return 'warning'; // orange/yellow (Bootstrap warning is amber, closest to orange)
+    case 'INACTIVE':
+      return 'secondary'; // gray
+    default:
+      return 'secondary';
+  }
+};
 
 export const RoomDetail = () => {
   const dispatch = useAppDispatch();
@@ -56,7 +72,9 @@ export const RoomDetail = () => {
             <span id="status">Status</span>
             <UncontrolledTooltip target="status">Current operational status</UncontrolledTooltip>
           </dt>
-          <dd>{roomEntity.status}</dd>
+          <dd>
+            <Badge color={getRoomStatusBadgeColor(roomEntity.status)}>{roomEntity.status}</Badge>
+          </dd>
           <dt>
             <span id="capacityBags">Capacity Bags</span>
             <UncontrolledTooltip target="capacityBags">Max bag/block capacity</UncontrolledTooltip>
