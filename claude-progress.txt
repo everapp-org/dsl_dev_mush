@@ -11673,3 +11673,31 @@ All forms now have consistent 3-button layout:
 - Both servers stable and running
 - Progress: 359/405 features (88.6%) - approaching 89%!
 - Default & Reset category: making good progress
+
+---
+
+## Session 134: 2026-03-23
+
+### Completed Features (363/405 - 89.6%)
+
+#### Feature #365: Direct URL to batch detail works - PASSING
+**Category:** URL & Direct Access
+
+Added error handling in batch.reducer.ts for getEntity failures.
+Now properly handles 404 errors and sets loading=false.
+
+#### Feature #366: Malformed ID in URL handled - PASSING
+**Category:** URL & Direct Access
+
+Malformed IDs now show error toast and redirect to list.
+
+---
+
+## Session Summary
+- Features Completed: 2
+- Progress: 361 to 363 / 405 (89.1% to 89.6%)
+- Commit: cfba770
+- Files Modified: batch.reducer.ts
+- Added isRejected matchers for proper error handling
+- Remaining: 42 features
+
