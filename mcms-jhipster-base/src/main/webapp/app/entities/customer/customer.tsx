@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 
 import { getEntities } from './customer.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const Customer = () => {
   const dispatch = useAppDispatch();
@@ -177,7 +178,7 @@ export const Customer = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Customers found</div>
+          !loading && <EmptyState entityName="Customer" entityNamePlural="customers" showCreateButton={true} createLink="/customer/new" />
         )}
       </div>
     </div>

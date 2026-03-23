@@ -11,6 +11,7 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { AUTHORITIES } from 'app/config/constants';
 
 import { getEntities } from './substrate-recipe.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const SubstrateRecipe = () => {
   const dispatch = useAppDispatch();
@@ -185,7 +186,14 @@ export const SubstrateRecipe = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Substrate Recipes found</div>
+          !loading && (
+            <EmptyState
+              entityName="Substrate Recipe"
+              entityNamePlural="substrate recipes"
+              showCreateButton={true}
+              createLink="/substrate-recipe/new"
+            />
+          )
         )}
       </div>
     </div>

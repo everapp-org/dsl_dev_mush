@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './room.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const Room = () => {
   const dispatch = useAppDispatch();
@@ -197,7 +198,7 @@ export const Room = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Rooms found</div>
+          !loading && <EmptyState entityName="Room" entityNamePlural="rooms" showCreateButton={true} createLink="/room/new" />
         )}
       </div>
     </div>

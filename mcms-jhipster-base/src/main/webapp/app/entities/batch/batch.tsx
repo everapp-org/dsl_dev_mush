@@ -18,6 +18,7 @@ import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
 
 import { getEntities, getMoreEntities, resetInfiniteScroll } from './batch.reducer';
 import { getEntities as getStrains } from '../strain/strain.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const Batch = () => {
   const dispatch = useAppDispatch();
@@ -767,16 +768,13 @@ export const Batch = () => {
                     </div>
                   </>
                 ) : (
-                  <>
-                    <h4>No Batches Found</h4>
-                    <p className="mb-3">There are no batches in the system yet. Get started by creating your first batch.</p>
-                    {canModifyBatch && (
-                      <Link to="/batch/new" state={{ referrerSearch: pageLocation.search }} className="btn btn-primary btn-lg">
-                        <FontAwesomeIcon icon="plus" />
-                        &nbsp; Create Your First Batch
-                      </Link>
-                    )}
-                  </>
+                  <EmptyState
+                    entityName="Batch"
+                    entityNamePlural="batches"
+                    showCreateButton={canModifyBatch}
+                    createLink="/batch/new"
+                    createLinkState={{ referrerSearch: pageLocation.search }}
+                  />
                 )}
               </div>
             </div>

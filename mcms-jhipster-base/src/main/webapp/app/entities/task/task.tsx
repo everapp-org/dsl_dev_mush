@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 import { getEntities } from './task.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const Task = () => {
   const dispatch = useAppDispatch();
@@ -251,7 +252,7 @@ export const Task = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Tasks found</div>
+          !loading && <EmptyState entityName="Task" entityNamePlural="tasks" showCreateButton={true} createLink="/task/new" />
         )}
       </div>
     </div>

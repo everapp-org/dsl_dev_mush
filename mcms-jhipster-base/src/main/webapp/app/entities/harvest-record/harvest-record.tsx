@@ -10,6 +10,7 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './harvest-record.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const HarvestRecord = () => {
   const dispatch = useAppDispatch();
@@ -171,7 +172,14 @@ export const HarvestRecord = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Harvest Records found</div>
+          !loading && (
+            <EmptyState
+              entityName="Harvest Record"
+              entityNamePlural="harvest records"
+              showCreateButton={true}
+              createLink="/harvest-record/new"
+            />
+          )
         )}
       </div>
     </div>

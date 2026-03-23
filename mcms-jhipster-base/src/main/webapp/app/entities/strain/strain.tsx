@@ -12,6 +12,7 @@ import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
 
 import { getEntities, activateStrain, deactivateStrain } from './strain.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const Strain = () => {
   const dispatch = useAppDispatch();
@@ -345,14 +346,7 @@ export const Strain = () => {
                     </div>
                   </>
                 ) : (
-                  <>
-                    <h4>No Strains Found</h4>
-                    <p className="mb-3">There are no strains in the system yet. Get started by creating your first strain.</p>
-                    <Link to="/strain/new" className="btn btn-primary btn-lg" data-cy="emptyStateCreateButton">
-                      <FontAwesomeIcon icon="plus" />
-                      &nbsp; Create Your First Strain
-                    </Link>
-                  </>
+                  <EmptyState entityName="Strain" entityNamePlural="strains" showCreateButton={canModifyBatch} createLink="/strain/new" />
                 )}
               </div>
             </div>

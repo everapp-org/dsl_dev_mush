@@ -10,6 +10,7 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './sales-order.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
 
 export const SalesOrder = () => {
   const dispatch = useAppDispatch();
@@ -212,7 +213,9 @@ export const SalesOrder = () => {
             </tbody>
           </Table>
         ) : (
-          !loading && <div className="alert alert-warning">No Sales Orders found</div>
+          !loading && (
+            <EmptyState entityName="Sales Order" entityNamePlural="sales orders" showCreateButton={true} createLink="/sales-order/new" />
+          )
         )}
       </div>
     </div>
