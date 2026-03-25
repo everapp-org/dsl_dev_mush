@@ -346,7 +346,7 @@ export const Strain = () => {
                     </div>
                   </>
                 ) : (
-                  <EmptyState entityName="Strain" entityNamePlural="strains" showCreateButton={canModifyBatch} createLink="/strain/new" />
+                  <EmptyState entityName="Strain" entityNamePlural="strains" showCreateButton={isAdmin} createLink="/strain/new" />
                 )}
               </div>
             </div>

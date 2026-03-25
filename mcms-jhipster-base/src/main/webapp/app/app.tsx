@@ -4,7 +4,7 @@ import 'app/config/dayjs';
 
 import React, { useEffect } from 'react';
 import { Card } from 'reactstrap';
-import { BrowserRouter, ScrollRestoration } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -38,7 +38,6 @@ export const App = () => {
   const paddingTop = '60px';
   return (
     <BrowserRouter basename={baseHref}>
-      <ScrollRestoration />
       <a href="#app-view-container" className="skip-to-main">
         Skip to main content
       </a>
