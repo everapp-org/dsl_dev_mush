@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
+  "packages": [
+    "temurin-bin@21",
+    "maven@latest",
+    "nodejs@22"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo \"MCMS devbox: Java $(java -version 2>&1 | head -1), Maven $(mvn -version | head -1 | awk '{print $3}'), Node $(node -v)\""
+    ],
+    "scripts": {
+      "build": "mvn -ntp clean install",
+      "test": "mvn -ntp test",
+      "test-module": "mvn -ntp test -pl \"$@\"",
+      "generate": "cd mcms-dsl && mvn -ntp generate-sources && cd ../mcms-codegen && mvn -ntp install",
+      "backend": "cd mcms-jhipster-base && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev",
+      "frontend": "cd mcms-jhipster-base && npm start",
+      "test-jest": "cd mcms-jhipster-base && npm test -- \"$@\"",
+      "e2e": "cd mcms-jhipster-base && npm run e2e -- \"$@\"",
+      "postgres-up": "docker compose -f mcms-jhipster-base/src/main/docker/postgresql.yml up -d",
+      "postgres-down": "docker compose -f mcms-jhipster-base/src/main/docker/postgresql.yml down",
+      "check": "mvn -ntp clean verify"
+    }
+  }
+}
