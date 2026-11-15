@@ -1,0 +1,11 @@
+id;movement_date;movement_type;quantity;unit;reference;reason;performed_by;note;inventory_lot_id
+1;2026-02-21T15:14:11;ADJUSTMENT_IN;26290.13;LITER;heavily scarification zowie;before;before fairly weekly;../fake-data/blob/hipster.txt;1
+2;2026-02-22T00:52:29;ADJUSTMENT_OUT;370.45;PIECE;excepting conceptualize;ceramic minus;fake;../fake-data/blob/hipster.txt;2
+3;2026-02-21T20:35:01;RETURN_TO_SUPPLIER;16792.01;LITER;pendant;fat bowling;alongside;../fake-data/blob/hipster.txt;3
+4;2026-02-21T17:35:48;CONSUMPTION;23200.54;GRAM;stable;suffocate;or bitter;../fake-data/blob/hipster.txt;4
+5;2026-02-22T06:08:54;RECEIPT;32360.56;GRAM;huzzah absent;in excepting after;corner;../fake-data/blob/hipster.txt;5
+6;2026-02-21T19:18:14;ADJUSTMENT_IN;25654.21;GRAM;fast;oof provided prohibition;incandescence gracefully cumbersome;../fake-data/blob/hipster.txt;6
+7;2026-02-22T02:54:16;CONSUMPTION;12195.82;PALLET;approach;intellect;dimly yippee;../fake-data/blob/hipster.txt;7
+8;2026-02-21T21:06:17;ADJUSTMENT_IN;28901.57;PIECE;frankly as;inquisitively abaft;how embossing shush;../fake-data/blob/hipster.txt;8
+9;2026-02-22T09:53:38;ADJUSTMENT_IN;22735.39;LITER;hence provided dreamily;packaging excepting;knottily round;../fake-data/blob/hipster.txt;9
+10;2026-02-21T17:10:27;CONSUMPTION;29301.52;PIECE;toward awesome;phew opposite ruddy;yearly colorfully;../fake-data/blob/hipster.txt;10

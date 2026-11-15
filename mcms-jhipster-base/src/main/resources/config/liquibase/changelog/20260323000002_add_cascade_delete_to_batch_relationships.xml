@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Add CASCADE DELETE to batch relationships.
+        When a batch is deleted, all related phase_execution, flush_cycle, and harvest_record entries should be deleted.
+    -->
+    <changeSet id="20260323000002-1" author="claude">
+
+        <!-- Phase Execution: Drop existing FK, recreate with CASCADE -->
+        <dropForeignKeyConstraint baseTableName="phase_execution" constraintName="fk_phase_execution__batch_id"/>
+        <addForeignKeyConstraint baseColumnNames="batch_id"
+                                 baseTableName="phase_execution"
+                                 constraintName="fk_phase_execution__batch_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="batch"
+                                 onDelete="CASCADE"/>
+
+        <!-- Flush Cycle: Drop existing FK, recreate with CASCADE -->
+        <dropForeignKeyConstraint baseTableName="flush_cycle" constraintName="fk_flush_cycle__batch_id"/>
+        <addForeignKeyConstraint baseColumnNames="batch_id"
+                                 baseTableName="flush_cycle"
+                                 constraintName="fk_flush_cycle__batch_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="batch"
+                                 onDelete="CASCADE"/>
+
+        <!-- Harvest Record: Drop existing FK, recreate with CASCADE -->
+        <dropForeignKeyConstraint baseTableName="harvest_record" constraintName="fk_harvest_record__flush_cycle_id"/>
+        <addForeignKeyConstraint baseColumnNames="flush_cycle_id"
+                                 baseTableName="harvest_record"
+                                 constraintName="fk_harvest_record__flush_cycle_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="flush_cycle"
+                                 onDelete="CASCADE"/>
+
+    </changeSet>
+</databaseChangeLog>

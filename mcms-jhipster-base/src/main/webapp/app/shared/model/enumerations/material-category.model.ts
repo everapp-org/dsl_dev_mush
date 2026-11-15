@@ -1,0 +1,15 @@
+export enum MaterialCategory {
+  SPAWN = 'SPAWN',
+
+  SUBSTRATE = 'SUBSTRATE',
+
+  SUPPLEMENT = 'SUPPLEMENT',
+
+  CHEMICAL = 'CHEMICAL',
+
+  PACKAGING = 'PACKAGING',
+
+  EQUIPMENT_SUPPLY = 'EQUIPMENT_SUPPLY',
+
+  OTHER = 'OTHER',
+}

@@ -1,0 +1,11 @@
+id;sensor_code;sensor_type;status;installed_date;last_calibration_date;manufacturer;model;note;room_id
+1;athwart;HUMIDITY_PERCENT;ERROR;2026-02-21;2026-02-21;till;nab;../fake-data/blob/hipster.txt;1
+2;deduct geez;CELSIUS;ERROR;2026-02-22;2026-02-21;trick;hierarchy geez yippee;../fake-data/blob/hipster.txt;2
+3;unlucky greedily outside;CELSIUS;ACTIVE;2026-02-21;2026-02-21;supposing;wrathful pro tidy;../fake-data/blob/hipster.txt;3
+4;dependent;AIRFLOW_MS;CALIBRATING;2026-02-22;2026-02-21;pretty chubby yeast;elegantly;../fake-data/blob/hipster.txt;4
+5;less or favorable;AIRFLOW_MS;INACTIVE;2026-02-21;2026-02-22;remark abseil;in honestly;../fake-data/blob/hipster.txt;5
+6;more or like;AIRFLOW_MS;ERROR;2026-02-22;2026-02-22;uh-huh;before under;../fake-data/blob/hipster.txt;6
+7;prime gorgeous instead;HUMIDITY_PERCENT;ACTIVE;2026-02-21;2026-02-21;excluding;truthfully cannibalise definitive;../fake-data/blob/hipster.txt;7
+8;damaged infatuated;CELSIUS;ERROR;2026-02-22;2026-02-22;rarely fidget cutover;gadzooks;../fake-data/blob/hipster.txt;8
+9;uniform hm;HUMIDITY_PERCENT;ACTIVE;2026-02-22;2026-02-21;daintily reapply once;woot through dearly;../fake-data/blob/hipster.txt;9
+10;elevator;LUX;INACTIVE;2026-02-22;2026-02-22;keel ick;brr yahoo;../fake-data/blob/hipster.txt;10

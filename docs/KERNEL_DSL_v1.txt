@@ -1,0 +1,454 @@
+# Kernel DSL v1 Specification
+
+Version: 1.0
+Purpose: Shared, reusable DSL for describing domains, models, state machines, events, and services across multiple projects (e.g., Frames, Dynamic UI, Notes).
+
+--------------------------------------------------
+1. OVERVIEW
+--------------------------------------------------
+
+Kernel DSL v1 is a small, domain-agnostic language for describing:
+
+- Structure
+  - domain, level, model, service, fields
+- Behavior
+  - states, transitions, invariants
+- Reactivity
+  - emits (events), do (actions)
+- Constraints
+  - Simple architecture rules (forbid/allow imports from package ...)
+
+It is designed to:
+
+- Be human-readable in .dsl (or .arch) files.
+- Be simple to parse (small grammar, suitable for tools like lark).
+- Be independent of any specific domain.
+- Act as a single source of truth for:
+  - Code generation
+  - Test generation
+  - Documentation
+  - Static validation
+
+
+--------------------------------------------------
+2. CORE CONCEPTS
+--------------------------------------------------
+
+2.1 Domain
+----------
+
+A domain defines a bounded context or logical project:
+
+    domain Notes {
+      ...
+    }
+
+You will typically have one domain per .dsl file (but the grammar allows more).
+
+
+2.2 Level
+---------
+
+level subdivides a domain by abstraction (optional but recommended):
+
+Common levels:
+- domain      – core domain logic
+- application – use cases, orchestrations
+- infrastructure – persistence, IO, integrations
+
+Example:
+
+    domain Notes {
+      level domain {
+        ...
+      }
+
+      level application {
+        ...
+      }
+    }
+
+
+2.3 Model
+---------
+
+model represents a domain entity or value object. It can define:
+
+- fields     – attributes and their types (types are free-form strings).
+- states     – allowed lifecycle states (for a state machine).
+- transitions – allowed changes between states.
+- invariants – conditions that should always hold (textual or expression-like).
+
+Example:
+
+    model Note {
+      description "Represents a user note and its lifecycle."
+
+      fields {
+        id: NoteId
+        title: String
+        body: String
+        state: NoteState
+      }
+
+      states {
+        Draft
+        Published
+        Archived
+      }
+
+      transitions {
+        Draft     -> Published on publish
+          emits NotePublished
+
+        Published -> Archived  on archive(reason)
+          emits NoteArchived
+      }
+
+      invariants {
+        // Example (free form):
+        // Published implies title is not empty
+      }
+    }
+
+
+2.4 Transition (State Machine)
+------------------------------
+
+A transition defines a state change with an associated triggering operation and optional extras.
+
+General form:
+
+    FromState -> ToState on operationName(param1, param2)
+      if conditionExpression
+      else AlternativeState
+      emits EventA, EventB
+      do actionOne, actionTwo
+
+All trailing parts are optional and appear at most once, in this order:
+
+1. if conditionExpression
+2. else AlternativeState
+3. emits EventA, EventB, ...
+4. do actionOne, actionTwo, ...
+
+Example with guard, events, and actions:
+
+    Sent -> Paid on receivePayment(amount)
+      if amount > 0
+      emits InvoicePaid, LedgerUpdated
+      do updateLedger, notifyCustomer
+
+    Sent -> Error on receivePayment(amount)
+      if amount <= 0
+      emits PaymentFailed
+      do logError
+
+
+2.5 Service & Operation
+-----------------------
+
+service groups externally visible operations (e.g., application services, APIs):
+
+    service NoteService {
+      description "Application service for manipulating notes."
+
+      operation createNote(title, body)
+      operation publishNote(noteId)
+      operation archiveNote(noteId, reason)
+    }
+
+Operations may (but are not required to) correspond to transition triggers (on publish, on archive, etc.).
+
+
+2.6 Description
+---------------
+
+Any construct (domain, model, service, etc.) may have a description:
+
+    description "Handles note-taking features independent of storage and UI."
+
+This is a standard double-quoted string and is useful for docs, AI tools, and human understanding.
+
+
+2.7 Constraints
+---------------
+
+constraints allow simple architectural or dependency rules:
+
+    constraints {
+      forbid imports from package notes.ui.*
+      allow imports from domain Core
+    }
+
+The kernel DSL only defines the syntax; it is up to validator tools to interpret and enforce these rules.
+
+
+--------------------------------------------------
+3. EXAMPLE DOMAIN FILES
+--------------------------------------------------
+
+3.1 Frames (frames.dsl)
+-----------------------
+
+    domain Frames {
+      description "Frames-based knowledge representation."
+
+      level domain {
+        model Frame {
+          description "Generic frame with typed slots."
+
+          fields {
+            id: FrameId
+            type: FrameType
+            slots: Map<String, Value>
+            state: FrameState
+          }
+
+          states {
+            Active
+            Archived
+          }
+
+          transitions {
+            Active -> Archived on archive
+              emits FrameArchived
+              do logFrameArchived
+          }
+        }
+      }
+    }
+
+
+3.2 Dynamic UI (dynamic_ui.dsl)
+-------------------------------
+
+    domain DynamicUI {
+      description "Dynamic user interface components and layout."
+
+      level domain {
+        model UIElement {
+          fields {
+            id: ElementId
+            kind: ElementKind
+            props: Map<String, Value>
+            state: UIState
+          }
+
+          states {
+            Hidden
+            Visible
+            Disabled
+          }
+
+          transitions {
+            Hidden  -> Visible  on show
+            Visible -> Hidden   on hide
+            Visible -> Disabled on disable
+          }
+        }
+      }
+
+      level application {
+        service UIService {
+          description "High-level operations for rendering and handling UI."
+
+          operation renderElement(elementId)
+          operation handleInteraction(elementId, event)
+        }
+      }
+    }
+
+
+3.3 Notes (notes.dsl)
+---------------------
+
+    domain Notes {
+      description "Note-taking domain, independent of storage and UI."
+
+      level domain {
+        model Note {
+          description "Represents a user note and its lifecycle."
+
+          fields {
+            id: NoteId
+            title: String
+            body: String
+            state: NoteState
+          }
+
+          states {
+            Draft
+            Published
+            Archived
+          }
+
+          transitions {
+            Draft     -> Published on publish
+              emits NotePublished
+
+            Published -> Archived  on archive(reason)
+              emits NoteArchived
+          }
+
+          invariants {
+            // Example: Published implies title is not empty
+          }
+        }
+      }
+
+      level application {
+        service NoteService {
+          description "Operations exposed to UI or API."
+
+          operation createNote(title, body)
+          operation publishNote(noteId)
+          operation archiveNote(noteId, reason)
+        }
+      }
+
+      constraints {
+        forbid imports from package notes.ui.*
+      }
+    }
+
+
+--------------------------------------------------
+4. FORMAL GRAMMAR (EBNF)
+--------------------------------------------------
+
+Below is a grammar you can implement with tools like lark or ANTLR.
+
+    start           = domain+
+
+    domain          = "domain" NAME "{" domain_body "}"
+    domain_body     = (description | level | constraints)*
+
+    description     = "description" STRING
+
+    level           = "level" NAME "{" level_body+ "}"
+    level_body      = (model | service)+
+
+    model           = "model" NAME "{" model_body+ "}"
+    model_body      = (description | fields | states | transitions | invariants)+
+
+    fields          = "fields" "{" field+ "}"
+    field           = NAME ":" TYPE
+
+    TYPE            = /[A-Za-z0-9_<>,.\[\] ]+/
+
+    states          = "states" "{" NAME+ "}"
+    transitions     = "transitions" "{" transition+ "}"
+    transition      = NAME "->" NAME "on" NAME ("(" param_list? ")")?
+                      [ "if" condition_expr ]
+                      [ "else" NAME ]
+                      [ "emits" name_list ]
+                      [ "do" name_list ]
+
+    param_list      = NAME ("," NAME)*
+
+    name_list       = NAME ("," NAME)*
+
+    condition_expr  = /[^{}\n]+/
+
+    invariants      = "invariants" "{" invariant+ "}"
+    invariant       = /[^}]+/
+
+    service         = "service" NAME "{" service_body+ "}"
+    service_body    = (description | operation)+
+
+    operation       = "operation" NAME ("(" param_list? ")")?
+
+    constraints     = "constraints" "{" constraint+ "}"
+    constraint      = ("forbid" | "allow") "imports" "from" "package" PATTERN
+
+    PATTERN         = /[A-Za-z0-9_.*]+/
+
+    NAME            = /[A-Za-z_][A-Za-z0-9_]*/
+    STRING          = ESCAPED_STRING
+
+    %import common.ESCAPED_STRING
+    %import common.WS
+    %ignore WS
+
+
+Notes:
+- TYPE and condition_expr are intentionally permissive and domain-agnostic.
+- You decide how to interpret types and conditions in generators/validators.
+
+
+--------------------------------------------------
+5. MAPPING TO CODE & TESTS (RECOMMENDED PATTERN)
+--------------------------------------------------
+
+This section is non-normative (an example of how to use Kernel DSL v1).
+
+5.1 From model with states and transitions
+-----------------------------------------
+
+For each model that has states and transitions, you can generate:
+
+1) State enum (e.g., from states { Draft Published Archived } -> NoteState enum).
+
+2) Model class:
+   - Fields as constructor args / attributes.
+   - state attribute using the enum.
+   - For each transition:
+     - A method named after the trigger (on publish -> publish()).
+     - Asserts current state.
+     - Applies guard (if condition) and optional else state.
+     - Updates state.
+     - Appends emitted event objects to a list (e.g., self.emitted).
+     - Calls action methods listed in do.
+
+3) Event classes:
+   - One simple class per emitted event name.
+
+4) Action method stubs:
+   - One stub per unique action in do lists.
+
+
+5.2 From service
+----------------
+
+Generate a service class with methods for each operation, e.g.:
+
+    class NoteService:
+        def createNote(self, title, body): ...
+        def publishNote(self, noteId): ...
+        def archiveNote(self, noteId, reason): ...
+
+You can then wire these to models (load, call transition, save) in generated code or by hand.
+
+
+5.3 Tests
+---------
+
+For each transition, generate:
+
+- Positive test for normal path:
+  - Start object in from state.
+  - Call trigger method.
+  - Assert state == to.
+  - Assert expected events in emitted list.
+
+- Branch tests when if/else is present:
+  - One test for guard true -> target state/event.
+  - One test for guard false -> else state (if provided).
+
+
+--------------------------------------------------
+6. VERSIONING AND EVOLUTION
+--------------------------------------------------
+
+- This document defines Kernel DSL v1.0.
+- Future, backward-compatible changes should be marked as minor versions (e.g. v1.1, v1.2).
+- Breaking changes require v2.x and migration notes.
+
+Guidelines for extending:
+
+- Do not bake domain-specific concepts (e.g., "Frame", "Note", "UIElement") into the grammar.
+- Prefer modeling new ideas using existing concepts (models, states, transitions, events, actions).
+- If you add syntax:
+  - Keep it orthogonal and minimal.
+  - Start by using it in one or two domains before formalizing it into the kernel.

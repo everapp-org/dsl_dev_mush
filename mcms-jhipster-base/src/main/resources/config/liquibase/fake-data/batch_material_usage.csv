@@ -1,0 +1,11 @@
+id;usage_date;quantity_used;unit;purpose;note;batch_id;inventory_lot_id;material_id
+1;2026-02-22;5641.42;LITER;than;../fake-data/blob/hipster.txt;1;1;1
+2;2026-02-22;8513.1;BAG;bidet;../fake-data/blob/hipster.txt;2;2;2
+3;2026-02-21;24765.37;BAG;shampoo inscribe onto;../fake-data/blob/hipster.txt;3;3;3
+4;2026-02-22;6401.41;PIECE;foodstuffs hypothesise;../fake-data/blob/hipster.txt;4;4;4
+5;2026-02-21;13716.06;BOX;vibrant;../fake-data/blob/hipster.txt;5;5;5
+6;2026-02-22;28998.83;PALLET;untried ah thankfully;../fake-data/blob/hipster.txt;6;6;6
+7;2026-02-22;16606.92;PIECE;tromp;../fake-data/blob/hipster.txt;7;7;7
+8;2026-02-21;3798.24;PIECE;sans which;../fake-data/blob/hipster.txt;8;8;8
+9;2026-02-22;2872.87;PIECE;definite unscramble;../fake-data/blob/hipster.txt;9;9;9
+10;2026-02-22;28150.13;KG;well-documented yum wholly;../fake-data/blob/hipster.txt;10;10;10

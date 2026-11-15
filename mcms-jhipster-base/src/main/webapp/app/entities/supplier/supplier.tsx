@@ -1,0 +1,180 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button, Table } from 'reactstrap';
+import { getSortState } from 'react-jhipster';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { ASC, DESC } from 'app/shared/util/pagination.constants';
+import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+
+import { getEntities } from './supplier.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
+
+export const Supplier = () => {
+  const dispatch = useAppDispatch();
+
+  const pageLocation = useLocation();
+  const navigate = useNavigate();
+
+  const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+
+  const supplierList = useAppSelector(state => state.supplier.entities);
+  const loading = useAppSelector(state => state.supplier.loading);
+
+  const getAllEntities = () => {
+    dispatch(
+      getEntities({
+        sort: `${sortState.sort},${sortState.order}`,
+      }),
+    );
+  };
+
+  const sortEntities = () => {
+    getAllEntities();
+    const endURL = `?sort=${sortState.sort},${sortState.order}`;
+    if (pageLocation.search !== endURL) {
+      navigate(`${pageLocation.pathname}${endURL}`);
+    }
+  };
+
+  useEffect(() => {
+    sortEntities();
+  }, [sortState.order, sortState.sort]);
+
+  const sort = p => () => {
+    setSortState({
+      ...sortState,
+      order: sortState.order === ASC ? DESC : ASC,
+      sort: p,
+    });
+  };
+
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
+  const getSortIconByFieldName = (fieldName: string) => {
+    const sortFieldName = sortState.sort;
+    const order = sortState.order;
+    if (sortFieldName !== fieldName) {
+      return faSort;
+    }
+    return order === ASC ? faSortUp : faSortDown;
+  };
+
+  return (
+    <div>
+      <h1 id="supplier-heading" data-cy="SupplierHeading">
+        Suppliers
+        <div className="d-flex justify-content-end">
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+          </Button>
+          <Link to="/supplier/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Create a new Supplier
+          </Link>
+        </div>
+      </h1>
+      <div className="table-responsive">
+        {supplierList && supplierList.length > 0 ? (
+          <Table responsive striped hover>
+            <thead>
+              <tr>
+                <th scope="col" className="hand" onClick={sort('id')}>
+                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('name')}>
+                  Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('type')}>
+                  Type <FontAwesomeIcon icon={getSortIconByFieldName('type')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('contactPerson')}>
+                  Contact Person <FontAwesomeIcon icon={getSortIconByFieldName('contactPerson')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('email')}>
+                  Email <FontAwesomeIcon icon={getSortIconByFieldName('email')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('phone')}>
+                  Phone <FontAwesomeIcon icon={getSortIconByFieldName('phone')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('address')}>
+                  Address <FontAwesomeIcon icon={getSortIconByFieldName('address')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('rating')}>
+                  Rating <FontAwesomeIcon icon={getSortIconByFieldName('rating')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('active')}>
+                  Active <FontAwesomeIcon icon={getSortIconByFieldName('active')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('note')}>
+                  Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
+                </th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {supplierList.map((supplier, i) => (
+                <tr key={`entity-${i}`} data-cy="entityTable">
+                  <td>
+                    <Button tag={Link} to={`/supplier/${supplier.id}`} color="link" size="sm">
+                      {supplier.id}
+                    </Button>
+                  </td>
+                  <td>{supplier.name}</td>
+                  <td>{supplier.type}</td>
+                  <td>{supplier.contactPerson}</td>
+                  <td>{supplier.email}</td>
+                  <td>{supplier.phone}</td>
+                  <td>{supplier.address}</td>
+                  <td>{supplier.rating}</td>
+                  <td>{supplier.active ? 'true' : 'false'}</td>
+                  <td>{supplier.note}</td>
+                  <td className="text-end">
+                    <div className="btn-group flex-btn-group-container">
+                      <Button
+                        tag={Link}
+                        to={`/supplier/${supplier.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        aria-label="View"
+                      >
+                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/supplier/${supplier.id}/edit`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
+                      >
+                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                      </Button>
+                      <Button
+                        onClick={() => (window.location.href = `/supplier/${supplier.id}/delete`)}
+                        color="danger"
+                        size="sm"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
+                      >
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          !loading && <EmptyState entityName="Supplier" entityNamePlural="suppliers" showCreateButton={true} createLink="/supplier/new" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Supplier;

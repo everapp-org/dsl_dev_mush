@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity BatchMaterialUsage.
+    -->
+    <changeSet id="20260222143032-1" author="jhipster">
+        <createTable tableName="batch_material_usage" remarks="Batch material usage - the key traceability link.\nRecords exactly which materials (from which inventory lots,\nfrom which supply orders, from which suppliers) were consumed\nin each production batch.\n\nAnswers: &quot;Batch PO-2025-001 used 200kg of wheat straw from\nLOT-2025-0042, which came from SupplyOrder PO-2025-018\nline 2, supplied by Agro-Straw d.o.o.&quot;">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="usage_date" type="date" remarks="When the material was used">
+                <constraints nullable="false" />
+            </column>
+            <column name="quantity_used" type="decimal(21,2)" remarks="How much was consumed">
+                <constraints nullable="false" />
+            </column>
+            <column name="unit" type="varchar(255)" remarks="Unit of measure">
+                <constraints nullable="false" />
+            </column>
+            <column name="purpose" type="varchar(255)" remarks="What it was used for, e.g. &quot;Substrate preparation&quot;, &quot;Supplementation&quot;">
+                <constraints nullable="true" />
+            </column>
+            <column name="note" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="batch_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="inventory_lot_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="material_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20260222143032-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/batch_material_usage.csv"
+                  separator=";"
+                  tableName="batch_material_usage"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="usage_date" type="date"/>
+            <column name="quantity_used" type="numeric"/>
+            <column name="unit" type="string"/>
+            <column name="purpose" type="string"/>
+            <column name="note" type="clob"/>
+            <column name="batch_id" type="numeric"/>
+            <column name="inventory_lot_id" type="numeric"/>
+            <column name="material_id" type="numeric"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity SupplyOrderLine.
+    -->
+    <changeSet id="20260222143025-1" author="jhipster">
+        <createTable tableName="supply_order_line" remarks="Supply order line item - individual item on a purchase order.\nEach line represents one material being procured.\nLinks to Material catalog for standardized identification.\nSupports partial deliveries and per-line quality tracking.">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="line_number" type="integer" remarks="Line sequence (1, 2, 3...)">
+                <constraints nullable="false" />
+            </column>
+            <column name="item_description" type="varchar(255)" remarks="Free-text description of what is being ordered">
+                <constraints nullable="false" />
+            </column>
+            <column name="quantity_ordered" type="decimal(21,2)" remarks="Amount ordered">
+                <constraints nullable="false" />
+            </column>
+            <column name="quantity_received" type="decimal(21,2)" remarks="Amount actually received (supports partial delivery)">
+                <constraints nullable="true" />
+            </column>
+            <column name="unit" type="varchar(255)" remarks="Unit of measure">
+                <constraints nullable="false" />
+            </column>
+            <column name="unit_price" type="decimal(21,2)" remarks="Price per unit">
+                <constraints nullable="false" />
+            </column>
+            <column name="line_total" type="decimal(21,2)" remarks="quantityOrdered × unitPrice">
+                <constraints nullable="false" />
+            </column>
+            <column name="lot_number" type="varchar(255)" remarks="Supplier lot/batch number for traceability">
+                <constraints nullable="true" />
+            </column>
+            <column name="expiry_date" type="date" remarks="Expiry date of supplied material">
+                <constraints nullable="true" />
+            </column>
+            <column name="quality_on_receipt" type="varchar(255)" remarks="Quality assessment upon delivery">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_received" type="boolean" remarks="Has this line been received?">
+                <constraints nullable="false" />
+            </column>
+            <column name="note" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="supply_order_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="material_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="batch_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20260222143025-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/supply_order_line.csv"
+                  separator=";"
+                  tableName="supply_order_line"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="line_number" type="numeric"/>
+            <column name="item_description" type="string"/>
+            <column name="quantity_ordered" type="numeric"/>
+            <column name="quantity_received" type="numeric"/>
+            <column name="unit" type="string"/>
+            <column name="unit_price" type="numeric"/>
+            <column name="line_total" type="numeric"/>
+            <column name="lot_number" type="string"/>
+            <column name="expiry_date" type="date"/>
+            <column name="quality_on_receipt" type="string"/>
+            <column name="is_received" type="boolean"/>
+            <column name="note" type="clob"/>
+            <column name="supply_order_id" type="numeric"/>
+            <column name="material_id" type="numeric"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

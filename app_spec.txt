@@ -1,0 +1,985 @@
+<project_specification>
+  <project_name>Mushroom Cultivation Management System (MCMS)</project_name>
+
+  <overview>
+    A comprehensive commercial mushroom farming management system that tracks the full production lifecycle
+    from inoculation through harvest and sales. Built using a DSL-First Development methodology blending
+    JHipster code generation (structural CRUD) with custom ANTLR/JavaPoet behavioral DSLs (state machines,
+    business rules, domain events). The system provides IoT sensor integration, environmental monitoring,
+    supply chain traceability (supplier to customer), contamination management, financial dashboards,
+    and compliance reporting — all organized around the Batch entity as the central aggregate root with
+    a 10-phase lifecycle enforced by a state machine.
+  </overview>
+
+  <technology_stack>
+    <frontend>
+      <framework>React with TypeScript</framework>
+      <styling>Bootstrap / JHipster default theme with responsive design</styling>
+      <state_management>React hooks + Redux (JHipster default)</state_management>
+      <testing>Cypress (E2E)</testing>
+    </frontend>
+    <backend>
+      <runtime>Java 21 with Spring Boot 3.2.2</runtime>
+      <framework>JHipster 8.x (monolith)</framework>
+      <database>PostgreSQL (production), H2 Disk (development)</database>
+      <orm>Spring Data JPA with Liquibase migrations</orm>
+      <build_tool>Maven 3.9+</build_tool>
+      <code_generation>ANTLR 4.13.1 (parser) + JavaPoet 1.13.0 (code generator)</code_generation>
+      <testing>JUnit 5.10.1</testing>
+    </backend>
+    <communication>
+      <api>RESTful JSON API with Swagger/OpenAPI documentation</api>
+      <authentication>JWT (JSON Web Tokens)</authentication>
+      <events>Spring ApplicationEventPublisher for domain events</events>
+    </communication>
+    <modules>
+      <module name="mcms-dsl">DSL definitions + ANTLR grammars</module>
+      <module name="mcms-codegen">JavaPoet generators</module>
+      <module name="mcms-jhipster-base">JHipster generated CRUD scaffold</module>
+      <module name="mcms-domain-extensions">DSL-generated state machines and events</module>
+      <module name="mcms-application">Hand-written orchestration (5%)</module>
+    </modules>
+  </technology_stack>
+
+  <prerequisites>
+    <environment_setup>
+      - Java 21 (LTS) installed
+      - Maven 3.9+ installed
+      - Node.js 18+ with npm installed
+      - JHipster CLI installed (npm install -g generator-jhipster)
+      - Git configured
+      - PostgreSQL (for production) or H2 Disk (for development, auto-configured)
+    </environment_setup>
+  </prerequisites>
+
+  <feature_count>405</feature_count>
+
+  <security_and_access_control>
+    <user_roles>
+      <role name="ROLE_ADMIN">
+        <permissions>
+          - Full CRUD on all 25 entities
+          - User management (create, edit, deactivate accounts)
+          - System configuration and settings
+          - View all dashboards and reports
+          - Access compliance and audit data
+          - Manage rooms, sensors, and environmental targets
+          - Force state transitions (emergency override)
+          - Generate monthly reports
+          - Export/import data
+        </permissions>
+        <protected_routes>
+          - /admin/* (admin panel)
+          - /api/admin/* (admin API)
+          - /management/* (JHipster management endpoints)
+        </protected_routes>
+      </role>
+      <role name="ROLE_MANAGER">
+        <permissions>
+          - Full CRUD on production entities (Batch, FlushCycle, HarvestRecord, PhaseExecution)
+          - Full CRUD on supply chain (SupplyOrder, SalesOrder, Customer, Supplier)
+          - Full CRUD on inventory (Material, InventoryLot, StockMovement)
+          - View financial dashboards and reports
+          - Manage contamination events
+          - Manage tasks and assignments
+          - View sensor data and alerts
+          - Acknowledge environmental alerts
+        </permissions>
+        <protected_routes>
+          - /management/reports (reporting)
+          - /management/supply-chain (procurement and sales)
+        </protected_routes>
+      </role>
+      <role name="ROLE_OPERATOR">
+        <permissions>
+          - Create and update Batch phase transitions (normal flow only, no force)
+          - Record harvests and flush cycles
+          - Log contamination events
+          - View assigned tasks, mark as complete
+          - View sensor readings and alerts
+          - Acknowledge alerts assigned to their rooms
+          - View (read-only) strain and recipe information
+          - Record stock movements (consumption, receipt)
+        </permissions>
+        <protected_routes>
+          - /production/* (production operations)
+          - /tasks/* (task management)
+        </protected_routes>
+      </role>
+      <role name="ROLE_USER">
+        <permissions>
+          - View dashboards (read-only)
+          - View batch status and history
+          - View sensor readings
+          - View product catalog
+          - View own profile
+        </permissions>
+        <protected_routes>
+          - /dashboard (read-only dashboard)
+          - /batches (read-only batch list)
+        </protected_routes>
+      </role>
+    </user_roles>
+    <authentication>
+      <method>JWT with email/password login (JHipster default)</method>
+      <session_timeout>24 hours (JWT token expiry)</session_timeout>
+      <password_requirements>Minimum 8 characters, at least 1 uppercase, 1 lowercase, 1 digit</password_requirements>
+      <registration>Admin-created accounts (no self-registration for farm staff)</registration>
+    </authentication>
+    <sensitive_operations>
+      - Delete batch requires confirmation dialog
+      - Force state transition requires admin password re-entry
+      - Discard contaminated batch requires confirmation with reason
+      - Delete customer/supplier with active orders blocked
+      - Financial report generation logged for audit trail
+    </sensitive_operations>
+  </security_and_access_control>
+
+  <core_features>
+    <infrastructure>
+      - Database connection established and healthy
+      - Database schema applied correctly (25 entity tables + relationships)
+      - Data persists across server restart
+      - No mock data patterns in codebase
+      - Backend API queries real database (SQL/ORM queries logged)
+    </infrastructure>
+
+    <authentication_and_authorization>
+      - User login with JWT token
+      - User logout and token invalidation
+      - Role-based access control (ADMIN, MANAGER, OPERATOR, USER)
+      - Protected route enforcement per role
+      - Unauthorized access returns 403
+      - Session expiry after 24 hours
+      - Password change functionality
+      - Admin can create/edit/deactivate user accounts
+      - Login redirect after session expiry
+      - Remember me functionality
+    </authentication_and_authorization>
+
+    <navigation_and_layout>
+      - Sidebar navigation with domain-grouped menus
+      - Top navbar with user info and logout
+      - Breadcrumb navigation on all pages
+      - Dashboard as landing page after login
+      - Responsive layout (desktop, tablet, mobile)
+      - 404 page for invalid routes
+      - Back button works correctly throughout app
+      - Deep links work for all entity detail pages
+      - Loading states shown during data fetch
+      - Empty state displays when no data exists
+    </navigation_and_layout>
+
+    <strain_management>
+      - List all strains with pagination and sorting
+      - Create new strain with all fields (name, species, variety, optimal conditions)
+      - Edit existing strain details
+      - Deactivate/activate strain (soft delete)
+      - View strain detail page with optimal growing conditions
+      - Filter strains by species, active status
+      - Search strains by name
+      - Strain linked to batches and products (view related records)
+      - Validate required fields (name, species, active)
+      - Display optimal temperature and humidity ranges
+    </strain_management>
+
+    <substrate_recipe_management>
+      - List all recipes with pagination
+      - Create new recipe with versioning
+      - Edit recipe details (creates new version)
+      - Deactivate/activate recipe
+      - View recipe detail with full composition
+      - Filter by base type (wheat straw, sawdust, etc.)
+      - Search recipes by name
+      - Validate required fields
+      - View batches using this recipe
+      - Display sterilization method and pH targets
+    </substrate_recipe_management>
+
+    <batch_lifecycle_management>
+      - Create new batch with strain, recipe, start date, bag count
+      - View batch list with current phase indicator and color coding
+      - View batch detail page with full lifecycle timeline
+      - 10-phase state machine enforcement:
+        - INOCULATION → EARLY_COLONIZATION (guard: substrate fully inoculated)
+        - EARLY_COLONIZATION → FULL_COLONIZATION
+        - FULL_COLONIZATION → CONSOLIDATION
+        - CONSOLIDATION → FRUITING_TRIGGER
+        - FRUITING_TRIGGER → PRIMORDIA
+        - PRIMORDIA → FRUITING_BODY_GROWTH
+        - FRUITING_BODY_GROWTH → HARVEST
+        - HARVEST → REHYDRATION_PAUSE (guard: flush count < max)
+        - REHYDRATION_PAUSE → HARVEST (rehydrated)
+        - HARVEST → COMPLETED (guard: final flush or yield below threshold)
+      - Invalid phase transitions blocked with error message
+      - Phase execution records created for each transition
+      - Domain events emitted on every transition
+      - UI shows "Available Actions" buttons based on current phase
+      - Batch timeline visualization (horizontal phase progress)
+      - Filter batches by phase, strain, active status, date range
+      - Search batches by batch code
+      - Yield tracking (target vs actual, biological efficiency)
+      - Batch notes and completion notes
+      - Admin force transition (emergency override with logging)
+      - Batch contamination flag indicator
+      - View related records (phases, flushes, harvests, costs, materials, contamination)
+    </batch_lifecycle_management>
+
+    <phase_execution_tracking>
+      - Auto-created on batch phase transition
+      - View phase history for a batch (ordered timeline)
+      - Record responsible person for each phase
+      - Track planned vs actual duration
+      - Phase-specific notes and observations
+      - Link to room where phase occurred
+      - View environmental conditions during phase
+    </phase_execution_tracking>
+
+    <multi_flush_harvest>
+      - Create flush cycle for batch in HARVEST phase
+      - Record yield per flush (kg, bags harvested, avg fruit body weight)
+      - Multiple flushes per batch (typically 2-5)
+      - Rehydration tracking between flushes (duration, done flag)
+      - View flush history with yield chart per flush
+      - Individual harvest records within a flush (daily picks)
+      - Harvest quality grading (A_PREMIUM, B_STANDARD, C_INDUSTRIAL, WASTE)
+      - Picker name tracking per harvest
+      - Cumulative yield calculation across flushes
+      - Biological efficiency percentage auto-calculated
+    </multi_flush_harvest>
+
+    <room_management>
+      - List all rooms with status indicators (ACTIVE, MAINTENANCE, DISINFECTION, INACTIVE)
+      - Create new room with type, capacity, area, HVAC/misting flags
+      - Edit room details
+      - Room status management (activate, put in maintenance, disinfect)
+      - View room detail with current occupancy
+      - View sensors installed in room
+      - View environmental targets for room by phase
+      - View batches currently in room
+      - View alerts for room
+      - Last disinfection date tracking
+      - Filter rooms by type and status
+    </room_management>
+
+    <environmental_monitoring>
+      - Set environmental targets per room per phase (temp, humidity, CO2, light, FAE)
+      - View target vs actual readings comparison
+      - Sensor management (register, assign to room, calibrate, deactivate)
+      - Sensor status tracking (ACTIVE, INACTIVE, ERROR, CALIBRATING)
+      - Record sensor readings (timestamp, value, unit)
+      - Time-series display of sensor readings (charts)
+      - Environmental alerts triggered on threshold breach
+      - Alert severity levels (INFO, WARNING, CRITICAL)
+      - Alert acknowledgment workflow (who, when, resolution notes)
+      - Real-time dashboard with sensor status per room
+      - Color-coded indicators (green=in range, yellow=warning, red=critical)
+      - Link alerts to batches in affected rooms
+      - Filter alerts by severity, room, acknowledged status
+      - Alert history and resolution tracking
+    </environmental_monitoring>
+
+    <contamination_management>
+      - Log contamination event with type, severity, affected bags
+      - 9 contamination types (Trichoderma, Cobweb, Black Mold, Bacterial Blotch, etc.)
+      - 4 severity levels (LOW, MEDIUM, HIGH, CRITICAL)
+      - 7 response actions (Isolate, Remove, Salt Treatment, Peroxide, Ventilation, Discard, Monitor)
+      - Link contamination to batch, phase, room
+      - Track affected percentage and estimated loss
+      - Root cause analysis text field
+      - Preventive measures documentation
+      - Photo reference (URL/path)
+      - Resolution tracking (resolved date)
+      - Contamination sets batch.isContaminated flag
+      - View contamination history by batch, room, type
+      - Filter by severity, type, resolved status
+      - Trend analysis view (contamination frequency over time)
+    </contamination_management>
+
+    <product_catalog>
+      - List products with pagination
+      - Create product (code, name, strain link, default grade, weight, price, shelf life)
+      - Edit product details
+      - Activate/deactivate products
+      - View product detail with linked strain
+      - Search products by name or code
+      - Filter by grade, active status
+      - View sales order lines for this product
+    </product_catalog>
+
+    <supplier_management>
+      - List suppliers with pagination and filtering
+      - Create supplier (name, type, contact info, rating)
+      - Edit supplier details
+      - Activate/deactivate supplier
+      - Supplier types (SPAWN, SUBSTRATE, CHEMICALS, EQUIPMENT, PACKAGING)
+      - Quality rating (1-5 stars)
+      - View supplier's order history
+      - Search suppliers by name
+      - Filter by type and active status
+    </supplier_management>
+
+    <procurement_supply_orders>
+      - Create supply order with supplier, date, currency
+      - Add multiple line items (material, quantity, unit price, unit of measure)
+      - Order status workflow (ORDERED → DELIVERED → RECEIVED → RETURNED)
+      - Track expected vs actual delivery dates
+      - Per-line receiving (support partial deliveries)
+      - Line-level lot number and expiry tracking
+      - Quality assessment on receipt
+      - Auto-calculate line totals and order total
+      - View order detail with all lines
+      - Filter orders by status, supplier, date range
+      - Search by order code
+      - Link supply order lines to batches (material destination)
+    </procurement_supply_orders>
+
+    <customer_management>
+      - List customers with pagination
+      - Create customer (name, contact info, delivery preference, payment terms)
+      - Edit customer details
+      - Activate/deactivate customer
+      - View customer's order history
+      - Search by name
+      - Filter by active status
+    </customer_management>
+
+    <sales_orders>
+      - Create sales order with customer, date, currency
+      - Add multiple line items (product, weight, grade, price per kg)
+      - Order status workflow (ORDERED → DELIVERED → RECEIVED → RETURNED)
+      - Payment status tracking (UNPAID → PARTIALLY_PAID → PAID → OVERDUE → REFUNDED)
+      - Payment due date and received date
+      - Track requested vs actual delivery dates
+      - Invoice number linking
+      - Auto-calculate line totals, total weight, total revenue
+      - View order detail with all lines
+      - Link sales order lines to source batches (traceability)
+      - Filter orders by status, customer, payment status, date range
+      - Search by order code
+    </sales_orders>
+
+    <material_catalog>
+      - List materials with pagination
+      - Create material (code, name, category, default unit, minimum stock level)
+      - Edit material details
+      - Material categories (SPAWN, SUBSTRATE, SUPPLEMENT, CHEMICAL, PACKAGING, EQUIPMENT_SUPPLY)
+      - Low stock alert when below minimum stock level
+      - View inventory lots for this material
+      - View supply order lines for this material
+      - Search by name or code
+      - Filter by category and active status
+    </material_catalog>
+
+    <inventory_management>
+      - View inventory lots with current quantities
+      - Create inventory lot (from supply order line receipt)
+      - Track lot lifecycle (received quantity → on-hand quantity)
+      - Lot exhaustion tracking (auto-flag when quantity reaches 0)
+      - Storage location tracking
+      - Expiry date monitoring with warnings
+      - Supplier lot number cross-reference
+      - Stock movements audit trail per lot
+      - Stock movement types (RECEIPT, CONSUMPTION, ADJUSTMENT_IN, ADJUSTMENT_OUT, WASTE, RETURN)
+      - Record stock movements with reason and performer
+      - Link consumption movements to batches
+      - Inventory summary view (total by material)
+      - Low stock dashboard
+      - Filter lots by material, exhausted status, expiry date
+    </inventory_management>
+
+    <batch_material_traceability>
+      - Record material usage per batch (date, quantity, purpose)
+      - Link usage to specific inventory lot
+      - Full traceability chain view: Supplier → SupplyOrder → InventoryLot → BatchMaterialUsage → Batch
+      - Traceability report for any batch (what materials, from which lots, from which suppliers)
+      - Reverse traceability: from supplier lot, find all batches that used it
+      - Forward traceability: from batch, find all sales orders
+      - Complete farm-to-fork chain: Supplier → ... → Customer
+    </batch_material_traceability>
+
+    <cost_tracking>
+      - Record costs per batch by category (RAW_MATERIALS, ENERGY, LABOR, PACKAGING, TRANSPORT, LABORATORY, MAINTENANCE, OTHER)
+      - View cost breakdown for a batch
+      - Cost summary by category (pie/bar chart)
+      - Calculate batch profitability (revenue - costs)
+      - Currency tracking per cost record
+      - Filter costs by batch, category, date range
+      - Total costs aggregation across batches
+    </cost_tracking>
+
+    <compliance_and_reporting>
+      - Mandatory field check tracking per phase execution
+      - Monthly report generation (year, month, yield, cost, revenue, profit margin, contamination count, missing fields)
+      - Report executive summary text
+      - View report history
+      - Link reports to batches
+      - Compliance dashboard showing missing field counts
+    </compliance_and_reporting>
+
+    <task_management>
+      - Create tasks with title, description, due date, priority (1-5), assignee
+      - Link tasks to batches or rooms
+      - Mark tasks complete with completion date
+      - View task list with filtering (completed, overdue, by assignee, by priority)
+      - Overdue task highlighting
+      - Sort by priority and due date
+      - Search tasks by title
+    </task_management>
+
+    <dashboards>
+      - Main dashboard with KPIs (active batches, yield this month, contamination rate, revenue)
+      - Production overview (batches by phase, pipeline view)
+      - Environmental monitoring dashboard (room status grid, alerts)
+      - Financial dashboard (top 10 profitable batches, cost breakdown, revenue trend)
+      - Inventory dashboard (low stock alerts, lot expiry warnings)
+      - Supply chain overview (pending orders, delivery schedule)
+    </dashboards>
+
+    <search_and_filtering>
+      - Global search across entities (batch codes, strain names, order codes)
+      - Entity-specific search on all list pages
+      - Multi-criteria filtering on all list pages
+      - Date range filtering where applicable
+      - Sort by any column on list pages
+      - Pagination on all list pages (configurable page size)
+      - Filter persistence across navigation
+      - Clear all filters button
+    </search_and_filtering>
+
+    <data_export_import>
+      - Export batch data to CSV
+      - Export harvest records to CSV
+      - Export financial reports to CSV
+      - Export monthly reports to PDF-ready format
+      - Import strain data from CSV
+      - Import material catalog from CSV
+      - Export traceability report
+    </data_export_import>
+  </core_features>
+
+  <database_schema>
+    <tables>
+      <jhi_user>
+        - id, login, password_hash, first_name, last_name, email, activated, lang_key, image_url, activation_key, reset_key, reset_date, created_by, created_date, last_modified_by, last_modified_date
+      </jhi_user>
+      <jhi_authority>
+        - name (ROLE_ADMIN, ROLE_MANAGER, ROLE_OPERATOR, ROLE_USER)
+      </jhi_authority>
+      <strain>
+        - id, name, species, variety, optimal_temp_min_c, optimal_temp_max_c, optimal_humidity_min, optimal_humidity_max, optimal_co2_max_ppm, colonization_days_min, colonization_days_max, expected_yield_percent, shelf_life_days, note, active
+      </strain>
+      <substrate_recipe>
+        - id, name, version, base_type, composition_detail, sterilization_method, moisture_target_percent, ph_target, supplement_notes, active
+      </substrate_recipe>
+      <batch>
+        - id, batch_code (unique), start_date, end_date, current_phase, number_of_bags, substrate_weight_kg, spawn_weight_kg, target_yield_kg, actual_total_yield_kg, biological_efficiency_percent, is_contaminated, is_active, completion_note, note, strain_id (FK), recipe_id (FK)
+      </batch>
+      <phase_execution>
+        - id, phase, sequence_order, start_date, end_date, planned_duration_days, actual_duration_days, responsible_person, note, batch_id (FK), room_id (FK)
+      </phase_execution>
+      <flush_cycle>
+        - id, flush_number, harvest_start_date, harvest_end_date, yield_kg, yield_bags_harvested, avg_fruit_body_weight_g, rehydration_done, rehydration_duration_hours, note, batch_id (FK)
+      </flush_cycle>
+      <harvest_record>
+        - id, harvest_date, weight_kg, grade, picker_name, note, flush_cycle_id (FK)
+      </harvest_record>
+      <room>
+        - id, name, code (unique), room_type, status, capacity_bags, current_occupancy, area_sq_m, has_hvac, has_misting, last_disinfection_date, note
+      </room>
+      <environmental_target>
+        - id, phase, temp_min_c, temp_max_c, humidity_min_percent, humidity_max_percent, co2_max_ppm, light_lux, fresh_air_exchanges_per_hour, room_id (FK)
+      </environmental_target>
+      <sensor>
+        - id, sensor_code (unique), sensor_type, status, installed_date, last_calibration_date, manufacturer, model, note, room_id (FK)
+      </sensor>
+      <sensor_reading>
+        - id, timestamp, value, unit, sensor_id (FK)
+      </sensor_reading>
+      <environmental_alert>
+        - id, alert_time, severity, parameter, actual_value, threshold_value, message, acknowledged, acknowledged_by, acknowledged_at, resolution_note, room_id (FK), sensor_id (FK), batch_id (FK)
+      </environmental_alert>
+      <contamination_event>
+        - id, detected_date, type, severity, affected_bags, affected_percentage, action_taken, resolved_date, loss_kg, root_cause_analysis, preventive_measures, detected_by, photos_reference, note, batch_id (FK), phase_execution_id (FK), room_id (FK)
+      </contamination_event>
+      <product>
+        - id, code (unique), name, description, default_grade, default_weight_kg, default_price_per_kg, shelf_life_days, active, note, strain_id (FK)
+      </product>
+      <supplier>
+        - id, name, type, contact_person, email, phone, address, rating (1-5), active, note
+      </supplier>
+      <supply_order>
+        - id, order_code (unique), order_date, expected_delivery_date, actual_delivery_date, status, total_amount, currency, shipping_address, note, supplier_id (FK)
+      </supply_order>
+      <supply_order_line>
+        - id, line_number, item_description, quantity_ordered, quantity_received, unit, unit_price, line_total, lot_number, expiry_date, quality_on_receipt, is_received, note, supply_order_id (FK), material_id (FK), batch_id (FK)
+      </supply_order_line>
+      <customer>
+        - id, name, contact_person, email, phone, address, delivery_preference, payment_terms, active, note
+      </customer>
+      <sales_order>
+        - id, order_code (unique), order_date, requested_delivery_date, actual_delivery_date, status, total_weight, total_revenue, currency, invoice_number, payment_status, payment_due_date, payment_received_date, shipping_address, note, customer_id (FK)
+      </sales_order>
+      <sales_order_line>
+        - id, line_number, weight_kg, grade, quantity_units, unit, price_per_kg, line_total, note, sales_order_id (FK), product_id (FK), batch_id (FK)
+      </sales_order_line>
+      <material>
+        - id, code (unique), name, category, default_unit, minimum_stock_level, description, active, note
+      </material>
+      <inventory_lot>
+        - id, lot_code (unique), received_date, quantity_received, quantity_on_hand, unit, expiry_date, storage_location, supplier_lot_number, is_exhausted, note, material_id (FK), supply_order_line_id (FK)
+      </inventory_lot>
+      <stock_movement>
+        - id, movement_date, movement_type, quantity, unit, reference, reason, performed_by, note, inventory_lot_id (FK), batch_id (FK)
+      </stock_movement>
+      <batch_material_usage>
+        - id, usage_date, quantity_used, unit, purpose, note, batch_id (FK), inventory_lot_id (FK), material_id (FK)
+      </batch_material_usage>
+      <cost_record>
+        - id, record_date, category, description, amount, currency, note, batch_id (FK)
+      </cost_record>
+      <mandatory_field_check>
+        - id, field_name, is_filled, check_date, phase_execution_id (FK)
+      </mandatory_field_check>
+      <monthly_report>
+        - id, year, month, generated_at, total_yield_kg, total_cost, total_revenue, profit_margin_percent, total_contamination_events, total_missing_fields, summary, batch_id (FK)
+      </monthly_report>
+      <task>
+        - id, title, description, due_date, completed, completed_date, priority (1-5), assigned_to, note, batch_id (FK), room_id (FK)
+      </task>
+    </tables>
+  </database_schema>
+
+  <api_endpoints_summary>
+    <authentication>
+      - POST /api/authenticate (login)
+      - POST /api/register (admin creates users)
+      - GET /api/account (current user)
+      - POST /api/account/change-password
+    </authentication>
+    <user_management>
+      - GET /api/admin/users
+      - POST /api/admin/users
+      - PUT /api/admin/users
+      - DELETE /api/admin/users/{login}
+    </user_management>
+    <strains>
+      - GET /api/strains (list, paginated)
+      - GET /api/strains/{id}
+      - POST /api/strains
+      - PUT /api/strains/{id}
+      - PATCH /api/strains/{id}
+      - DELETE /api/strains/{id}
+    </strains>
+    <substrate_recipes>
+      - GET /api/substrate-recipes
+      - GET /api/substrate-recipes/{id}
+      - POST /api/substrate-recipes
+      - PUT /api/substrate-recipes/{id}
+      - PATCH /api/substrate-recipes/{id}
+      - DELETE /api/substrate-recipes/{id}
+    </substrate_recipes>
+    <batches>
+      - GET /api/batches (list, paginated, filterable)
+      - GET /api/batches/{id}
+      - POST /api/batches
+      - PUT /api/batches/{id}
+      - PATCH /api/batches/{id}
+      - DELETE /api/batches/{id}
+      - POST /api/batches/{id}/transition (trigger state transition)
+      - POST /api/batches/{id}/force-transition (admin only)
+      - GET /api/batches/{id}/timeline (phase history)
+      - GET /api/batches/{id}/traceability (full material chain)
+    </batches>
+    <phase_executions>
+      - GET /api/phase-executions (list by batch)
+      - GET /api/phase-executions/{id}
+      - PUT /api/phase-executions/{id}
+    </phase_executions>
+    <flush_cycles>
+      - GET /api/flush-cycles (list by batch)
+      - GET /api/flush-cycles/{id}
+      - POST /api/flush-cycles
+      - PUT /api/flush-cycles/{id}
+    </flush_cycles>
+    <harvest_records>
+      - GET /api/harvest-records (list by flush)
+      - GET /api/harvest-records/{id}
+      - POST /api/harvest-records
+      - PUT /api/harvest-records/{id}
+      - DELETE /api/harvest-records/{id}
+    </harvest_records>
+    <rooms>
+      - GET /api/rooms
+      - GET /api/rooms/{id}
+      - POST /api/rooms
+      - PUT /api/rooms/{id}
+      - PATCH /api/rooms/{id}
+      - DELETE /api/rooms/{id}
+      - GET /api/rooms/{id}/sensors
+      - GET /api/rooms/{id}/alerts
+    </rooms>
+    <environmental_targets>
+      - GET /api/environmental-targets (by room)
+      - POST /api/environmental-targets
+      - PUT /api/environmental-targets/{id}
+      - DELETE /api/environmental-targets/{id}
+    </environmental_targets>
+    <sensors>
+      - GET /api/sensors
+      - GET /api/sensors/{id}
+      - POST /api/sensors
+      - PUT /api/sensors/{id}
+      - DELETE /api/sensors/{id}
+      - GET /api/sensors/{id}/readings
+    </sensors>
+    <sensor_readings>
+      - GET /api/sensor-readings (by sensor, time range)
+      - POST /api/sensor-readings
+      - POST /api/sensor-readings/bulk
+    </sensor_readings>
+    <environmental_alerts>
+      - GET /api/environmental-alerts (filterable by severity, room, acknowledged)
+      - GET /api/environmental-alerts/{id}
+      - PUT /api/environmental-alerts/{id}/acknowledge
+    </environmental_alerts>
+    <contamination_events>
+      - GET /api/contamination-events
+      - GET /api/contamination-events/{id}
+      - POST /api/contamination-events
+      - PUT /api/contamination-events/{id}
+      - DELETE /api/contamination-events/{id}
+    </contamination_events>
+    <products>
+      - GET /api/products
+      - GET /api/products/{id}
+      - POST /api/products
+      - PUT /api/products/{id}
+      - DELETE /api/products/{id}
+    </products>
+    <suppliers>
+      - GET /api/suppliers
+      - GET /api/suppliers/{id}
+      - POST /api/suppliers
+      - PUT /api/suppliers/{id}
+      - DELETE /api/suppliers/{id}
+    </suppliers>
+    <supply_orders>
+      - GET /api/supply-orders
+      - GET /api/supply-orders/{id}
+      - POST /api/supply-orders
+      - PUT /api/supply-orders/{id}
+      - DELETE /api/supply-orders/{id}
+    </supply_orders>
+    <supply_order_lines>
+      - GET /api/supply-order-lines (by order)
+      - POST /api/supply-order-lines
+      - PUT /api/supply-order-lines/{id}
+      - PUT /api/supply-order-lines/{id}/receive
+      - DELETE /api/supply-order-lines/{id}
+    </supply_order_lines>
+    <customers>
+      - GET /api/customers
+      - GET /api/customers/{id}
+      - POST /api/customers
+      - PUT /api/customers/{id}
+      - DELETE /api/customers/{id}
+    </customers>
+    <sales_orders>
+      - GET /api/sales-orders
+      - GET /api/sales-orders/{id}
+      - POST /api/sales-orders
+      - PUT /api/sales-orders/{id}
+      - DELETE /api/sales-orders/{id}
+    </sales_orders>
+    <sales_order_lines>
+      - GET /api/sales-order-lines (by order)
+      - POST /api/sales-order-lines
+      - PUT /api/sales-order-lines/{id}
+      - DELETE /api/sales-order-lines/{id}
+    </sales_order_lines>
+    <materials>
+      - GET /api/materials
+      - GET /api/materials/{id}
+      - POST /api/materials
+      - PUT /api/materials/{id}
+      - DELETE /api/materials/{id}
+    </materials>
+    <inventory_lots>
+      - GET /api/inventory-lots
+      - GET /api/inventory-lots/{id}
+      - POST /api/inventory-lots
+      - PUT /api/inventory-lots/{id}
+      - GET /api/inventory-lots/{id}/movements
+    </inventory_lots>
+    <stock_movements>
+      - GET /api/stock-movements
+      - POST /api/stock-movements
+    </stock_movements>
+    <batch_material_usage>
+      - GET /api/batch-material-usages (by batch)
+      - POST /api/batch-material-usages
+      - DELETE /api/batch-material-usages/{id}
+    </batch_material_usage>
+    <cost_records>
+      - GET /api/cost-records (by batch)
+      - GET /api/cost-records/{id}
+      - POST /api/cost-records
+      - PUT /api/cost-records/{id}
+      - DELETE /api/cost-records/{id}
+    </cost_records>
+    <mandatory_field_checks>
+      - GET /api/mandatory-field-checks (by phase execution)
+      - POST /api/mandatory-field-checks
+    </mandatory_field_checks>
+    <monthly_reports>
+      - GET /api/monthly-reports
+      - GET /api/monthly-reports/{id}
+      - POST /api/monthly-reports/generate
+    </monthly_reports>
+    <tasks>
+      - GET /api/tasks
+      - GET /api/tasks/{id}
+      - POST /api/tasks
+      - PUT /api/tasks/{id}
+      - PATCH /api/tasks/{id}/complete
+      - DELETE /api/tasks/{id}
+    </tasks>
+    <dashboards>
+      - GET /api/dashboard/overview (KPIs)
+      - GET /api/dashboard/production (batch pipeline)
+      - GET /api/dashboard/environmental (room/sensor status)
+      - GET /api/dashboard/financial (revenue, costs, profitability)
+      - GET /api/dashboard/inventory (stock levels, low alerts)
+    </dashboards>
+    <export>
+      - GET /api/export/batches (CSV)
+      - GET /api/export/harvests (CSV)
+      - GET /api/export/financials (CSV)
+      - GET /api/export/traceability/{batchId} (report)
+    </export>
+  </api_endpoints_summary>
+
+  <ui_layout>
+    <main_structure>
+      Sidebar navigation (collapsible) with domain-grouped menus:
+      - Dashboard (landing page)
+      - Production
+        - Batches
+        - Strains
+        - Substrate Recipes
+      - Facility
+        - Rooms
+        - Sensors
+        - Environmental Monitoring
+      - Quality
+        - Contamination Events
+        - Mandatory Checks
+      - Supply Chain
+        - Suppliers
+        - Supply Orders
+        - Customers
+        - Sales Orders
+      - Inventory
+        - Materials
+        - Inventory Lots
+        - Stock Movements
+      - Products
+      - Finance
+        - Cost Records
+        - Monthly Reports
+      - Tasks
+      - Administration (admin only)
+        - User Management
+        - System Settings
+    </main_structure>
+    <page_types>
+      - List pages: paginated table with search, filters, sort, actions column
+      - Detail pages: read-only view with related entity tabs
+      - Form pages: create/edit forms with validation
+      - Dashboard pages: KPI cards, charts, status grids
+      - Timeline pages: batch lifecycle visualization
+      - Report pages: generated reports with export options
+    </page_types>
+    <responsive_breakpoints>
+      - Desktop: 1920px (full sidebar, multi-column layouts)
+      - Tablet: 768px (collapsed sidebar, stacked layouts)
+      - Mobile: 375px (hamburger menu, single column)
+    </responsive_breakpoints>
+  </ui_layout>
+
+  <design_system>
+    <color_palette>
+      - Primary: JHipster default blue (#3E8ACC)
+      - Success/Active: Green (#28a745) - healthy batches, passing checks
+      - Warning: Yellow/Orange (#ffc107) - environmental warnings, approaching thresholds
+      - Danger/Critical: Red (#dc3545) - critical alerts, contamination, overdue payments
+      - Info: Light blue (#17a2b8) - informational alerts
+      - Background: Light gray (#f8f9fa)
+      - Phase colors: Each of the 10 batch phases has a distinct color for timeline visualization
+    </color_palette>
+    <typography>
+      - JHipster/Bootstrap defaults (system font stack)
+      - Monospace for batch codes, order codes, sensor codes
+    </typography>
+    <iconography>
+      - Font Awesome (JHipster default) for navigation and action icons
+      - Phase-specific icons (mushroom emoji for harvest, thermometer for environmental, etc.)
+    </iconography>
+  </design_system>
+
+  <implementation_steps>
+    <step number="1">
+      <title>Infrastructure & Foundation</title>
+      <tasks>
+        - Set up JHipster monolith with React, Spring Boot, PostgreSQL/H2
+        - Import JDL (25 entities)
+        - Verify database schema, API endpoints, and basic UI generated
+        - Set up ANTLR and JavaPoet modules (already partially done in Phase 0)
+        - Configure JWT authentication with 4 roles
+      </tasks>
+    </step>
+    <step number="2">
+      <title>Strain & Recipe CRUD (Vertical Slice 1)</title>
+      <tasks>
+        - Implement full CRUD for Strain entity with UI
+        - Implement full CRUD for SubstrateRecipe entity with UI
+        - Add search, filter, pagination
+        - Form validation
+        - Detail pages with related records
+      </tasks>
+    </step>
+    <step number="3">
+      <title>Batch Lifecycle State Machine (Vertical Slice 2 - CRITICAL)</title>
+      <tasks>
+        - Implement 10-phase state machine via DSL
+        - Generate BatchStateMachine with ANTLR/JavaPoet
+        - Create transition API endpoint
+        - Build batch timeline UI
+        - Phase execution tracking
+        - Available actions UI based on current phase
+        - Guard conditions and error handling
+        - Domain events for all transitions
+      </tasks>
+    </step>
+    <step number="4">
+      <title>Multi-Flush Harvest (Vertical Slice 3)</title>
+      <tasks>
+        - FlushCycle CRUD
+        - HarvestRecord CRUD with quality grading
+        - Rehydration tracking
+        - Yield calculations and biological efficiency
+        - Flush history chart
+      </tasks>
+    </step>
+    <step number="5">
+      <title>Facility & Environmental Monitoring (Vertical Slice 4)</title>
+      <tasks>
+        - Room management with status workflow
+        - Sensor CRUD and status tracking
+        - Environmental targets per room per phase
+        - Sensor readings (time series)
+        - Alert generation and acknowledgment
+        - Environmental monitoring dashboard
+      </tasks>
+    </step>
+    <step number="6">
+      <title>Contamination Management (Vertical Slice 5)</title>
+      <tasks>
+        - ContaminationEvent CRUD
+        - Link to batch, phase, room
+        - Severity and action tracking
+        - Root cause analysis
+        - Contamination trend view
+        - Batch contamination flag
+      </tasks>
+    </step>
+    <step number="7">
+      <title>Supply Chain & Inventory (Vertical Slice 6)</title>
+      <tasks>
+        - Supplier CRUD
+        - Supply order + line items (header/detail pattern)
+        - Material catalog
+        - Inventory lot management
+        - Stock movements audit trail
+        - Batch material usage tracking
+        - Full traceability chain
+        - Customer CRUD
+        - Sales order + line items
+        - Payment status tracking
+        - Product catalog linking
+      </tasks>
+    </step>
+    <step number="8">
+      <title>Finance & Reporting (Vertical Slice 7)</title>
+      <tasks>
+        - Cost record CRUD by batch and category
+        - Batch profitability calculation
+        - Financial dashboard
+        - Monthly report generation
+        - Mandatory field checks
+        - Compliance dashboard
+      </tasks>
+    </step>
+    <step number="9">
+      <title>Task Management & Dashboards</title>
+      <tasks>
+        - Task CRUD with priority, assignment, completion
+        - Main dashboard with KPIs
+        - Production pipeline dashboard
+        - Inventory low-stock dashboard
+        - Supply chain overview dashboard
+      </tasks>
+    </step>
+    <step number="10">
+      <title>Search, Export, Polish</title>
+      <tasks>
+        - Global search
+        - CSV/report exports
+        - Data import functionality
+        - Responsive design polish
+        - Accessibility improvements
+        - Performance optimization (pagination, lazy loading)
+        - Error handling polish
+      </tasks>
+    </step>
+  </implementation_steps>
+
+  <success_criteria>
+    <functionality>
+      - All 25 entities have full CRUD operations via API and UI
+      - 10-phase Batch state machine enforced (invalid transitions blocked)
+      - Multi-flush harvest cycle works (HARVEST → REHYDRATION → HARVEST → COMPLETED)
+      - Full traceability chain (Supplier → Customer) queryable
+      - Environmental alerts trigger on threshold breach
+      - Role-based access control enforced across all endpoints and UI
+      - All dashboards display real aggregated data
+      - Search and filter work on all list pages
+    </functionality>
+    <user_experience>
+      - Responsive design works on desktop, tablet, and mobile
+      - Intuitive navigation with sidebar and breadcrumbs
+      - Loading states and empty states handled
+      - Form validation with clear error messages
+      - Success/error feedback for all actions
+      - Batch timeline visualization easy to read
+    </user_experience>
+    <technical_quality>
+      - Real database (PostgreSQL/H2) - no mock data
+      - Data persists across server restart
+      - JWT authentication secure
+      - API returns proper HTTP status codes
+      - No console errors in normal operation
+      - Pagination on all list endpoints
+      - Proper error handling for network failures
+    </technical_quality>
+    <design_polish>
+      - Consistent color usage for status indicators
+      - Proper typography hierarchy
+      - Icons for navigation and actions
+      - Phase-specific color coding on batch timeline
+      - Clean table layouts with proper spacing
+      - Modal dialogs for confirmations
+    </design_polish>
+  </success_criteria>
+</project_specification>

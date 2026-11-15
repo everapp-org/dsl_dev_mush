@@ -1,0 +1,850 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button, Table, Input, Row, Col, FormGroup, Label, Card, CardBody, Alert, UncontrolledTooltip } from 'reactstrap';
+import { TextFormat, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
+import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { PhaseName } from 'app/shared/model/enumerations/phase-name.model';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
+import { useInfiniteScroll } from 'app/shared/hooks/use-infinite-scroll';
+import { StatusBadge } from 'app/shared/badge/status-badge';
+import { localDateToUTCStart, localDateToUTCEnd } from 'app/config/locale-date-format';
+import { LoadingSpinner } from 'app/shared/components/LoadingSpinner';
+
+import { getEntities, getMoreEntities, resetInfiniteScroll } from './batch.reducer';
+import { getEntities as getStrains } from '../strain/strain.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
+
+export const Batch = () => {
+  const dispatch = useAppDispatch();
+
+  // Feature #323: Store current request promise to cancel on unmount
+  const currentRequestRef = useRef<{ abort: () => void } | null>(null);
+
+  const pageLocation = useLocation();
+  const navigate = useNavigate();
+
+  const [paginationState, setPaginationState] = useState(
+    overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
+  );
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    search: '',
+    phase: '',
+    strainId: '',
+    isActive: '',
+    startDateFrom: '',
+    startDateTo: '',
+    numberOfBagsMin: '',
+    numberOfBagsMax: '',
+  });
+
+  // Feature #348: Separate state for search input (immediate) vs debounced search (API call)
+  const [searchInput, setSearchInput] = useState('');
+
+  // Track invalid page redirect
+  const [showInvalidPageMessage, setShowInvalidPageMessage] = useState(false);
+
+  // Feature #321: Track data changes during pagination
+  const [initialTotalCount, setInitialTotalCount] = useState<number | null>(null);
+  const [showDataChangeWarning, setShowDataChangeWarning] = useState(false);
+
+  const batchList = useAppSelector(state => state.batch.entities);
+  const loading = useAppSelector(state => state.batch.loading);
+  const totalItems = useAppSelector(state => state.batch.totalItems);
+  const loadingMore = useAppSelector(state => state.batch.loadingMore);
+  const hasMore = useAppSelector(state => state.batch.hasMore);
+
+  // Feature #343: Infinite scroll mode toggle
+  const [infiniteScrollMode, setInfiniteScrollMode] = useState(() => {
+    const saved = localStorage.getItem('batchListInfiniteScroll');
+    return saved === 'true';
+  });
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading batch list...',
+    loadedMessage: 'Batch list loaded',
+  });
+  const strainList = useAppSelector(state => state.strain.entities);
+  const canModifyBatch = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER, AUTHORITIES.OPERATOR]),
+  );
+
+  // Load strains for dropdown
+  useEffect(() => {
+    dispatch(getStrains({ sort: 'name,asc' }));
+  }, []);
+
+  // Feature #363: Clean URL params when navigating from other entities
+  // Remove any parameters that aren't relevant to batch filtering
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const allowedParams = [
+      'page',
+      'sort',
+      'search',
+      'phase',
+      'strainId',
+      'isActive',
+      'startDateFrom',
+      'startDateTo',
+      'numberOfBagsMin',
+      'numberOfBagsMax',
+    ];
+
+    // Check if there are any irrelevant params
+    const hasIrrelevantParams = Array.from(params.keys()).some(key => !allowedParams.includes(key));
+
+    if (hasIrrelevantParams) {
+      // Build clean URL with only allowed params
+      const cleanParams = new URLSearchParams();
+      allowedParams.forEach(key => {
+        if (params.has(key)) {
+          cleanParams.set(key, params.get(key));
+        }
+      });
+
+      const cleanURL = cleanParams.toString() ? `?${cleanParams.toString()}` : '';
+      navigate(`${pageLocation.pathname}${cleanURL}`, { replace: true });
+    }
+  }, []); // Run once on mount
+
+  // Initialize filters from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const searchParam = params.get('search') || '';
+    setFilters({
+      search: searchParam,
+      phase: params.get('phase') || '',
+      strainId: params.get('strainId') || '',
+      isActive: params.get('isActive') || '',
+      startDateFrom: params.get('startDateFrom') || '',
+      startDateTo: params.get('startDateTo') || '',
+      numberOfBagsMin: params.get('numberOfBagsMin') || '',
+      numberOfBagsMax: params.get('numberOfBagsMax') || '',
+    });
+    setSearchInput(searchParam);
+  }, []);
+
+  // Feature #348: Debounce search input (500ms delay)
+  // Updates filters.search only after user stops typing for 500ms
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        search: searchInput,
+      }));
+      // Reset to first page when search changes
+      setPaginationState(prev => ({
+        ...prev,
+        activePage: 1,
+      }));
+    }, 500);
+
+    // Cleanup timer on every searchInput change
+    return () => clearTimeout(debounceTimer);
+  }, [searchInput]);
+
+  const getAllEntities = () => {
+    // Feature #310: Convert local date filters to UTC for timezone-aware filtering
+    // When user enters "2024-01-01", it should match all items from that day in their local timezone
+    const startDateFromUTC = filters.startDateFrom ? localDateToUTCStart(filters.startDateFrom) : undefined;
+    const startDateToUTC = filters.startDateTo ? localDateToUTCEnd(filters.startDateTo) : undefined;
+
+    // Feature #323: Store dispatch promise for cancellation on unmount
+    // This prevents late API responses from updating state after navigation
+    const promise = dispatch(
+      getEntities({
+        page: paginationState.activePage - 1,
+        size: paginationState.itemsPerPage,
+        sort: `${paginationState.sort},${paginationState.order}`,
+        search: filters.search?.trim() || undefined,
+        phase: filters.phase || undefined,
+        strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
+        isActive: filters.isActive ? filters.isActive === 'true' : undefined,
+        startDateFrom: startDateFromUTC,
+        startDateTo: startDateToUTC,
+        numberOfBagsMin: filters.numberOfBagsMin ? parseInt(filters.numberOfBagsMin, 10) : undefined,
+        numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
+      }),
+    );
+    currentRequestRef.current = promise;
+  };
+
+  // Feature #343: Load more items for infinite scroll
+  const loadMoreEntities = () => {
+    if (loadingMore || !hasMore) return;
+
+    const startDateFromUTC = filters.startDateFrom ? localDateToUTCStart(filters.startDateFrom) : undefined;
+    const startDateToUTC = filters.startDateTo ? localDateToUTCEnd(filters.startDateTo) : undefined;
+
+    // Calculate next page
+    const currentPage = Math.floor(batchList.length / paginationState.itemsPerPage);
+
+    dispatch(
+      getMoreEntities({
+        page: currentPage,
+        size: paginationState.itemsPerPage,
+        sort: `${paginationState.sort},${paginationState.order}`,
+        search: filters.search?.trim() || undefined,
+        phase: filters.phase || undefined,
+        strainId: filters.strainId ? parseInt(filters.strainId, 10) : undefined,
+        isActive: filters.isActive ? filters.isActive === 'true' : undefined,
+        startDateFrom: startDateFromUTC,
+        startDateTo: startDateToUTC,
+        numberOfBagsMin: filters.numberOfBagsMin ? parseInt(filters.numberOfBagsMin, 10) : undefined,
+        numberOfBagsMax: filters.numberOfBagsMax ? parseInt(filters.numberOfBagsMax, 10) : undefined,
+      }),
+    );
+  };
+
+  const buildURL = () => {
+    const params = new URLSearchParams();
+    params.set('page', paginationState.activePage.toString());
+    params.set('sort', `${paginationState.sort},${paginationState.order}`);
+
+    if (filters.search) params.set('search', filters.search);
+    if (filters.phase) params.set('phase', filters.phase);
+    if (filters.strainId) params.set('strainId', filters.strainId);
+    if (filters.isActive) params.set('isActive', filters.isActive);
+    if (filters.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
+    if (filters.startDateTo) params.set('startDateTo', filters.startDateTo);
+    if (filters.numberOfBagsMin) params.set('numberOfBagsMin', filters.numberOfBagsMin);
+    if (filters.numberOfBagsMax) params.set('numberOfBagsMax', filters.numberOfBagsMax);
+
+    return `?${params.toString()}`;
+  };
+
+  // Feature #333, #334: Build export URL with filters and pagination options
+  const buildExportURL = (pageOnly: boolean) => {
+    const params = new URLSearchParams();
+
+    // Add filters (Feature #333)
+    if (filters.search) params.set('search', filters.search);
+    if (filters.phase) params.set('phase', filters.phase);
+    if (filters.strainId) params.set('strainId', filters.strainId);
+    if (filters.isActive) params.set('isActive', filters.isActive);
+    if (filters.startDateFrom) params.set('startDateFrom', filters.startDateFrom);
+    if (filters.startDateTo) params.set('startDateTo', filters.startDateTo);
+    if (filters.numberOfBagsMin) params.set('numberOfBagsMin', filters.numberOfBagsMin);
+    if (filters.numberOfBagsMax) params.set('numberOfBagsMax', filters.numberOfBagsMax);
+
+    // Add pagination (Feature #334)
+    if (pageOnly) {
+      params.set('pageOnly', 'true');
+      params.set('page', (paginationState.activePage - 1).toString());
+      params.set('size', paginationState.itemsPerPage.toString());
+    }
+
+    return `/api/export/batches?${params.toString()}`;
+  };
+
+  const sortEntities = () => {
+    // Feature #322: getAllEntities uses AbortController to cancel previous requests
+    // Redux Toolkit automatically aborts pending requests when a new one is dispatched
+    getAllEntities();
+    const endURL = buildURL();
+    if (pageLocation.search !== endURL) {
+      navigate(`${pageLocation.pathname}${endURL}`);
+    }
+  };
+
+  // Feature #343: Setup infinite scroll observer
+  const { scrollContainerRef, sentinelRef } = useInfiniteScroll({
+    loading: loadingMore,
+    hasMore: hasMore && infiniteScrollMode,
+    onLoadMore: loadMoreEntities,
+    threshold: 200,
+  });
+
+  useEffect(() => {
+    sortEntities();
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, paginationState.itemsPerPage, filters]);
+
+  // Feature #343: Reset infinite scroll when mode changes or filters change
+  useEffect(() => {
+    if (infiniteScrollMode) {
+      dispatch(resetInfiniteScroll());
+      setPaginationState({
+        ...paginationState,
+        activePage: 1,
+      });
+    }
+  }, [infiniteScrollMode, filters]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const page = params.get('page');
+    const sortParam = params.get(SORT);
+    if (page && sortParam) {
+      const sortSplit = sortParam.split(',');
+      const pageNumber = parseInt(page, 10);
+      setPaginationState({
+        ...paginationState,
+        activePage: !isNaN(pageNumber) && pageNumber > 0 ? pageNumber : 1,
+        sort: sortSplit[0],
+        order: sortSplit[1],
+      });
+    }
+  }, [pageLocation.search]);
+
+  // Validate page number after data loads
+  useEffect(() => {
+    let messageTimer: ReturnType<typeof setTimeout> | null = null;
+
+    if (totalItems > 0 && !loading) {
+      const maxPage = Math.ceil(totalItems / paginationState.itemsPerPage);
+      if (paginationState.activePage > maxPage) {
+        // Redirect to last valid page
+        setShowInvalidPageMessage(true);
+        setPaginationState({
+          ...paginationState,
+          activePage: maxPage,
+        });
+        // Auto-hide message after 5 seconds
+        messageTimer = setTimeout(() => setShowInvalidPageMessage(false), 5000);
+      }
+    }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (messageTimer) {
+        clearTimeout(messageTimer);
+      }
+    };
+  }, [totalItems, loading]);
+
+  // Feature #321: Detect data changes during pagination
+  // When items are added/removed while paginating, warn the user to refresh
+  useEffect(() => {
+    if (totalItems >= 0 && !loading) {
+      if (initialTotalCount === null) {
+        // First load - record the initial count
+        setInitialTotalCount(totalItems);
+        setShowDataChangeWarning(false);
+      } else if (initialTotalCount !== totalItems) {
+        // Total count changed - show warning
+        setShowDataChangeWarning(true);
+      }
+    }
+  }, [totalItems, loading]);
+
+  // Feature #323: Cancel pending requests when component unmounts
+  // This prevents late API responses from trying to update state after navigation
+  useEffect(() => {
+    return () => {
+      if (currentRequestRef.current) {
+        currentRequestRef.current.abort();
+      }
+    };
+  }, []);
+
+  const sort = p => () => {
+    setPaginationState({
+      ...paginationState,
+      order: paginationState.order === ASC ? DESC : ASC,
+      sort: p,
+    });
+  };
+
+  const handlePagination = currentPage =>
+    setPaginationState({
+      ...paginationState,
+      activePage: currentPage,
+    });
+
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSize = parseInt(event.target.value, 10);
+    setPaginationState({
+      ...paginationState,
+      itemsPerPage: newSize,
+      activePage: 1,
+    });
+  };
+
+  const handleFilterChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Feature #348: Handle search separately with debouncing
+    if (field === 'search') {
+      setSearchInput(event.target.value);
+      return;
+    }
+
+    // Other filters: immediate update (no debouncing needed)
+    setFilters({
+      ...filters,
+      [field]: event.target.value,
+    });
+    // Reset to first page when filters change
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+    });
+  };
+
+  const handleClearFilters = () => {
+    setSearchInput(''); // Feature #348: Clear search input
+    setFilters({
+      search: '',
+      phase: '',
+      strainId: '',
+      isActive: '',
+      startDateFrom: '',
+      startDateTo: '',
+      numberOfBagsMin: '',
+      numberOfBagsMax: '',
+    });
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+    });
+  };
+
+  // Feature #321: Handle refresh after data change detection
+  const handleDataChangeRefresh = () => {
+    setInitialTotalCount(null);
+    setShowDataChangeWarning(false);
+    handleSyncList();
+  };
+
+  const hasActiveFilters =
+    filters.search ||
+    filters.phase ||
+    filters.strainId ||
+    filters.isActive ||
+    filters.startDateFrom ||
+    filters.startDateTo ||
+    filters.numberOfBagsMin ||
+    filters.numberOfBagsMax;
+
+  const getSortIconByFieldName = (fieldName: string) => {
+    const sortFieldName = paginationState.sort;
+    const order = paginationState.order;
+    if (sortFieldName !== fieldName) {
+      return faSort;
+    }
+    return order === ASC ? faSortUp : faSortDown;
+  };
+
+  return (
+    <div>
+      <h1 id="batch-heading" data-cy="BatchHeading">
+        Batches
+        <div className="d-flex justify-content-end">
+          <Button
+            className="me-2"
+            color="secondary"
+            size="sm"
+            onClick={() => {
+              const newMode = !infiniteScrollMode;
+              setInfiniteScrollMode(newMode);
+              localStorage.setItem('batchListInfiniteScroll', String(newMode));
+            }}
+            title={infiniteScrollMode ? 'Switch to pagination mode' : 'Switch to infinite scroll mode'}
+          >
+            <FontAwesomeIcon icon={infiniteScrollMode ? 'list' : 'arrows-alt-v'} /> {infiniteScrollMode ? 'Pagination' : 'Infinite Scroll'}
+          </Button>
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+          </Button>
+          {canModifyBatch && (
+            <>
+              <Button tag="a" href={buildExportURL(false)} className="me-2" color="success" data-cy="entityExportAllButton">
+                <FontAwesomeIcon icon="download" /> Export All {hasActiveFilters && '(Filtered)'}
+              </Button>
+              <Button tag="a" href={buildExportURL(true)} className="me-2" color="success" data-cy="entityExportPageButton">
+                <FontAwesomeIcon icon="download" /> Export Page
+              </Button>
+              <Link
+                to="/batch/new"
+                state={{ referrerSearch: pageLocation.search }}
+                className="btn btn-primary jh-create-entity"
+                id="jh-create-entity"
+                data-cy="entityCreateButton"
+              >
+                <FontAwesomeIcon icon="plus" />
+                &nbsp; Create a new Batch
+              </Link>
+            </>
+          )}
+        </div>
+      </h1>
+
+      {/* Invalid page message */}
+      {showInvalidPageMessage && (
+        <Alert color="info" className="mb-3">
+          <FontAwesomeIcon icon="info-circle" /> The requested page number was too high. Showing the last available page instead.
+        </Alert>
+      )}
+
+      {/* Feature #321: Data change warning during pagination */}
+      {showDataChangeWarning && (
+        <Alert color="warning" className="mb-3">
+          <FontAwesomeIcon icon="exclamation-triangle" /> Data has changed while you were browsing (items added or removed). Some items may
+          appear duplicated or missing.{' '}
+          <Button color="warning" size="sm" onClick={handleDataChangeRefresh}>
+            <FontAwesomeIcon icon="sync" /> Refresh to see latest results
+          </Button>
+        </Alert>
+      )}
+
+      {/* Filter Section */}
+      <Card className="mb-3">
+        <CardBody>
+          <Row className="mb-3">
+            <Col md="12">
+              <FormGroup>
+                <Label for="search-filter">Search</Label>
+                <Input
+                  type="text"
+                  id="search-filter"
+                  placeholder="Search by batch code, note, or completion note..."
+                  value={searchInput}
+                  onChange={handleFilterChange('search')}
+                  maxLength={1000}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3">
+              <FormGroup>
+                <Label for="phase-filter">Phase</Label>
+                <Input type="select" id="phase-filter" value={filters.phase} onChange={handleFilterChange('phase')}>
+                  <option value="">All Phases</option>
+                  {Object.values(PhaseName).map(phase => (
+                    <option key={phase} value={phase}>
+                      {phase}
+                    </option>
+                  ))}
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              <FormGroup>
+                <Label for="strain-filter">Strain</Label>
+                <Input type="select" id="strain-filter" value={filters.strainId} onChange={handleFilterChange('strainId')}>
+                  <option value="">All Strains</option>
+                  {strainList.map(strain => (
+                    <option key={strain.id} value={strain.id}>
+                      {strain.name}
+                    </option>
+                  ))}
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="active-filter">Status</Label>
+                <Input type="select" id="active-filter" value={filters.isActive} onChange={handleFilterChange('isActive')}>
+                  <option value="">All</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="start-date-from">Start Date From</Label>
+                <Input type="date" id="start-date-from" value={filters.startDateFrom} onChange={handleFilterChange('startDateFrom')} />
+              </FormGroup>
+            </Col>
+            <Col md="2">
+              <FormGroup>
+                <Label for="start-date-to">Start Date To</Label>
+                <Input type="date" id="start-date-to" value={filters.startDateTo} onChange={handleFilterChange('startDateTo')} />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3">
+              <FormGroup>
+                <Label for="number-of-bags-min">Number of Bags (Min)</Label>
+                <Input
+                  type="number"
+                  id="number-of-bags-min"
+                  placeholder="e.g., 50"
+                  value={filters.numberOfBagsMin}
+                  onChange={handleFilterChange('numberOfBagsMin')}
+                  min="0"
+                />
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              <FormGroup>
+                <Label for="number-of-bags-max">Number of Bags (Max)</Label>
+                <Input
+                  type="number"
+                  id="number-of-bags-max"
+                  placeholder="e.g., 100"
+                  value={filters.numberOfBagsMax}
+                  onChange={handleFilterChange('numberOfBagsMax')}
+                  min="0"
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          {hasActiveFilters && (
+            <Row>
+              <Col>
+                <Button color="secondary" size="sm" onClick={handleClearFilters}>
+                  <FontAwesomeIcon icon="times" /> Clear Filters
+                </Button>
+              </Col>
+            </Row>
+          )}
+        </CardBody>
+      </Card>
+
+      <div className="table-responsive">
+        {loading ? (
+          <LoadingSpinner size="large" message="Loading batch list..." centered minHeight="200px" />
+        ) : batchList && batchList.length > 0 ? (
+          <Table responsive striped hover>
+            <thead>
+              <tr>
+                <th scope="col" className="hand" onClick={sort('id')}>
+                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('batchCode')}>
+                  Batch Code <FontAwesomeIcon icon={getSortIconByFieldName('batchCode')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('startDate')}>
+                  Start Date <FontAwesomeIcon icon={getSortIconByFieldName('startDate')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('endDate')}>
+                  End Date <FontAwesomeIcon icon={getSortIconByFieldName('endDate')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('currentPhase')}>
+                  Current Phase <FontAwesomeIcon icon={getSortIconByFieldName('currentPhase')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('numberOfBags')}>
+                  Number Of Bags <FontAwesomeIcon icon={getSortIconByFieldName('numberOfBags')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('substrateWeightKg')}>
+                  Substrate Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('substrateWeightKg')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('spawnWeightKg')}>
+                  Spawn Weight Kg <FontAwesomeIcon icon={getSortIconByFieldName('spawnWeightKg')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('targetYieldKg')}>
+                  Target Yield Kg <FontAwesomeIcon icon={getSortIconByFieldName('targetYieldKg')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('actualTotalYieldKg')}>
+                  Actual Total Yield Kg <FontAwesomeIcon icon={getSortIconByFieldName('actualTotalYieldKg')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('biologicalEfficiencyPercent')}>
+                  Biological Efficiency Percent <FontAwesomeIcon icon={getSortIconByFieldName('biologicalEfficiencyPercent')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('isContaminated')}>
+                  Is Contaminated <FontAwesomeIcon icon={getSortIconByFieldName('isContaminated')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('isActive')}>
+                  Is Active <FontAwesomeIcon icon={getSortIconByFieldName('isActive')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('completionNote')}>
+                  Completion Note <FontAwesomeIcon icon={getSortIconByFieldName('completionNote')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('note')}>
+                  Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
+                </th>
+                <th scope="col">
+                  Strain <FontAwesomeIcon icon="sort" />
+                </th>
+                <th scope="col">
+                  Recipe <FontAwesomeIcon icon="sort" />
+                </th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {batchList.map((batch, i) => (
+                <tr key={`entity-${i}`} data-cy="entityTable" style={{ opacity: batch._isOptimistic ? 0.6 : 1 }}>
+                  <td>
+                    {batch._isOptimistic ? (
+                      <span className="text-muted">
+                        <FontAwesomeIcon icon="spinner" spin /> Saving...
+                      </span>
+                    ) : (
+                      <Button tag={Link} to={`/batch/${batch.id}`} color="link" size="sm">
+                        {batch.id}
+                      </Button>
+                    )}
+                  </td>
+                  <td>{batch.batchCode}</td>
+                  <td>{batch.startDate ? <TextFormat type="date" value={batch.startDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
+                  <td>{batch.endDate ? <TextFormat type="date" value={batch.endDate} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
+                  <td>
+                    <StatusBadge phase={batch.currentPhase} isContaminated={batch.isContaminated} />
+                  </td>
+                  <td>{batch.numberOfBags}</td>
+                  <td>{batch.substrateWeightKg}</td>
+                  <td>{batch.spawnWeightKg}</td>
+                  <td>{batch.targetYieldKg}</td>
+                  <td>{batch.actualTotalYieldKg}</td>
+                  <td>{batch.biologicalEfficiencyPercent}</td>
+                  <td>
+                    {batch.isContaminated ? (
+                      <>
+                        <FontAwesomeIcon icon="flag" className="text-danger" id={`contaminated-${batch.id}`} />
+                        <UncontrolledTooltip target={`contaminated-${batch.id}`}>
+                          Contaminated - This batch has been marked as contaminated and may require special handling
+                        </UncontrolledTooltip>
+                      </>
+                    ) : (
+                      <span className="text-muted">-</span>
+                    )}
+                  </td>
+                  <td>{batch.isActive ? 'true' : 'false'}</td>
+                  <td>{batch.completionNote}</td>
+                  <td>{batch.note}</td>
+                  <td>{batch.strain ? <Link to={`/strain/${batch.strain.id}`}>{batch.strain.name}</Link> : ''}</td>
+                  <td>{batch.recipe ? <Link to={`/substrate-recipe/${batch.recipe.id}`}>{batch.recipe.name}</Link> : ''}</td>
+                  <td className="text-end">
+                    <div className="btn-group flex-btn-group-container">
+                      <Button
+                        tag={Link}
+                        to={`/batch/${batch.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        disabled={batch._isOptimistic}
+                        aria-disabled={batch._isOptimistic}
+                        aria-label="View"
+                      >
+                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                      </Button>
+                      {canModifyBatch && !batch._isOptimistic && (
+                        <>
+                          <Button
+                            tag={Link}
+                            to={`/batch/${batch.id}/edit`}
+                            state={{ referrerSearch: pageLocation.search }}
+                            color="primary"
+                            size="sm"
+                            data-cy="entityEditButton"
+                            aria-label="Edit"
+                          >
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                          <Button
+                            onClick={() => (window.location.href = `/batch/${batch.id}/delete`)}
+                            color="danger"
+                            size="sm"
+                            data-cy="entityDeleteButton"
+                            aria-label="Delete"
+                          >
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          !loading && (
+            <div className="text-center my-5">
+              <div className="alert alert-info d-inline-block">
+                {hasActiveFilters ? (
+                  <>
+                    <h4>No Results Found</h4>
+                    <p className="mb-3">
+                      <FontAwesomeIcon icon="filter" /> No batches match your current filters.
+                    </p>
+                    <p className="mb-3">Try:</p>
+                    <ul className="text-start" style={{ display: 'inline-block' }}>
+                      <li>Clearing some filters</li>
+                      <li>Selecting a different phase or strain</li>
+                      <li>Expanding the date range</li>
+                    </ul>
+                    <div className="mt-3">
+                      <Button color="secondary" onClick={handleClearFilters}>
+                        <FontAwesomeIcon icon="times" />
+                        &nbsp; Clear All Filters
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <EmptyState
+                    entityName="Batch"
+                    entityNamePlural="batches"
+                    showCreateButton={canModifyBatch}
+                    createLink="/batch/new"
+                    createLinkState={{ referrerSearch: pageLocation.search }}
+                  />
+                )}
+              </div>
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Feature #343: Infinite scroll sentinel - triggers loading more when visible */}
+      {infiniteScrollMode && batchList && batchList.length > 0 && hasMore && (
+        <div ref={sentinelRef} className="text-center py-3">
+          {loadingMore && <LoadingSpinner size="medium" message="Loading more batches..." className="justify-content-center" />}
+        </div>
+      )}
+
+      {/* Feature #343: Show total count in infinite scroll mode */}
+      {infiniteScrollMode && totalItems > 0 && (
+        <div className="text-center text-muted my-3">
+          <small>
+            Showing {batchList.length} of {totalItems} total batches
+            {!hasMore && ' (all loaded)'}
+          </small>
+        </div>
+      )}
+
+      {/* Pagination controls - only show in pagination mode */}
+      {!infiniteScrollMode && totalItems ? (
+        <div className={batchList && batchList.length > 0 ? '' : 'd-none'}>
+          <div className="justify-content-center d-flex align-items-center">
+            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
+            <div className="ms-3">
+              <span className="me-2">Items per page:</span>
+              <Input
+                type="select"
+                value={paginationState.itemsPerPage}
+                onChange={handlePageSizeChange}
+                style={{ width: 'auto', display: 'inline-block' }}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </Input>
+            </div>
+          </div>
+          <div className="justify-content-center d-flex">
+            <JhiPagination
+              activePage={paginationState.activePage}
+              onSelect={handlePagination}
+              maxButtons={5}
+              itemsPerPage={paginationState.itemsPerPage}
+              totalItems={totalItems}
+            />
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+    </div>
+  );
+};
+
+export default Batch;

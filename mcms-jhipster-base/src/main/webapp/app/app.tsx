@@ -1,0 +1,94 @@
+import 'react-toastify/dist/ReactToastify.css';
+import './app.scss';
+import 'app/config/dayjs';
+
+import React, { useEffect } from 'react';
+import { Card } from 'reactstrap';
+import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { getSession } from 'app/shared/reducers/authentication';
+import { getProfile } from 'app/shared/reducers/application-profile';
+import Header from 'app/shared/layout/header/header';
+import Sidebar from 'app/shared/layout/sidebar/sidebar';
+import Footer from 'app/shared/layout/footer/footer';
+import BreadcrumbNav from 'app/shared/layout/breadcrumb/breadcrumb';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import ErrorBoundary from 'app/shared/error/error-boundary';
+import { AUTHORITIES } from 'app/config/constants';
+import AppRoutes from 'app/routes';
+
+const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
+
+export const App = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getSession());
+    dispatch(getProfile());
+  }, []);
+
+  const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+  const ribbonEnv = useAppSelector(state => state.applicationProfile.ribbonEnv);
+  const isInProduction = useAppSelector(state => state.applicationProfile.inProduction);
+  const isOpenAPIEnabled = useAppSelector(state => state.applicationProfile.isOpenAPIEnabled);
+
+  const paddingTop = '60px';
+  return (
+    <BrowserRouter basename={baseHref}>
+      <a href="#app-view-container" className="skip-to-main">
+        Skip to main content
+      </a>
+      <div className={`app-container ${isAuthenticated ? 'with-sidebar' : ''}`} style={{ paddingTop }}>
+        {/* Feature #271: ARIA live region for screen reader announcements */}
+        <div
+          id="sr-announcements"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          style={{
+            position: 'absolute',
+            left: '-10000px',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        />
+        <ToastContainer
+          position="top-left"
+          className="toastify-container"
+          toastClassName="toastify-toast"
+          role="region"
+          aria-label="Notifications"
+          limit={10}
+          newestOnTop={true}
+        />
+        <ErrorBoundary>
+          <Header
+            isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
+            ribbonEnv={ribbonEnv}
+            isInProduction={isInProduction}
+            isOpenAPIEnabled={isOpenAPIEnabled}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <Sidebar isAuthenticated={isAuthenticated} />
+        </ErrorBoundary>
+        <div className="container-fluid view-container" id="app-view-container">
+          <Card className="jh-card">
+            <ErrorBoundary>
+              {isAuthenticated && <BreadcrumbNav />}
+              <AppRoutes />
+            </ErrorBoundary>
+          </Card>
+          <Footer />
+        </div>
+      </div>
+    </BrowserRouter>
+  );
+};
+
+export default App;

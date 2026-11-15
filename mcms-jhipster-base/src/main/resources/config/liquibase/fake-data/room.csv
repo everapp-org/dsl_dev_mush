@@ -1,0 +1,11 @@
+id;name;code;room_type;status;capacity_bags;current_occupancy;area_sq_m;has_hvac;has_misting;last_disinfection_date;note
+1;numeric;vice;COLD_STORAGE;ACTIVE;7392;31328;26708.12;false;false;2026-02-22;../fake-data/blob/hipster.txt
+2;trusty;snack;INCUBATION;ACTIVE;24723;14541;14716.04;true;true;2026-02-22;../fake-data/blob/hipster.txt
+3;innovate wide-eyed;coarse;INCUBATION;MAINTENANCE;6624;31886;8724.53;true;true;2026-02-22;../fake-data/blob/hipster.txt
+4;victorious really wordy;whoever;INCUBATION;DISINFECTION;32141;1580;28248.28;true;true;2026-02-21;../fake-data/blob/hipster.txt
+5;cycle edge consequently;pendant sans;STERILE_ZONE;ACTIVE;23350;6090;21437.56;true;false;2026-02-22;../fake-data/blob/hipster.txt
+6;questionably circa astride;total ha lest;LABORATORY;MAINTENANCE;10626;11506;23885.32;false;true;2026-02-22;../fake-data/blob/hipster.txt
+7;minus;sting but;INCUBATION;INACTIVE;18760;2946;26064.56;true;true;2026-02-22;../fake-data/blob/hipster.txt
+8;longboat whenever that;sticker witty equatorial;STERILE_ZONE;DISINFECTION;10222;362;21310.39;true;false;2026-02-22;../fake-data/blob/hipster.txt
+9;positively gosh ironclad;thread;COLD_STORAGE;MAINTENANCE;9571;10608;21109.96;false;true;2026-02-22;../fake-data/blob/hipster.txt
+10;cassava hmph;warp;INCUBATION;INACTIVE;26706;6026;16208.14;true;false;2026-02-22;../fake-data/blob/hipster.txt

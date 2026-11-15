@@ -1,0 +1,11 @@
+id;order_code;order_date;requested_delivery_date;actual_delivery_date;status;total_weight;total_revenue;currency;invoice_number;payment_status;payment_due_date;payment_received_date;shipping_address;note;customer_id
+1;mushy;2026-02-22;2026-02-21;2026-02-22;ORDERED;458.45;18200.34;huzzah revoke;forgery circumnavigate successfully;UNPAID;2026-02-22;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;1
+2;huzzah rapidly;2026-02-21;2026-02-22;2026-02-21;DELIVERED;14391.55;8783.39;gosh legging information;phooey considering beneath;OVERDUE;2026-02-22;2026-02-21;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;2
+3;whether;2026-02-22;2026-02-21;2026-02-22;RETURNED;27707.12;18957.47;gosh showy provided;sans ugh;UNPAID;2026-02-21;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;3
+4;wherever;2026-02-22;2026-02-21;2026-02-22;RECEIVED;24125.74;5715.91;on outset;apud;REFUNDED;2026-02-22;2026-02-21;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;4
+5;testimonial below;2026-02-21;2026-02-21;2026-02-21;ORDERED;2735.12;18589.19;clumsy;flame;OVERDUE;2026-02-21;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;5
+6;valuable deep while;2026-02-21;2026-02-22;2026-02-21;RECEIVED;25805.82;26037.93;curiously about;mad;UNPAID;2026-02-22;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;6
+7;avaricious;2026-02-22;2026-02-22;2026-02-22;ORDERED;12768.16;6774.76;off for;that sedately;PARTIALLY_PAID;2026-02-21;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;7
+8;yawningly bossy wherever;2026-02-22;2026-02-22;2026-02-22;RETURNED;13096.09;31285.97;aha;behold an license;UNPAID;2026-02-22;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;8
+9;zowie furthermore;2026-02-22;2026-02-22;2026-02-22;DELIVERED;19936.59;27668.42;competent;break testing;UNPAID;2026-02-22;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;9
+10;facilitate;2026-02-22;2026-02-22;2026-02-21;DELIVERED;22652.44;28044.85;geez excitable;among structure wisely;REFUNDED;2026-02-22;2026-02-22;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;10

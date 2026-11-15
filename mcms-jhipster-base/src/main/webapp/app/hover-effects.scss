@@ -1,0 +1,357 @@
+/**
+ * Feature #388: Consistent Hover Effects
+ *
+ * Ensures all interactive elements across the application have uniform hover states:
+ * - Consistent transition speeds
+ * - Consistent visual feedback
+ * - Proper cursor states
+ *
+ * Transition Speed Standards:
+ * - 0.15s: Quick feedback (buttons, links, small interactions)
+ * - 0.2s: Standard transitions (backgrounds, colors)
+ * - 0.3s: Layout transitions (sidebar, panels, major UI changes)
+ */
+
+/* ==========================================================================
+Links - Consistent hover feedback
+========================================================================== */
+
+/* Standard links */
+a {
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+}
+
+/* Anchor button links */
+a.anchor-btn {
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+}
+
+/* ==========================================================================
+Buttons - Consistent hover feedback
+========================================================================== */
+
+/* Bootstrap buttons inherit transitions from Bootstrap 5
+   Bootstrap 5 default: transition: color .15s ease-in-out,
+                                   background-color .15s ease-in-out,
+                                   border-color .15s ease-in-out,
+                                   box-shadow .15s ease-in-out;
+   We ensure consistency by standardizing to 0.15s ease
+*/
+
+.btn,
+button:not(.icon-button > .btn) {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.15s ease !important;
+
+  &:hover:not(:disabled):not(.disabled) {
+    cursor: pointer;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled):not(.disabled) {
+    transform: translateY(0);
+  }
+}
+
+/* Icon buttons - lighter hover effect */
+.icon-button > .btn {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+Table Rows - Consistent hover feedback
+========================================================================== */
+
+/* Standardize table row transitions to 0.2s ease for smooth feedback */
+.table tbody tr {
+  transition: background-color 0.2s ease, transform 0.15s ease !important;
+
+  &:hover {
+    cursor: pointer;
+    transform: translateX(2px);
+  }
+}
+
+/* Striped table rows */
+.table-striped tbody tr:nth-of-type(odd),
+.table-striped tbody tr:nth-of-type(even) {
+  transition: background-color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    transform: translateX(2px);
+  }
+}
+
+/* Table headers (sortable) */
+.table thead th.hand {
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Cards - Consistent hover feedback
+========================================================================== */
+
+/* Dashboard KPI cards - standardize with easing function */
+.kpi-card,
+.dashboard-card,
+.card.clickable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ==========================================================================
+Navigation - Consistent hover feedback
+========================================================================== */
+
+/* Sidebar items - already standardized at 0.2s ease */
+.sidebar-item {
+  transition: all 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* Sidebar section headers */
+.sidebar-section-header {
+  transition: background 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+  }
+}
+
+/* Mobile menu toggle */
+.mobile-menu-toggle {
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+}
+
+/* Breadcrumb links - add missing transition */
+.breadcrumb-item a {
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* Navbar links */
+.nav-link {
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* Dropdown items */
+.dropdown-item {
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Form Elements - Consistent hover feedback
+========================================================================== */
+
+/* Form inputs with hover feedback */
+input:not([type='checkbox']):not([type='radio']):not(:disabled),
+textarea:not(:disabled),
+select:not(:disabled) {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover:not(:focus) {
+    border-color: #80bdff;
+  }
+}
+
+/* Checkboxes and radio buttons */
+input[type='checkbox'],
+input[type='radio'] {
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Form labels with clickable inputs */
+label {
+  transition: color 0.15s ease;
+
+  &:hover {
+    cursor: default;
+  }
+
+  &[for]:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Badges and Labels - Consistent hover feedback
+========================================================================== */
+
+/* Clickable badges */
+.badge.clickable,
+.badge[role='button'] {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+}
+
+/* ==========================================================================
+Modals and Overlays - Consistent hover feedback
+========================================================================== */
+
+/* Modal close buttons */
+.modal-header .btn-close {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.75;
+    transform: scale(1.1);
+  }
+}
+
+/* ==========================================================================
+Icons - Consistent hover feedback
+========================================================================== */
+
+/* Clickable icons (Font Awesome, etc.) */
+svg[role='button'],
+svg.clickable,
+.icon.clickable,
+i.clickable {
+  transition: color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.15);
+  }
+}
+
+/* ==========================================================================
+Pagination - Consistent hover feedback
+========================================================================== */
+
+.page-link {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Tabs - Consistent hover feedback
+========================================================================== */
+
+.nav-tabs .nav-link {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Scrollbars - Consistent hover feedback
+========================================================================== */
+
+/* Sidebar scrollbar thumb */
+.sidebar::-webkit-scrollbar-thumb {
+  transition: background 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+Accessibility - Ensure disabled elements don't show hover cursor
+========================================================================== */
+
+/* Disabled elements should never show pointer cursor */
+*:disabled,
+*.disabled,
+*[aria-disabled='true'] {
+  cursor: not-allowed !important;
+
+  &:hover {
+    cursor: not-allowed !important;
+  }
+}
+
+/* ==========================================================================
+Custom Interactive Elements - Consistent hover feedback
+========================================================================== */
+
+/* Any element with .hand class (cursor pointer) should have transition */
+.hand {
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Any element with role="button" should have consistent hover */
+[role='button'] {
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}

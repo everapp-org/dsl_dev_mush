@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Add SET NULL to room relationships.
+        When a room is deleted, all references to it should be set to NULL rather than blocking deletion.
+        This allows room cleanup while preserving historical data.
+    -->
+    <changeSet id="20260323000003-1" author="claude">
+
+        <!-- Phase Execution: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="phase_execution" constraintName="fk_phase_execution__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="phase_execution"
+                                 constraintName="fk_phase_execution__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+        <!-- Contamination Event: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="contamination_event" constraintName="fk_contamination_event__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="contamination_event"
+                                 constraintName="fk_contamination_event__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+        <!-- Environmental Alert: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="environmental_alert" constraintName="fk_environmental_alert__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="environmental_alert"
+                                 constraintName="fk_environmental_alert__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+        <!-- Environmental Target: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="environmental_target" constraintName="fk_environmental_target__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="environmental_target"
+                                 constraintName="fk_environmental_target__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+        <!-- Sensor: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="sensor" constraintName="fk_sensor__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="sensor"
+                                 constraintName="fk_sensor__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+        <!-- Task: Drop existing FK, recreate with SET NULL -->
+        <dropForeignKeyConstraint baseTableName="task" constraintName="fk_task__room_id"/>
+        <addForeignKeyConstraint baseColumnNames="room_id"
+                                 baseTableName="task"
+                                 constraintName="fk_task__room_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="room"
+                                 onDelete="SET NULL"/>
+
+    </changeSet>
+</databaseChangeLog>

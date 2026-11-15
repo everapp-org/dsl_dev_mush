@@ -1,0 +1,11 @@
+id;batch_code;start_date;end_date;current_phase;number_of_bags;substrate_weight_kg;spawn_weight_kg;target_yield_kg;actual_total_yield_kg;biological_efficiency_percent;is_contaminated;is_active;completion_note;note;strain_id;recipe_id
+1;white;2026-02-22;2026-02-22;FULL_COLONIZATION;18969;12094.22;26898.68;877.12;7142.51;17052.24;false;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;1;1
+2;swift intellect as;2026-02-22;2026-02-22;EARLY_COLONIZATION;1443;17880.17;4184.44;911.98;2405.22;27637.9;true;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;2;2
+3;digitize appropriate;2026-02-22;2026-02-22;EARLY_COLONIZATION;23175;6121.73;10491.88;26508.57;4298.77;16455.5;false;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;3;3
+4;favorable suddenly;2026-02-22;2026-02-22;EARLY_COLONIZATION;11733;3287.46;17509.59;5351.94;21040.66;15156.77;false;false;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;4;4
+5;schlep internalize;2026-02-22;2026-02-22;INOCULATION;13213;374.69;740.23;26029.18;11235.99;26728.69;true;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;5;5
+6;amongst;2026-02-22;2026-02-22;EARLY_COLONIZATION;5319;25226.83;29391.16;8290.57;27200.63;1770.35;false;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;6;6
+7;coal within;2026-02-21;2026-02-21;FULL_COLONIZATION;5796;16397.81;23160.67;19453.18;28423.23;30655.4;true;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;7;7
+8;ick given as;2026-02-22;2026-02-21;REHYDRATION_PAUSE;8788;4071.99;23284.37;27951.27;11720.08;21130.74;false;true;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;8;8
+9;highly brand;2026-02-22;2026-02-22;FRUITING_TRIGGER;30522;7210.02;4035.48;22298.51;25993.72;22867.49;true;false;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;9;9
+10;victorious orderly;2026-02-22;2026-02-21;PRIMORDIA;13772;380.2;10877.13;18695.24;27895.01;25436.63;true;false;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;10;10

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mcms</groupId>
+    <artifactId>mcms-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>MCMS Parent</name>
+    <description>Mushroom Cultivation Management System - DSL-First Implementation</description>
+
+    <modules>
+        <module>mcms-dsl</module>
+        <module>mcms-codegen</module>
+        <module>mcms-jhipster-base</module>
+        <module>mcms-domain-extensions</module>
+        <module>mcms-application</module>
+    </modules>
+
+    <properties>
+        <!-- Java Version -->
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- DSL & Code Generation -->
+        <antlr4.version>4.13.1</antlr4.version>
+        <javapoet.version>1.13.0</javapoet.version>
+
+        <!-- Spring Boot -->
+        <spring-boot.version>3.2.2</spring-boot.version>
+
+        <!-- Testing -->
+        <junit.version>5.10.1</junit.version>
+        <assertj.version>3.25.1</assertj.version>
+        <mockito.version>5.8.0</mockito.version>
+
+        <!-- Logging -->
+        <slf4j.version>2.0.11</slf4j.version>
+        <logback.version>1.4.14</logback.version>
+
+        <!-- Utilities -->
+        <jackson.version>2.16.1</jackson.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+
+        <!-- Maven Plugins -->
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.2.3</maven-surefire-plugin.version>
+        <exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ANTLR 4 -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>${antlr4.version}</version>
+            </dependency>
+
+            <!-- JavaPoet for Code Generation -->
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>javapoet</artifactId>
+                <version>${javapoet.version}</version>
+            </dependency>
+
+            <!-- Jackson for YAML/JSON -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Apache Commons -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Maven Compiler Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+
+                <!-- ANTLR 4 Maven Plugin -->
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
+                    <executions>
+                        <execution>
+                            <id>antlr</id>
+                            <goals>
+                                <goal>antlr4</goal>
+                            </goals>
+                            <phase>generate-sources</phase>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <visitor>true</visitor>
+                        <listener>true</listener>
+                    </configuration>
+                </plugin>
+
+                <!-- Build Helper Plugin (add generated sources) -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.build.directory}/generated-sources/antlr4</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Exec Maven Plugin (for running generators) -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-plugin.version}</version>
+                </plugin>
+
+                <!-- Maven Surefire Plugin (for running tests) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <useModulePath>false</useModulePath>
+                    </configuration>
+                </plugin>
+
+                <!-- Spring Boot Maven Plugin -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

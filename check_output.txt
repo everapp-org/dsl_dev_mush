@@ -1,0 +1,10 @@
+
+============================================================================
+  MCMS - Mushroom Cultivation Management System
+============================================================================
+
+Prerequisites Checker for Ubuntu
+
+[0;34m[1/7] Checking Java 21...[0m
+Found: openjdk version "21.0.10" 2026-01-20
+[0;32m✓ PASS[0m Java 21 is installed

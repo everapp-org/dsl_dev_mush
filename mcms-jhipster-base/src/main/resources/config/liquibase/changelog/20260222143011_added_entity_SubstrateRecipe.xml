@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity SubstrateRecipe.
+    -->
+    <changeSet id="20260222143011-1" author="jhipster">
+        <createTable tableName="substrate_recipe" remarks="Substrate recipe - the growth medium formulation.\nVersioned to track recipe evolution and yield correlation.">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)" remarks="e.g. &quot;Standard Wheat Straw v3&quot;">
+                <constraints nullable="false" />
+            </column>
+            <column name="version" type="varchar(255)" remarks="Recipe version identifier">
+                <constraints nullable="false" />
+            </column>
+            <column name="base_type" type="varchar(255)" remarks="Primary substrate material">
+                <constraints nullable="false" />
+            </column>
+            <column name="composition_detail" type="${clobType}" remarks="Full ingredient list &amp; ratios">
+                <constraints nullable="true" />
+            </column>
+            <column name="sterilization_method" type="varchar(255)" remarks="e.g. &quot;Autoclave 121°C/2h&quot;, &quot;Pasteurization 80°C/8h&quot;">
+                <constraints nullable="true" />
+            </column>
+            <column name="moisture_target_percent" type="decimal(21,2)" remarks="Target moisture content %">
+                <constraints nullable="true" />
+            </column>
+            <column name="ph_target" type="decimal(21,2)" remarks="Target pH level">
+                <constraints nullable="true" />
+            </column>
+            <column name="supplement_notes" type="${clobType}" remarks="Supplements: gypsum, bran, lime, etc.">
+                <constraints nullable="true" />
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20260222143011-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/substrate_recipe.csv"
+                  separator=";"
+                  tableName="substrate_recipe"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="name" type="string"/>
+            <column name="version" type="string"/>
+            <column name="base_type" type="string"/>
+            <column name="composition_detail" type="clob"/>
+            <column name="sterilization_method" type="string"/>
+            <column name="moisture_target_percent" type="numeric"/>
+            <column name="ph_target" type="numeric"/>
+            <column name="supplement_notes" type="clob"/>
+            <column name="active" type="boolean"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,11 @@
+id;lot_code;received_date;quantity_received;quantity_on_hand;unit;expiry_date;storage_location;supplier_lot_number;is_exhausted;note;material_id;supply_order_line_id
+1;drat oh;2026-02-22;31814.14;10794.8;LITER;2026-02-22;beneath annual provided;portray times;false;../fake-data/blob/hipster.txt;1;1
+2;or;2026-02-21;1158.18;15986.21;LITER;2026-02-21;meal grass hungry;confused slowly;false;../fake-data/blob/hipster.txt;2;2
+3;ah;2026-02-22;6739.12;24632.37;KG;2026-02-21;than;premeditation;true;../fake-data/blob/hipster.txt;3;3
+4;concerning hippodrome notwithstanding;2026-02-22;13831.86;5847.72;PIECE;2026-02-21;vague phew;unlike;false;../fake-data/blob/hipster.txt;4;4
+5;countess;2026-02-21;5519.24;26208.33;PIECE;2026-02-22;properly abaft arrogantly;serene;true;../fake-data/blob/hipster.txt;5;5
+6;respray;2026-02-22;31028.34;22891.27;GRAM;2026-02-21;urgently;jubilantly;false;../fake-data/blob/hipster.txt;6;6
+7;lest hammock;2026-02-21;6933.15;16527.31;BOX;2026-02-21;decision beneath tribe;gah defrag oof;false;../fake-data/blob/hipster.txt;7;7
+8;save eggplant;2026-02-22;4608.89;32062.21;BOX;2026-02-21;miskey odd;trouser rear;true;../fake-data/blob/hipster.txt;8;8
+9;pish webbed;2026-02-22;1928.18;20186.25;LITER;2026-02-21;impure meanwhile;given tool effector;false;../fake-data/blob/hipster.txt;9;9
+10;competent dream dearest;2026-02-22;25506.55;19601.45;KG;2026-02-22;persecute sheepishly;machine;true;../fake-data/blob/hipster.txt;10;10

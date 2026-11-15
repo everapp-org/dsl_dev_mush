@@ -1,0 +1,360 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button, Table, Input, Label } from 'reactstrap';
+import { getSortState } from 'react-jhipster';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { ASC, DESC } from 'app/shared/util/pagination.constants';
+import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { useLoadingAnnouncer } from 'app/shared/hooks/use-loading-announcer';
+
+import { getEntities, activateStrain, deactivateStrain } from './strain.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
+
+export const Strain = () => {
+  const dispatch = useAppDispatch();
+
+  const pageLocation = useLocation();
+  const navigate = useNavigate();
+
+  const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [importing, setImporting] = useState(false);
+
+  const strainList = useAppSelector(state => state.strain.entities);
+  const loading = useAppSelector(state => state.strain.loading);
+  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+
+  // Feature #280: Announce loading states to screen readers
+  useLoadingAnnouncer({
+    loading,
+    loadingMessage: 'Loading strain list...',
+    loadedMessage: 'Strain list loaded',
+  });
+
+  const getAllEntities = () => {
+    dispatch(
+      getEntities({
+        sort: `${sortState.sort},${sortState.order}`,
+        query: searchTerm,
+      }),
+    );
+  };
+
+  const sortEntities = () => {
+    getAllEntities();
+    const endURL = `?sort=${sortState.sort},${sortState.order}`;
+    if (pageLocation.search !== endURL) {
+      navigate(`${pageLocation.pathname}${endURL}`);
+    }
+  };
+
+  // Feature #363: Clean URL params when navigating from other entities
+  // Only keep 'sort' parameter, remove any filters from other entity lists
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const allowedParams = ['sort'];
+    const hasIrrelevantParams = Array.from(params.keys()).some(key => !allowedParams.includes(key));
+
+    if (hasIrrelevantParams) {
+      // Clean URL by keeping only the sort parameter
+      const cleanURL = params.has('sort') ? `?sort=${params.get('sort')}` : `?sort=${sortState.sort},${sortState.order}`;
+      navigate(`${pageLocation.pathname}${cleanURL}`, { replace: true });
+    }
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    sortEntities();
+  }, [sortState.order, sortState.sort, searchTerm]);
+
+  const sort = p => () => {
+    setSortState({
+      ...sortState,
+      order: sortState.order === ASC ? DESC : ASC,
+      sort: p,
+    });
+  };
+
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
+  const handleActivate = (id: number) => {
+    dispatch(activateStrain(id));
+  };
+
+  const handleDeactivate = (id: number) => {
+    dispatch(deactivateStrain(id));
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setImporting(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/strains/import', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jhi-authenticationToken') || sessionStorage.getItem('jhi-authenticationToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Import failed');
+      }
+
+      const result = await response.json();
+
+      if (result.errors && result.errors.length > 0) {
+        alert(`Import completed with warnings:\n\nImported: ${result.imported} strains\nErrors:\n${result.errors.join('\n')}`);
+      } else {
+        alert(`Successfully imported ${result.imported} strains!`);
+      }
+
+      // Refresh the list
+      getAllEntities();
+    } catch (error) {
+      alert(`Error importing strains: ${error.message}`);
+    } finally {
+      setImporting(false);
+      // Reset file input
+      event.target.value = '';
+    }
+  };
+
+  const getSortIconByFieldName = (fieldName: string) => {
+    const sortFieldName = sortState.sort;
+    const order = sortState.order;
+    if (sortFieldName !== fieldName) {
+      return faSort;
+    }
+    return order === ASC ? faSortUp : faSortDown;
+  };
+
+  return (
+    <div>
+      <h1 id="strain-heading" data-cy="StrainHeading">
+        Strains
+        <div className="d-flex justify-content-end">
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+          </Button>
+          <Button
+            className="me-2"
+            color="success"
+            disabled={importing}
+            aria-disabled={importing}
+            onClick={() => document.getElementById('strain-import-file')?.click()}
+            data-cy="entityImportButton"
+          >
+            <FontAwesomeIcon icon="upload" spin={importing} /> Import CSV
+          </Button>
+          <input
+            type="file"
+            id="strain-import-file"
+            accept=".csv"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+            aria-label="Import strains from CSV file"
+          />
+          <Link to="/strain/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Create a new Strain
+          </Link>
+        </div>
+      </h1>
+      <div className="mb-3">
+        <Label for="strainSearchInput" className="visually-hidden">
+          Search strains by name, species, or variety
+        </Label>
+        <Input
+          type="text"
+          id="strainSearchInput"
+          placeholder="Search by name, species, or variety..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          data-cy="strainSearchInput"
+          aria-label="Search strains by name, species, or variety"
+        />
+      </div>
+      <div className="table-responsive">
+        {strainList && strainList.length > 0 ? (
+          <Table responsive striped hover>
+            <thead>
+              <tr>
+                <th scope="col" className="hand" onClick={sort('id')}>
+                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('name')}>
+                  Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('species')}>
+                  Species <FontAwesomeIcon icon={getSortIconByFieldName('species')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('variety')}>
+                  Variety <FontAwesomeIcon icon={getSortIconByFieldName('variety')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('optimalTempMinC')}>
+                  Optimal Temp Min C <FontAwesomeIcon icon={getSortIconByFieldName('optimalTempMinC')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('optimalTempMaxC')}>
+                  Optimal Temp Max C <FontAwesomeIcon icon={getSortIconByFieldName('optimalTempMaxC')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('optimalHumidityMin')}>
+                  Optimal Humidity Min <FontAwesomeIcon icon={getSortIconByFieldName('optimalHumidityMin')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('optimalHumidityMax')}>
+                  Optimal Humidity Max <FontAwesomeIcon icon={getSortIconByFieldName('optimalHumidityMax')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('optimalCO2MaxPpm')}>
+                  Optimal CO 2 Max Ppm <FontAwesomeIcon icon={getSortIconByFieldName('optimalCO2MaxPpm')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('colonizationDaysMin')}>
+                  Colonization Days Min <FontAwesomeIcon icon={getSortIconByFieldName('colonizationDaysMin')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('colonizationDaysMax')}>
+                  Colonization Days Max <FontAwesomeIcon icon={getSortIconByFieldName('colonizationDaysMax')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('expectedYieldPercent')}>
+                  Expected Yield Percent <FontAwesomeIcon icon={getSortIconByFieldName('expectedYieldPercent')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('shelfLifeDays')}>
+                  Shelf Life Days <FontAwesomeIcon icon={getSortIconByFieldName('shelfLifeDays')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('note')}>
+                  Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('active')}>
+                  Active <FontAwesomeIcon icon={getSortIconByFieldName('active')} />
+                </th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {strainList.map((strain, i) => (
+                <tr key={`entity-${i}`} data-cy="entityTable">
+                  <td>
+                    <Button tag={Link} to={`/strain/${strain.id}`} color="link" size="sm">
+                      {strain.id}
+                    </Button>
+                  </td>
+                  <td>{strain.name}</td>
+                  <td>{strain.species}</td>
+                  <td>{strain.variety}</td>
+                  <td>{strain.optimalTempMinC}</td>
+                  <td>{strain.optimalTempMaxC}</td>
+                  <td>{strain.optimalHumidityMin}</td>
+                  <td>{strain.optimalHumidityMax}</td>
+                  <td>{strain.optimalCO2MaxPpm}</td>
+                  <td>{strain.colonizationDaysMin}</td>
+                  <td>{strain.colonizationDaysMax}</td>
+                  <td>{strain.expectedYieldPercent}</td>
+                  <td>{strain.shelfLifeDays}</td>
+                  <td>{strain.note}</td>
+                  <td>{strain.active ? 'true' : 'false'}</td>
+                  <td className="text-end">
+                    <div className="btn-group flex-btn-group-container">
+                      <Button tag={Link} to={`/strain/${strain.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/strain/${strain.id}/edit`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                        aria-label="Edit"
+                      >
+                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                      </Button>
+                      {isAdmin && (
+                        <>
+                          {strain.active ? (
+                            <Button
+                              onClick={() => handleDeactivate(strain.id)}
+                              color="warning"
+                              size="sm"
+                              data-cy="entityDeactivateButton"
+                              aria-label="Deactivate"
+                            >
+                              <FontAwesomeIcon icon="ban" /> <span className="d-none d-md-inline">Deactivate</span>
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => handleActivate(strain.id)}
+                              color="success"
+                              size="sm"
+                              data-cy="entityActivateButton"
+                              aria-label="Activate"
+                            >
+                              <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Activate</span>
+                            </Button>
+                          )}
+                        </>
+                      )}
+                      <Button
+                        onClick={() => (window.location.href = `/strain/${strain.id}/delete`)}
+                        color="danger"
+                        size="sm"
+                        data-cy="entityDeleteButton"
+                        aria-label="Delete"
+                      >
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          !loading && (
+            <div className="text-center my-5">
+              <div className="alert alert-info d-inline-block">
+                {searchTerm ? (
+                  <>
+                    <h4>No Results Found</h4>
+                    <p className="mb-3">
+                      No strains match your search for &quot;<strong>{searchTerm}</strong>&quot;
+                    </p>
+                    <p className="mb-3">Try:</p>
+                    <ul className="text-start" style={{ display: 'inline-block' }}>
+                      <li>Using different keywords</li>
+                      <li>Checking your spelling</li>
+                      <li>Using more general search terms</li>
+                    </ul>
+                    <div className="mt-3">
+                      <Button color="secondary" onClick={() => setSearchTerm('')} className="me-2">
+                        <FontAwesomeIcon icon="times" />
+                        &nbsp; Clear Search
+                      </Button>
+                      <Link to="/strain/new" className="btn btn-primary">
+                        <FontAwesomeIcon icon="plus" />
+                        &nbsp; Create New Strain
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <EmptyState entityName="Strain" entityNamePlural="strains" showCreateButton={isAdmin} createLink="/strain/new" />
+                )}
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Strain;

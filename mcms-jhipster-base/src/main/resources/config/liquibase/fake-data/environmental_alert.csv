@@ -1,0 +1,11 @@
+id;alert_time;severity;parameter;actual_value;threshold_value;message;acknowledged;acknowledged_by;acknowledged_at;resolution_note;room_id
+1;2026-02-22T07:45:03;CRITICAL;CELSIUS;8774.84;13825.61;sans;true;minus;2026-02-22T05:51:55;../fake-data/blob/hipster.txt;1
+2;2026-02-22T02:09:22;CRITICAL;PPM_CO2;5487.07;23415.55;impostor below hunt;false;circumnavigate;2026-02-22T01:47:36;../fake-data/blob/hipster.txt;2
+3;2026-02-22T02:15:35;INFO;AIRFLOW_MS;11126.51;2742.13;boo joyfully faithfully;true;spiteful who;2026-02-22T10:10:35;../fake-data/blob/hipster.txt;3
+4;2026-02-22T03:18:32;CRITICAL;CELSIUS;571.79;20789.75;merge;true;overproduce;2026-02-21T16:47:36;../fake-data/blob/hipster.txt;4
+5;2026-02-22T02:12:20;CRITICAL;HUMIDITY_PERCENT;22487.52;9874.06;like gleefully;true;summary;2026-02-21T18:56:48;../fake-data/blob/hipster.txt;5
+6;2026-02-22T07:44:18;WARNING;AIRFLOW_MS;8378.85;23002.11;incidentally uncommon until;true;yet anti;2026-02-22T10:04:43;../fake-data/blob/hipster.txt;6
+7;2026-02-21T21:50:00;WARNING;PPM_CO2;23172.03;8568.51;sneaky beyond;true;fortunately although deplore;2026-02-22T14:19:11;../fake-data/blob/hipster.txt;7
+8;2026-02-22T05:41:10;WARNING;CELSIUS;13616.38;31364.42;unlined;true;when oxygenate following;2026-02-22T00:55:11;../fake-data/blob/hipster.txt;8
+9;2026-02-22T04:54:55;CRITICAL;LUX;12389.67;23556.65;wherever;true;gosh;2026-02-22T11:19:06;../fake-data/blob/hipster.txt;9
+10;2026-02-22T03:10:02;INFO;LUX;16375.85;25994.48;suckle;false;gadzooks;2026-02-22T10:25:29;../fake-data/blob/hipster.txt;10

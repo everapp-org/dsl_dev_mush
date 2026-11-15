@@ -1,0 +1,9 @@
+export enum RoomStatus {
+  ACTIVE = 'ACTIVE',
+
+  MAINTENANCE = 'MAINTENANCE',
+
+  DISINFECTION = 'DISINFECTION',
+
+  INACTIVE = 'INACTIVE',
+}

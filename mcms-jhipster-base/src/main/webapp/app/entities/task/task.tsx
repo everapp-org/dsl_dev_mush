@@ -1,0 +1,281 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Badge, Button, Table } from 'reactstrap';
+import { TextFormat, getSortState } from 'react-jhipster';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { ASC, DESC } from 'app/shared/util/pagination.constants';
+import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+
+import { getEntities } from './task.reducer';
+import { EmptyState } from 'app/shared/components/EmptyState';
+
+const getPriorityBadgeColor = (priority: number): string => {
+  switch (priority) {
+    case 5:
+      return 'danger'; // red - highest priority
+    case 4:
+      return 'warning'; // orange/yellow - high priority
+    case 3:
+      return 'info'; // light blue - medium priority
+    case 2:
+      return 'light'; // light gray - low priority
+    case 1:
+      return 'secondary'; // gray - lowest priority
+    default:
+      return 'secondary';
+  }
+};
+
+export const Task = () => {
+  const dispatch = useAppDispatch();
+
+  const pageLocation = useLocation();
+  const navigate = useNavigate();
+
+  const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+  const [completingTaskId, setCompletingTaskId] = useState<number | null>(null);
+
+  const taskList = useAppSelector(state => state.task.entities);
+  const loading = useAppSelector(state => state.task.loading);
+  const account = useAppSelector(state => state.authentication.account);
+  const isOperator = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.OPERATOR]));
+  const isAdminOrManager = useAppSelector(state =>
+    hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.MANAGER]),
+  );
+
+  const getAllEntities = () => {
+    dispatch(
+      getEntities({
+        sort: `${sortState.sort},${sortState.order}`,
+      }),
+    );
+  };
+
+  const sortEntities = () => {
+    getAllEntities();
+    const endURL = `?sort=${sortState.sort},${sortState.order}`;
+    if (pageLocation.search !== endURL) {
+      navigate(`${pageLocation.pathname}${endURL}`);
+    }
+  };
+
+  // Feature #363: Clean URL params when navigating from other entities
+  // Only keep 'sort' parameter, remove any filters from other entity lists
+  useEffect(() => {
+    const params = new URLSearchParams(pageLocation.search);
+    const allowedParams = ['sort'];
+    const hasIrrelevantParams = Array.from(params.keys()).some((key: string) => !allowedParams.includes(key));
+
+    if (hasIrrelevantParams) {
+      // Clean URL by keeping only the sort parameter
+      const cleanURL = params.has('sort') ? `?sort=${params.get('sort')}` : `?sort=${sortState.sort},${sortState.order}`;
+      navigate(`${pageLocation.pathname}${cleanURL}`, { replace: true });
+    }
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    sortEntities();
+  }, [sortState.order, sortState.sort]);
+
+  const sort = p => () => {
+    setSortState({
+      ...sortState,
+      order: sortState.order === ASC ? DESC : ASC,
+      sort: p,
+    });
+  };
+
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
+  const getSortIconByFieldName = (fieldName: string) => {
+    const sortFieldName = sortState.sort;
+    const order = sortState.order;
+    if (sortFieldName !== fieldName) {
+      return faSort;
+    }
+    return order === ASC ? faSortUp : faSortDown;
+  };
+
+  const handleCompleteTask = async (taskId: number) => {
+    if (window.confirm('Mark this task as complete?')) {
+      try {
+        setCompletingTaskId(taskId);
+        await axios.patch(`/api/tasks/${taskId}/complete`);
+        // Refresh the list to show updated status
+        sortEntities();
+      } catch (error) {
+        console.error('Error completing task:', error);
+        alert('Failed to complete task. Please try again.');
+      } finally {
+        setCompletingTaskId(null);
+      }
+    }
+  };
+
+  const canCompleteTask = (task: any) => {
+    return !task.completed && (isAdminOrManager || (isOperator && task.assignedTo === account.login));
+  };
+
+  const isTaskOverdue = (task: any) => {
+    if (task.completed || !task.dueDate) {
+      return false;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for date-only comparison
+    const dueDate = new Date(task.dueDate);
+    return dueDate < today;
+  };
+
+  return (
+    <div>
+      <h1 id="task-heading" data-cy="TaskHeading">
+        Tasks
+        <div className="d-flex justify-content-end">
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading} aria-disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+          </Button>
+          {isAdminOrManager && (
+            <Link to="/task/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Create a new Task
+            </Link>
+          )}
+        </div>
+      </h1>
+      <div className="table-responsive">
+        {taskList && taskList.length > 0 ? (
+          <Table responsive striped hover>
+            <thead>
+              <tr>
+                <th scope="col" className="hand" onClick={sort('id')}>
+                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('title')}>
+                  Title <FontAwesomeIcon icon={getSortIconByFieldName('title')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('description')}>
+                  Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('dueDate')}>
+                  Due Date <FontAwesomeIcon icon={getSortIconByFieldName('dueDate')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('completed')}>
+                  Completed <FontAwesomeIcon icon={getSortIconByFieldName('completed')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('completedDate')}>
+                  Completed Date <FontAwesomeIcon icon={getSortIconByFieldName('completedDate')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('priority')}>
+                  Priority <FontAwesomeIcon icon={getSortIconByFieldName('priority')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('assignedTo')}>
+                  Assigned To <FontAwesomeIcon icon={getSortIconByFieldName('assignedTo')} />
+                </th>
+                <th scope="col" className="hand" onClick={sort('note')}>
+                  Note <FontAwesomeIcon icon={getSortIconByFieldName('note')} />
+                </th>
+                <th scope="col">
+                  Batch <FontAwesomeIcon icon="sort" />
+                </th>
+                <th scope="col">
+                  Room <FontAwesomeIcon icon="sort" />
+                </th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {taskList.map((task, i) => {
+                const overdue = isTaskOverdue(task);
+                return (
+                  <tr key={`entity-${i}`} data-cy="entityTable" className={overdue ? 'table-danger' : ''}>
+                    <td>
+                      <Button tag={Link} to={`/task/${task.id}`} color="link" size="sm">
+                        {task.id}
+                      </Button>
+                    </td>
+                    <td>{task.title}</td>
+                    <td>{task.description}</td>
+                    <td>
+                      {task.dueDate ? (
+                        <>
+                          <TextFormat type="date" value={task.dueDate} format={APP_LOCAL_DATE_FORMAT} />
+                          {overdue && (
+                            <span className="badge bg-danger ms-2" style={{ fontSize: '0.75rem' }}>
+                              Overdue
+                            </span>
+                          )}
+                        </>
+                      ) : null}
+                    </td>
+                    <td>{task.completed ? 'true' : 'false'}</td>
+                    <td>
+                      {task.completedDate ? <TextFormat type="date" value={task.completedDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
+                    </td>
+                    <td>
+                      <Badge color={getPriorityBadgeColor(task.priority)}>{task.priority}</Badge>
+                    </td>
+                    <td>{task.assignedTo}</td>
+                    <td>{task.note}</td>
+                    <td>{task.batch ? <Link to={`/batch/${task.batch.id}`}>{task.batch.batchCode}</Link> : ''}</td>
+                    <td>{task.room ? <Link to={`/room/${task.room.id}`}>{task.room.name}</Link> : ''}</td>
+                    <td className="text-end">
+                      <div className="btn-group flex-btn-group-container">
+                        <Button tag={Link} to={`/task/${task.id}`} color="info" size="sm" data-cy="entityDetailsButton" aria-label="View">
+                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                        </Button>
+                        {canCompleteTask(task) && (
+                          <Button
+                            onClick={() => handleCompleteTask(task.id)}
+                            color="success"
+                            size="sm"
+                            disabled={completingTaskId === task.id}
+                          >
+                            <FontAwesomeIcon icon="check" /> <span className="d-none d-md-inline">Complete</span>
+                          </Button>
+                        )}
+                        {isAdminOrManager && (
+                          <>
+                            <Button
+                              tag={Link}
+                              to={`/task/${task.id}/edit`}
+                              color="primary"
+                              size="sm"
+                              data-cy="entityEditButton"
+                              aria-label="Edit"
+                            >
+                              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                            </Button>
+                            <Button
+                              onClick={() => (window.location.href = `/task/${task.id}/delete`)}
+                              color="danger"
+                              size="sm"
+                              data-cy="entityDeleteButton"
+                              aria-label="Delete"
+                            >
+                              <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        ) : (
+          !loading && <EmptyState entityName="Task" entityNamePlural="tasks" showCreateButton={true} createLink="/task/new" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Task;
